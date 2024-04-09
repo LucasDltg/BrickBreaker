@@ -16,9 +16,12 @@ public:
 
 private:
     std::vector<std::unique_ptr<Brick>> bricks;
+    std::pair<uint32_t, uint32_t> gridDimensions;
 
     // Helper function to create bricks from level data
     void createBricksFromLevel(const std::string& filename);
+    void handleResize();
+
 };
 
 #endif

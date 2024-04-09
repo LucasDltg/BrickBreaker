@@ -14,6 +14,7 @@ public:
 
     void decreaseResistance();
 
+    void setRect(int x, int y, int width, int height);
     const SDL_Rect& getRect() const;
 
     const SDL_Color& getColor() const;

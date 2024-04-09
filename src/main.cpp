@@ -10,9 +10,9 @@ int main()
     const int SCREEN_WIDTH = 800;
     const int SCREEN_HEIGHT = 600;
 
-    SDLApp app(SCREEN_WIDTH, SCREEN_HEIGHT);
+    SDLApp app(SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE);
     app.addComponent(std::make_shared<BrickBreaker>("./assets/level1.txt"));
-
+    
     app.run();
 
     return 0;

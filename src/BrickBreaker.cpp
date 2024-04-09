@@ -1,19 +1,30 @@
 #include "../include/BrickBreaker.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <iomanip>
 #include <SDL2/SDL.h>
 #include "../include/Brick.h"
 
 BrickBreaker::BrickBreaker()
 : SDLComponent()
-{
-    // Default constructor, do any initialization here if needed
-}
+{}
 
 BrickBreaker::BrickBreaker(const std::string& filename)
 : SDLComponent()
 {
     createBricksFromLevel(filename);
+}
+
+void BrickBreaker::handleResize()
+{
+    int brickWidth = surface->w / gridDimensions.first;
+    int brickHeight = surface->h / gridDimensions.second;
+
+    for (const auto& brick : bricks)
+    {
+        brick->setRect(brick->getRect().x * brickWidth, brick->getRect().y * brickHeight, brickWidth, brickHeight);
+    }
 }
 
 void BrickBreaker::createBricksFromLevel(const std::string& filename) {
@@ -23,28 +34,53 @@ void BrickBreaker::createBricksFromLevel(const std::string& filename) {
         return;
     }
 
+    // Read and validate the magic sequence
+    std::string magicSequence;
+    file >> magicSequence;
+    if (magicSequence != "rectangle") {
+        std::cerr << "Invalid magic sequence in level file: " << filename << std::endl;
+        return;
+    }
+
+    // Read dimensions of the grid from the second line of the file
+    file >> gridDimensions.first >> gridDimensions.second;
+
+    // Calculate brick width and height based on grid dimensions and surface dimensions
+    int brickWidth = surface->w / gridDimensions.first;
+    int brickHeight = surface->h / gridDimensions.second;
+
+    std::cout << "Brick width: " << brickWidth << ", Brick height: " << brickHeight << std::endl;
+
     std::string line;
-    int y = 0;
     while (std::getline(file, line)) {
-        int x = 0;
-        for (char c : line) {
-            if (c == 'X') { // Assuming 'X' represents a brick
-                // Create brick at position (x, y) and add to vector
-                SDL_Color color = {0xFF, 0, 0, 0xFF}; // Red color
-                int WIDTH = 50;
-                int HEIGHT = 20;
-                bricks.push_back(std::make_unique<Brick>(x, y, WIDTH, HEIGHT, color, 3));
-            }
-            x += Brick::WIDTH; // Adjust x position for next brick
+        std::istringstream iss(line);
+        int posX, posY, resistance;
+        std::string colorHex;
+
+        if (!(iss >> posX >> posY >> resistance >> colorHex)) {
+            std::cerr << "Invalid line format in level file: " << filename << std::endl;
+            continue;
         }
-        y += Brick::HEIGHT; // Move to next row
+
+        // Convert color from hexadecimal string to SDL_Color
+        SDL_Color color;
+        std::stringstream(colorHex) >> std::hex >> color.r >> color.g >> color.b >> color.a;
+
+        // Create brick at adjusted position and add to vector
+        bricks.push_back(std::make_unique<Brick>(posX * brickWidth, posY * brickHeight, brickWidth, brickHeight, color, resistance));
     }
 
     file.close();
 }
 
+
+
 void BrickBreaker::handleEvents(SDL_Event& event) {
-    // Handle events specific to the BrickBreaker component
+    // handle resize
+    if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
+    {
+        handleResize();
+    }
 }
 
 SDL_Surface* BrickBreaker::render()
@@ -52,6 +88,7 @@ SDL_Surface* BrickBreaker::render()
     // clear the surface
     SDL_FillRect(surface.get(), nullptr, SDL_MapRGB(surface->format, 0, 0, 0));
 
+    // draw bricks on the surface
     for (const auto& brick : bricks)
     {
        SDL_FillRect(surface.get(), &brick->getRect(), SDL_MapRGB(surface->format, brick->getColor().r, brick->getColor().g, brick->getColor().b));

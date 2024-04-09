@@ -16,6 +16,11 @@ void Brick::decreaseResistance()
         resistance--;
 }
 
+void Brick::setRect(int x, int y, int width, int height)
+{
+    rect = {x, y, width, height};
+}
+
 const SDL_Rect& Brick::getRect() const
 {
     return this->rect;
