@@ -6,16 +6,20 @@
 class Brick
 {
 public:
-    Brick(SDL_Renderer* renderer, int x, int y, int width, int height, SDL_Color color, int resistance);
-
-    void render();
+    static const int WIDTH = 50;
+    static const int HEIGHT = 20;
+    Brick(int x, int y, int width, int height, SDL_Color color, int resistance);
 
     int getResistance() const;
 
     void decreaseResistance();
 
+    const SDL_Rect& getRect() const;
+
+    const SDL_Color& getColor() const;
+
+
 private:
-    SDL_Renderer* renderer;
     SDL_Rect rect;
     SDL_Color color;
     int resistance;

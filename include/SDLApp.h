@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include <vector>
 #include <memory>
-#include "../include/sdl_component.h"
+#include "../include/SDLComponent.h"
 
 class SDLApp {
 public:
