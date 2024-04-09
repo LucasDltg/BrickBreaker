@@ -8,21 +8,21 @@ class Brick
 public:
     static const int WIDTH = 50;
     static const int HEIGHT = 20;
-    Brick(int x, int y, int width, int height, SDL_Color color, int resistance);
+    Brick(int x, int y, uint32_t color, int resistance);
 
     int getResistance() const;
 
     void decreaseResistance();
 
-    void setRect(int x, int y, int width, int height);
-    const SDL_Rect& getRect() const;
+    void setPosition(int x, int y);
+    const std::pair<uint32_t, uint32_t>& getPosition() const;
 
-    const SDL_Color& getColor() const;
+    const uint32_t& getColor() const;
 
 
 private:
-    SDL_Rect rect;
-    SDL_Color color;
+    std::pair<uint32_t, uint32_t> position;
+    uint32_t color;
     int resistance;
 };
 

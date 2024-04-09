@@ -2,8 +2,9 @@
 #include <iostream>
 #include "Brick.h"
 
-Brick::Brick(int x, int y, int width, int height, SDL_Color color, int resistance)
-: rect({x, y, width, height}), color(color), resistance(resistance) {}
+Brick::Brick(int x, int y, uint32_t color, int resistance)
+: position({x, y}), color(color), resistance(resistance) 
+{}
 
 int Brick::getResistance() const
 {
@@ -16,17 +17,18 @@ void Brick::decreaseResistance()
         resistance--;
 }
 
-void Brick::setRect(int x, int y, int width, int height)
+void Brick::setPosition(int x, int y)
 {
-    rect = {x, y, width, height};
+    position.first = x;
+    position.second = y;
 }
 
-const SDL_Rect& Brick::getRect() const
+const std::pair<uint32_t, uint32_t>& Brick::getPosition() const
 {
-    return this->rect;
+    return position;
 }
 
-const SDL_Color& Brick::getColor() const
+const uint32_t& Brick::getColor() const
 {
     return color;
 }

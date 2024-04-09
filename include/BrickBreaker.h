@@ -9,6 +9,8 @@
 
 class BrickBreaker : public SDLComponent {
 public:
+    static constexpr float BRICK_HEIGHT_LIMIT = 0.3f;
+
     BrickBreaker(); // Default constructor
     BrickBreaker(const std::string& filename); // Constructor to read level from file
     virtual void handleEvents(SDL_Event& event) override;
