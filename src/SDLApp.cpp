@@ -43,22 +43,11 @@ void SDLApp::addComponent(std::shared_ptr<SDLComponent> obj)
     components.push_back(obj);
     int windowWidth, windowHeight;
     SDL_GetWindowSize(window.get(), &windowWidth, &windowHeight);
-    components.back()->setSurfaceDimensions(windowWidth, windowHeight);
+    components.back()->initSurface(windowWidth, windowHeight);
 }
 
 void SDLApp::run()
 {
-    // create a resize event to forward their size to the components
-    SDL_Event resizeEvent;
-    resizeEvent.type = SDL_WINDOWEVENT;
-    resizeEvent.window.windowID = SDL_GetWindowID(window.get());
-    resizeEvent.window.event = SDL_WINDOWEVENT_RESIZED;
-    int windowWidth, windowHeight;
-    SDL_GetWindowSize(window.get(), &windowWidth, &windowHeight);
-    resizeEvent.window.data1 = windowWidth;
-    resizeEvent.window.data2 = windowHeight;
-    SDL_PushEvent(&resizeEvent);
-
     while (is_running) 
     {
         handleEvents();

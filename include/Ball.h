@@ -10,7 +10,7 @@ public:
     Ball(uint32_t radius, std::pair<uint32_t, uint32_t> center, SDL_Color color, std::pair<int, int> speed);
 
     uint32_t getRadius() const;
-    std::pair<uint32_t, uint32_t> getCenter() const;
+    const std::pair<uint32_t, uint32_t>& getCenter() const;
     SDL_Color getColor() const;
     std::pair<int, int> getSpeed() const;
 

@@ -7,7 +7,7 @@ uint32_t Ball::getRadius() const {
     return radius;
 }
 
-std::pair<uint32_t, uint32_t> Ball::getCenter() const {
+const std::pair<uint32_t, uint32_t>& Ball::getCenter() const {
     return center;
 }
 
