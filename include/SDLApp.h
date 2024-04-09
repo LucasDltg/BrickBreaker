@@ -17,11 +17,13 @@ public:
 private:
     std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)> window;
     std::unique_ptr<SDL_Renderer, decltype(&SDL_DestroyRenderer)> renderer;
-    bool isRunning;
+    bool is_running;
     std::vector<std::shared_ptr<SDLComponent>> components;
+    uint32_t last_time;
+    std::pair<uint32_t, uint32_t> window_dimensions;
 
     void handleEvents();
-    void render();
+    void render(uint64_t delta_time);
 };
 
 #endif

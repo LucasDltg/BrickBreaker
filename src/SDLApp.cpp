@@ -1,8 +1,8 @@
 #include "../include/SDLApp.h"
 #include <iostream>
 
-SDLApp::SDLApp(int screenWidth, int screenHeight, uint32_t flags)
-    : window(nullptr, &SDL_DestroyWindow), renderer(nullptr, &SDL_DestroyRenderer), isRunning(false)
+SDLApp::SDLApp(int screen_width, int screen_height, uint32_t flags)
+    : window(nullptr, &SDL_DestroyWindow), renderer(nullptr, &SDL_DestroyRenderer), is_running(false), last_time(SDL_GetTicks64())
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
@@ -11,7 +11,7 @@ SDLApp::SDLApp(int screenWidth, int screenHeight, uint32_t flags)
     }
 
     window.reset(SDL_CreateWindow("SDL Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                                  screenWidth, screenHeight, SDL_WINDOW_SHOWN | flags));
+                                  screen_width, screen_height, SDL_WINDOW_SHOWN | flags));
     if (!window)
     {
         std::cerr << "Window creation failed: " << SDL_GetError() << std::endl;
@@ -27,7 +27,8 @@ SDLApp::SDLApp(int screenWidth, int screenHeight, uint32_t flags)
         return;
     }
 
-    isRunning = true;
+    is_running = true;
+    window_dimensions = {screen_width, screen_height};
 }
 
 SDLApp::~SDLApp()
@@ -58,10 +59,11 @@ void SDLApp::run()
     resizeEvent.window.data2 = windowHeight;
     SDL_PushEvent(&resizeEvent);
 
-    while (isRunning) 
+    while (is_running) 
     {
         handleEvents();
-        render();
+        render(SDL_GetTicks64() - last_time);
+        last_time = SDL_GetTicks64();
     }
 }
 
@@ -71,35 +73,40 @@ void SDLApp::handleEvents()
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT)
         {
-            isRunning = false;
+            is_running = false;
         }
         else if(event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) // a changer pour pouvoir afficher plusieurs objets
-        {
-            int windowWidth, windowHeight;
-            SDL_GetWindowSize(window.get(), &windowWidth, &windowHeight);
+        {            
+            // on change la taille ici, pour communiquer la nouvelle taille aux objets (ils sont libres de la garder ou non)
             for (auto& obj : components)
             {
-                obj->setSurfaceDimensions(windowWidth, windowHeight);
+                obj->setSurfaceDimensions(event.window.data1, event.window.data2);
+                // on envoie la taille précédente et la nouvelle taille
+                obj->handleEvents(event, std::make_shared<int>(window_dimensions.first), std::make_shared<int>(window_dimensions.second)); 
             }
+            int window_width, window_height;
+            SDL_GetWindowSize(window.get(), &window_width, &window_height);
+            window_dimensions = {window_width, window_height};
         }
-
-
-        for (auto& obj : components)
+        else
         {
-            obj->handleEvents(event);
+            for (auto& obj : components)
+            {
+                obj->handleEvents(event, nullptr, nullptr);
+            }
         }
     }
 }
 
 // adaptable facilement pour pouvoir afficher plusieurs objets, besoin de changer addComponent et resize dans handleEvents
-void SDLApp::render()
+void SDLApp::render(uint64_t delta_time)
 {
     SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
     SDL_RenderClear(renderer.get());
 
     for (auto& obj : components)
     {
-        SDL_Surface* surface = obj->render();
+        SDL_Surface* surface = obj->render(delta_time);
         SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer.get(), surface);
         if(!texture)
         {
