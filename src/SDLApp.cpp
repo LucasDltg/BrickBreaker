@@ -1,14 +1,22 @@
 #include "../include/SDLApp.h"
 #include <iostream>
+#include <SDL2/SDL_image.h>
 
 SDLApp::SDLApp(int screen_width, int screen_height, uint32_t flags)
     : window(nullptr, &SDL_DestroyWindow), renderer(nullptr, &SDL_DestroyRenderer), is_running(false), last_time(0)
 {
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
-    {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
         std::cerr << "SDL initialization failed: " << SDL_GetError() << std::endl;
         return;
     }
+
+    int imgFlags = IMG_INIT_PNG;
+    if (!(IMG_Init(imgFlags) & imgFlags)) {
+        std::cerr << "SDL_image initialization failed: " << IMG_GetError() << std::endl;
+        SDL_Quit();
+        return;
+    }
+
 
     window.reset(SDL_CreateWindow("SDL Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                   screen_width, screen_height, SDL_WINDOW_SHOWN | flags));
@@ -26,6 +34,7 @@ SDLApp::SDLApp(int screen_width, int screen_height, uint32_t flags)
         SDL_Quit();
         return;
     }
+    SDL_SetRenderDrawBlendMode(renderer.get(), SDL_BLENDMODE_BLEND);
 
     is_running = true;
     window_dimensions = {screen_width, screen_height};
@@ -48,7 +57,7 @@ void SDLApp::addComponent(std::shared_ptr<SDLComponent> obj)
 
 void SDLApp::run()
 {
-    const int DESIRED_FPS = 120;
+    const int DESIRED_FPS = 60;
     const __uint64_t FRAME_TIME = 1000 / DESIRED_FPS;
 
     __uint64_t lastTime = SDL_GetTicks64();

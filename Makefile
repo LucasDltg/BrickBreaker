@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -std=c++14 -Wall
-LDFLAGS = -lSDL2
+LDFLAGS = -lSDL2 -lSDL2_image
 
 SRC_DIR = src
 INCLUDE_DIR = include

@@ -1,9 +1,18 @@
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 #include "Ball.h"
 
+SDL_Surface* Ball::ballSurface = IMG_Load("ball.png");
+
 Ball::Ball(_Float32 radius, std::pair<_Float32, _Float32> center, SDL_Color color, std::pair<_Float32, _Float32> speed)
-    : radius(radius), center(center), color(color), speed(speed) {}
+    : radius(radius), center(center), color(color), speed(speed)
+    {
+        if (!ballSurface)
+        {
+            std::cerr << "Failed to load image: " << IMG_GetError() << std::endl;
+        }
+    }
 
 _Float32 Ball::getRadius() const {
     return radius;
@@ -43,38 +52,32 @@ void Ball::update(uint64_t delta_time) {
     center.second += speed.second * delta_time;
 }
 
-bool Ball::resolveCollisionWithRectangle(const SDL_Rect& rect) {
-    // Calculate the closest point on the rectangle to the circle's center
+bool Ball::resolveCollisionWithRectangle(const SDL_Rect& rect)
+{
     float closestX = std::max(static_cast<float>(rect.x), std::min(center.first, static_cast<float>(rect.x + rect.w)));
     float closestY = std::max(static_cast<float>(rect.y), std::min(center.second, static_cast<float>(rect.y + rect.h)));
-    
-    // Calculate the distance between the circle's center and the closest point
+
     float distanceX = center.first - closestX;
     float distanceY = center.second - closestY;
     float distanceSquared = distanceX * distanceX + distanceY * distanceY;
-    
-    // Check if the distance is less than the circle's radius squared
+
     if (distanceSquared < (radius * radius)) {
-        // Collision detected, resolve it
-        float distance = sqrt(distanceSquared);
+        float distance = std::sqrt(distanceSquared);
         float overlap = radius - distance;
 
-        // Calculate the direction from the circle's center to the closest point on the rectangle
-        float directionX = distanceX / distance;
-        float directionY = distanceY / distance;
+        if (distance > 0) {
+            float directionX = distanceX / distance;
+            float directionY = distanceY / distance;
 
-        // Adjust the circle's position by the overlap in the opposite direction
-        center.first += overlap * directionX;
-        center.second += overlap * directionY;
+            center.first += overlap * directionX;
+            center.second += overlap * directionY;
 
-        // Invert the appropriate component of the circle's speed vector to simulate bouncing off the rectangle
-        if (center.first < closestX || center.first > closestX + rect.w)
-            speed.first = -speed.first;
-        if (center.second < closestY || center.second > closestY + rect.h)
-            speed.second = -speed.second;
+            float dotProduct = (speed.first * directionX + speed.second * directionY) * 2.0f;
+            speed.first -= dotProduct * directionX;
+            speed.second -= dotProduct * directionY;
 
-        return true;
+            return true;
+        }
     }
-
     return false;
 }

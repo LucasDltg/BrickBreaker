@@ -4,9 +4,13 @@
 #include <utility>
 #include <cstdint>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 class Ball {
 public:
+    static SDL_Surface* ballSurface;
+
+    
     Ball(_Float32 radius, std::pair<_Float32, _Float32> center, SDL_Color color, std::pair<_Float32, _Float32> speed);
 
     _Float32 getRadius() const;

@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <algorithm>
 #include <SDL2/SDL.h>
 #include "../include/Brick.h"
 #include "../include/Ball.h"
@@ -24,7 +25,7 @@ void BrickBreaker::initSurface(uint32_t width, uint32_t height)
     SDL_Color color;
     color.r = 0; color.g = 0; color.b = 255; color.a = 0;
     std::pair<uint32_t, uint32_t> center = {surface->w / 2, surface->h / 4};
-    std::pair<_Float32, _Float32> speed = {0.01, 0.2};
+    std::pair<_Float32, _Float32> speed = {-0.02, 0.8};
     balls.push_back(std::make_unique<Ball>(surface->w / 35, center, color, speed));
 
     color.r = 255; color.g = 0; color.b = 0; color.a = 0;
@@ -33,6 +34,8 @@ void BrickBreaker::initSurface(uint32_t width, uint32_t height)
 
 void BrickBreaker::handleResize(std::pair<int, int> previousSize, std::pair<int, int> newSize)
 {
+    // no need to resize bricks
+
     for (auto& ball : balls)
     {
         std::pair<uint32_t, uint32_t> center = ball->getCenter();
@@ -51,8 +54,7 @@ void BrickBreaker::handleResize(std::pair<int, int> previousSize, std::pair<int,
     rect.y = surface->h * 9 / 10;
     rect.w = newSize.first / 7;
     rect.h = newSize.second / 30;
-    platform->setRect(rect);
-    
+    platform->setRect(rect);   
 }
 
 void BrickBreaker::createBricksFromLevel(const std::string& filename) {
@@ -137,21 +139,42 @@ void BrickBreaker::update(uint64_t delta_time)
     
     for (auto& ball : balls)
     {
-        /*for(auto& brick : bricks)
+        for(auto& brick : bricks)
         {
-            if(ball->resolveCollisionWithRectangle(brick->getRect()))
+            int brickWidth = surface->w / gridDimensions.first;
+            int brickHeight = surface->h * BrickBreaker::BRICK_HEIGHT_LIMIT / gridDimensions.second;
+            const std::pair<uint32_t, uint32_t> position = brick->getPosition();
+            SDL_Rect rect = {(int)position.first * brickWidth, (int)position.second * brickHeight, brickWidth, brickHeight};
+       
+            if(ball->resolveCollisionWithRectangle(rect))
             {
                 brick->decreaseResistance();
                 if(brick->getResistance() == 0)
                 {
                     bricks.erase(std::remove_if(bricks.begin(), bricks.end(), [&brick](const std::unique_ptr<Brick>& b) { return b.get() == brick.get(); }), bricks.end());
                 }
+                break;
             }
-        }*/
+        }
 
 
-        if(!ball->resolveCollisionWithRectangle(platform->getRect()))
-            ball->update(delta_time);
+        ball->resolveCollisionWithRectangle(platform->getRect());
+
+        // collisions with borders
+        SDL_Rect borders[4] = {
+            {0, 0, surface->w, 1},
+            {0, 0, 1, surface->h},
+            {0, surface->h - 1, surface->w, 1},
+            {surface->w - 1, 0, 1, surface->h}
+        };
+        
+        for (const auto& border : borders)
+        {
+            ball->resolveCollisionWithRectangle(border);
+        }
+
+        ball->update(delta_time);
+
     }
 }
 
@@ -172,24 +195,23 @@ SDL_Surface* BrickBreaker::render()
        const std::pair<uint32_t, uint32_t> position = brick->getPosition();
        SDL_Rect rect = {(int)position.first * brickWidth, (int)position.second * brickHeight, brickWidth, brickHeight};
        SDL_FillRect(surface.get(), &rect, brick->getColor());
-
     }
 
     for (const auto& ball : balls)
     {
         const std::pair<uint32_t, uint32_t> position = ball->getCenter();
         float radius = ball->getRadius();
-        SDL_Color color = ball->getColor();
+        // SDL_Color color = ball->getColor();
 
-        // drax a circle
-        for (int x = position.first - radius; x <= position.first + radius; ++x) {
-            for (int y = position.second - radius; y <= position.second + radius; ++y) {
-                if ((x - position.first) * (x - position.first) + (y - position.second) * (y - position.second) <= radius * radius) {
-                    SDL_Rect rect = { x, y, 1, 1 };
-                    SDL_FillRect(surface.get(), &rect, SDL_MapRGBA(surface->format, color.r, color.g, color.b, color.a));
-                }
-            }
-        }
+        SDL_Rect destRect = {
+            static_cast<int>(position.first - radius),
+            static_cast<int>(position.second - radius),
+            static_cast<int>(2 * radius),
+            static_cast<int>(2 * radius)
+        };
+
+        SDL_BlitScaled(Ball::ballSurface, nullptr, surface.get(), &destRect);
+
     }
 
     SDL_Color color = platform->getColor();
