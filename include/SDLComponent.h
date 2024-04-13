@@ -16,6 +16,7 @@ public:
 
 protected:
     std::shared_ptr<SDL_Surface> surface;
+    SDL_Renderer* renderer;
 };
 
 #endif

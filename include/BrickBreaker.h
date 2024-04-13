@@ -9,11 +9,12 @@
 #include <vector>
 #include <fstream>
 
+enum class BrickShape {RECTANGLE, HEXAGON};
+
 class BrickBreaker : public SDLComponent {
 public:
     static constexpr float BRICK_HEIGHT_LIMIT = 0.3f;
 
-    BrickBreaker(); // Default constructor
     BrickBreaker(const std::string& filename); // Constructor to read level from file
     virtual void handleEvents(SDL_Event& event, std::shared_ptr<void> data1, std::shared_ptr<void> data2) override;
     virtual void update(uint64_t delta_time) override;
@@ -23,8 +24,10 @@ public:
 private:
     std::vector<std::unique_ptr<Brick>> bricks;
     std::vector<std::unique_ptr<Ball>> balls;
+    std::vector<std::unique_ptr<PowerUp>> powerUps;
     std::unique_ptr<Platform> platform;
     std::pair<uint32_t, uint32_t> gridDimensions;
+    BrickShape brickShape;
 
     // Helper function to create bricks from level data
     void createBricksFromLevel(const std::string& filename);

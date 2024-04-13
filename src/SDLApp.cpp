@@ -78,7 +78,7 @@ void SDLApp::run()
             SDL_Delay(FRAME_TIME - elapsedTime);
 
         double fps = 1000.0 / (SDL_GetTicks64() - lastTime);
-        std::cout << "FPS: " << fps << std::endl;
+        // std::cout << "FPS: " << fps << std::endl;
     }
 }
 
