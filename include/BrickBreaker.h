@@ -16,7 +16,8 @@ public:
     BrickBreaker(); // Default constructor
     BrickBreaker(const std::string& filename); // Constructor to read level from file
     virtual void handleEvents(SDL_Event& event, std::shared_ptr<void> data1, std::shared_ptr<void> data2) override;
-    virtual SDL_Surface* render(uint64_t delta_time) override;
+    virtual void update(uint64_t delta_time) override;
+    virtual SDL_Surface* render() override;
     virtual void initSurface(uint32_t width, uint32_t height) override;
 
 private:

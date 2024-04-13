@@ -5,7 +5,7 @@
 
 SDLComponent::SDLComponent() 
     : surface(nullptr) {
-    surface.reset(SDL_CreateRGBSurface(0, 100, 100, 32, 0, 0, 0, 0));
+    surface.reset(SDL_CreateRGBSurface(0, 0, 0, 32, 0, 0, 0, 0));
     if (!surface)
     {
         throw std::runtime_error("SDL_CreateRGBSurface failed");

@@ -23,7 +23,8 @@ private:
     std::pair<uint32_t, uint32_t> window_dimensions;
 
     void handleEvents();
-    void render(uint64_t delta_time);
+    void update(uint64_t delta_time);
+    void render();
 };
 
 #endif

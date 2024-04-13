@@ -7,23 +7,26 @@
 
 class Ball {
 public:
-    Ball(uint32_t radius, std::pair<uint32_t, uint32_t> center, SDL_Color color, std::pair<int, int> speed);
+    Ball(_Float32 radius, std::pair<_Float32, _Float32> center, SDL_Color color, std::pair<_Float32, _Float32> speed);
 
-    uint32_t getRadius() const;
-    const std::pair<uint32_t, uint32_t>& getCenter() const;
+    _Float32 getRadius() const;
+    const std::pair<_Float32, _Float32>& getCenter() const;
     SDL_Color getColor() const;
-    std::pair<int, int> getSpeed() const;
+    std::pair<_Float32, _Float32> getSpeed() const;
 
-    void setRadius(uint32_t newRadius);
-    void setCenter(std::pair<uint32_t, uint32_t> newCenter);
+    void setRadius(_Float32 newRadius);
+    void setCenter(std::pair<_Float32, _Float32> newCenter);
     void setColor(SDL_Color newColor);
-    void setSpeed(std::pair<int, int> newSpeed);
+    void setSpeed(std::pair<_Float32, _Float32> newSpeed);
+
+    void update(uint64_t delta_time);
+    bool resolveCollisionWithRectangle(const SDL_Rect& rect);
 
 private:
-    uint32_t radius;
-    std::pair<uint32_t, uint32_t> center;
+    _Float32 radius;
+    std::pair<_Float32, _Float32> center;
     SDL_Color color;
-    std::pair<int, int> speed;
+    std::pair<_Float32, _Float32> speed;
 };
 
 #endif // BALL_H
