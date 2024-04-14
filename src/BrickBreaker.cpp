@@ -15,7 +15,7 @@ BrickBreaker::BrickBreaker(const std::string& filename)
 {
     createBricksFromLevel(filename);
     
-    font = TTF_OpenFont("./fonts/arial/arial.ttf", 24);
+    font = TTF_OpenFont("./assets/fonts/arial/arial.ttf", 24);
     if (!font)
     {
         std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
@@ -256,6 +256,15 @@ SDL_Surface* BrickBreaker::render()
 
     if (bricks.empty() || balls.empty() || gridDimensions.first == 0 || gridDimensions.second == 0)
     {
+        if (font)
+        {
+            SDL_Color color = {255, 255, 255, 0};
+            SDL_Surface* textSurface = TTF_RenderText_Solid(font, "You won!", color);
+            SDL_Rect destRect = {surface->w / 2 - textSurface->w / 2, surface->h / 2 - textSurface->h / 2, textSurface->w, textSurface->h};
+            SDL_BlitSurface(textSurface, nullptr, surface.get(), &destRect);
+            SDL_FreeSurface(textSurface);
+        }
+        is_running = false;
         return surface.get();
     }
 

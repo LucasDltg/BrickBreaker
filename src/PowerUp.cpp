@@ -5,7 +5,6 @@
 
 std::unique_ptr<PowerUp> initPowerUp(std::string name)
 {
-    std::cout << "Creating power up: " << name << std::endl;
     if (name == "SpeedUp")
         return std::make_unique<SpeedUpPowerUp>();
     else if (name == "MultiBall")
@@ -86,8 +85,8 @@ void SpeedUpPowerUp::applyPowerUp(BrickBreaker &game)
 
 void SpeedUpPowerUp::unApplyPowerUp(BrickBreaker &game)
 {
-    /*for (auto &ball : game.balls)
+    for (auto &ball : game.getBalls())
     {
-        ball->setSpeed(ball->getSpeed() / 1.5f);
-    }*/
+        ball.setSpeed({ball.getSpeed().first / 1.2f, ball.getSpeed().second / 1.2f});
+    }
 }

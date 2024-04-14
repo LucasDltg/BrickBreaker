@@ -4,7 +4,8 @@
 #include <stdexcept>
 
 SDLComponent::SDLComponent() 
-    : surface(nullptr) {
+    : surface(nullptr), is_running(true)
+{
     surface.reset(SDL_CreateRGBSurface(0, 0, 0, 32, 0, 0, 0, 0));
     if (!surface)
     {
@@ -21,7 +22,17 @@ void SDLComponent::setSurfaceDimensions(uint32_t width, uint32_t height)
     }
 }
 
+void SDLComponent::initSurface(uint32_t width, uint32_t height)
+{
+    setSurfaceDimensions(width, height);
+}
+
 SDLComponent::~SDLComponent()
 {
     
+}
+
+bool SDLComponent::isRunning() const
+{
+    return is_running;
 }

@@ -2,8 +2,11 @@
 #include <iostream>
 #include "../include/SDLApp.h"
 #include "../include/BrickBreaker.h"
+#include "../include/BrickBreakerMenu.h"
 
 // consistence throw et cerr
+// const
+// public et private
 
 int main()
 {
@@ -11,7 +14,7 @@ int main()
     const int SCREEN_HEIGHT = 600;
 
     SDLApp app(SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE);
-    app.addComponent(std::make_shared<BrickBreaker>("./assets/level1.txt"));
+    app.addComponent(std::make_shared<BrickBreakerMenu>());
     
     app.run();
 

@@ -48,6 +48,9 @@
         "typeinfo": "cpp",
         "ctime": "cpp",
         "iomanip": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "chrono": "cpp",
+        "codecvt": "cpp",
+        "ratio": "cpp"
     }
 }

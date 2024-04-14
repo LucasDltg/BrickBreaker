@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++14 -Wall
+CXXFLAGS = -std=c++17 -Wall
 LDFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf
 
 SRC_DIR = src
