@@ -10,25 +10,40 @@ std::unique_ptr<PowerUp> initPowerUp(std::string name)
         return std::make_unique<SpeedUpPowerUp>();
     else if (name == "MultiBall")
         return std::make_unique<MultiBallPowerUp>();
-    else if (name == "ExtraLife")
-        return std::make_unique<ExtraLifePowerUp>();
+    else if (name == "ExtendPlatform")
+        return std::make_unique<ExtendPlatformPowerUp>();
     else
         return nullptr;
 }
 
-PowerUp::PowerUp()
+PowerUp::PowerUp(int32_t current_duration)
+: current_duration(current_duration), active(false)
 {}
 
-void SpeedUpPowerUp::applyPowerUp(BrickBreaker &game)
+bool PowerUp::isActive() const
 {
-    /*for (auto &ball : game.getBalls())
-    {
-        ball->setSpeed(ball->getSpeed() * 1.5f);
-    }   */
+    return active;
 }
+
+void PowerUp::decrementDuration(uint64_t delta_time)
+{
+    if (active)
+        current_duration -= delta_time;
+}
+
+int64_t PowerUp::getDuration() const
+{
+    return current_duration;
+}
+
+MultiBallPowerUp::MultiBallPowerUp()
+: PowerUp()
+{}
 
 void MultiBallPowerUp::applyPowerUp(BrickBreaker &game)
 {
+    active = true;
+    
     SDL_Rect platformRect = game.getPlatform().getRect();
     Ball ball = Ball(game.getBallRadius(), std::pair<_Float32, _Float32>{static_cast<_Float32>(platformRect.x) + static_cast<_Float32>(platformRect.w) / 2.0f, 
                     static_cast<_Float32>(platformRect.y) - game.getBallRadius()}, SDL_Color{255, 0, 0, 0}, std::pair<_Float32, _Float32>{0, game.getInitialBallSpeed()});
@@ -36,7 +51,43 @@ void MultiBallPowerUp::applyPowerUp(BrickBreaker &game)
     game.addBall(ball);
 }
 
-void ExtraLifePowerUp::applyPowerUp(BrickBreaker &game)
-{
+void MultiBallPowerUp::unApplyPowerUp(BrickBreaker &game)
+{}
 
+ExtendPlatformPowerUp::ExtendPlatformPowerUp()
+: PowerUp(5000)
+{}
+
+void ExtendPlatformPowerUp::applyPowerUp(BrickBreaker &game)
+{
+    active = true;
+    Platform& p = game.getPlatform();
+    p.setRect({p.getRect().x, p.getRect().y, static_cast<int32_t>(p.getRect().w * 1.5f), p.getRect().h});
+}
+
+void ExtendPlatformPowerUp::unApplyPowerUp(BrickBreaker &game)
+{
+    Platform& p = game.getPlatform();
+    p.setRect({p.getRect().x, p.getRect().y, static_cast<int32_t>(p.getRect().w / 1.5f), p.getRect().h});
+}
+
+SpeedUpPowerUp::SpeedUpPowerUp()
+: PowerUp(5000)
+{}
+
+void SpeedUpPowerUp::applyPowerUp(BrickBreaker &game)
+{
+    active = true;
+    for (auto &ball : game.getBalls())
+    {
+        ball.setSpeed({ball.getSpeed().first * 1.2f, ball.getSpeed().second * 1.2f});
+    }
+}
+
+void SpeedUpPowerUp::unApplyPowerUp(BrickBreaker &game)
+{
+    /*for (auto &ball : game.balls)
+    {
+        ball->setSpeed(ball->getSpeed() / 1.5f);
+    }*/
 }

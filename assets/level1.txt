@@ -1,7 +1,7 @@
 rectangle
 10 5
-1 1 2 0x00FF0000 MultiBall
-2 2 2 0x00FF0000 MultiBall
-0 0 2 0xFF000000 MultiBall
-3 2 2 0x00FF0000 MultiBall
-4 2 2 0x00FF0000 MultiBall
+1 1 1 0x00FF0000 SpeedUp
+2 2 1 0x00FF0000 SpeedUp
+0 0 1 0xFF000000 SpeedUp
+3 2 1 0x00FF0000 SpeedUp
+4 2 1 0x00FF0000 SpeedUp

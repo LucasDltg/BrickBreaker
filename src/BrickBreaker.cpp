@@ -14,6 +14,7 @@ BrickBreaker::BrickBreaker(const std::string& filename)
 : SDLComponent(), lifeCount(3)
 {
     createBricksFromLevel(filename);
+    
     font = TTF_OpenFont("./fonts/arial/arial.ttf", 24);
     if (!font)
     {
@@ -167,31 +168,36 @@ void BrickBreaker::handleEvents(SDL_Event& event, std::shared_ptr<void> data1, s
 void BrickBreaker::update(uint64_t delta_time)
 {
     platform.update(delta_time, surface->w);
-    
-    // remove power-up if there is a collision with platform
-    powerUps.erase(std::remove_if(powerUps.begin(), powerUps.end(), [this](const std::unique_ptr<PowerUp>& powerUp) {
-        if (powerUp->resolveCollisionWithRectangle(platform.getRect()))
-        {
-            powerUp->applyPowerUp(*this);
-            std::cout << "Power up applied" << std::endl;
-            return true;
-        }
-        return false;
-    }), powerUps.end());
-
-    // remove power-up if it is out of bounds
-    powerUps.erase(std::remove_if(powerUps.begin(), powerUps.end(), [this](const std::unique_ptr<PowerUp>& powerUp) {
-        if (powerUp->getCenter().second  + powerUp->getRadius() > surface->h)
-        {
-            return true;
-        }
-        return false;
-    }), powerUps.end());
 
     for (auto& powerUp : powerUps)
     {
-        powerUp->update(delta_time);
+        if (!powerUp->isActive())
+        {
+            powerUp->update(delta_time);
+            if(powerUp->resolveCollisionWithRectangle(platform.getRect()))
+            {
+                powerUp->applyPowerUp(*this);
+            }
+        }
+        else
+        {
+            powerUp->decrementDuration(delta_time);
+        }
     }
+
+    // remove power-up if it is out of bounds or its duration is over
+    powerUps.erase(std::remove_if(powerUps.begin(), powerUps.end(), [this](const std::unique_ptr<PowerUp>& powerUp) {
+        if (powerUp->getCenter().second + powerUp->getRadius() > surface->h && !powerUp->isActive())
+        {
+            return true;
+        }
+        if(powerUp->isActive() && powerUp->getDuration() <= 0)
+        {
+            powerUp->unApplyPowerUp(*this);
+            return true;
+        }
+        return false;
+    }), powerUps.end());
 
     
     for (auto& ball : balls)
@@ -227,10 +233,10 @@ void BrickBreaker::update(uint64_t delta_time)
 
         // collisions with borders
         SDL_Rect borders[4] = {
-            {0, 0, surface->w, 1},
-            {0, 0, 1, surface->h},
-            {0, surface->h - 1, surface->w, 1},
-            {surface->w - 1, 0, 1, surface->h}
+            {0, 0, surface->w, 30},
+            {0, 0, 30, surface->h},
+            {0, surface->h - 1, surface->w, 30},
+            {surface->w - 1, 0, 30, surface->h}
         };
         
         for (const auto& border : borders)
@@ -281,6 +287,10 @@ SDL_Surface* BrickBreaker::render()
 
     for (const auto& powerUp : powerUps)
     {
+        if(powerUp->isActive())
+        {
+            continue;
+        }
         std::pair<_Float32, _Float32> position = powerUp->getCenter();
         SDL_Rect rect = {static_cast<int>(position.first), static_cast<int>(position.second), 20, 20};
 
@@ -304,15 +314,12 @@ const _Float32 BrickBreaker::getInitialBallSpeed() const
     return static_cast<_Float32>(surface->w) / 1600.0f;
 }
 
-/*const SDL_Rect& BrickBreaker::getInitialPlatformRect()
+Platform& BrickBreaker::getPlatform()
 {
-    return platform->getRect();
-}*/
+    return platform;
+}
 
-void BrickBreaker::setBallsSpeed(_Float32 speed_x, _Float32 speed_y)
+std::vector<Ball>& BrickBreaker::getBalls()
 {
-    for (auto& ball : balls)
-    {
-        ball.setSpeed({speed_x, speed_y});
-    }
+    return balls;
 }

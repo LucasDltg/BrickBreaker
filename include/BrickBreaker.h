@@ -16,17 +16,20 @@ class BrickBreaker : public SDLComponent {
 public:
     static constexpr float BRICK_HEIGHT_LIMIT = 0.3f;
 
-    BrickBreaker(const std::string& filename); // Constructor to read level from file
+    BrickBreaker(const std::string& filename);
+
     void handleEvents(SDL_Event& event, std::shared_ptr<void> data1, std::shared_ptr<void> data2) override;
     void update(uint64_t delta_time) override;
     SDL_Surface* render() override;
     void initSurface(uint32_t width, uint32_t height) override;
+    
     void addBall(Ball& ball);
+    
     const Platform& getPlatform() const;
-
+    Platform& getPlatform();
     const _Float32 getBallRadius() const;
     const _Float32 getInitialBallSpeed() const;
-    void setBallsSpeed(_Float32 speed_x, _Float32 speed_y);
+    std::vector<Ball>& getBalls();
 
 private:
     std::vector<Brick> bricks;
