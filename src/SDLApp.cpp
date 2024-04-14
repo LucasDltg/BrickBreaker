@@ -1,6 +1,7 @@
 #include "../include/SDLApp.h"
 #include <iostream>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 SDLApp::SDLApp(int screen_width, int screen_height, uint32_t flags)
     : window(nullptr, &SDL_DestroyWindow), renderer(nullptr, &SDL_DestroyRenderer), is_running(false), last_time(0)
@@ -17,6 +18,11 @@ SDLApp::SDLApp(int screen_width, int screen_height, uint32_t flags)
         return;
     }
 
+    if(TTF_Init() == -1)
+    {
+        std::cerr << "SDL_ttf initialization failed: " << TTF_GetError() << std::endl;
+        return;
+    }
 
     window.reset(SDL_CreateWindow("SDL Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                   screen_width, screen_height, SDL_WINDOW_SHOWN | flags));

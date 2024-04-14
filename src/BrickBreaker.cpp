@@ -5,14 +5,20 @@
 #include <iomanip>
 #include <algorithm>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include "../include/Brick.h"
 #include "../include/Ball.h"
 #include "../include/Platform.h"
 
 BrickBreaker::BrickBreaker(const std::string& filename)
-: SDLComponent()
+: SDLComponent(), lifeCount(3)
 {
     createBricksFromLevel(filename);
+    font = TTF_OpenFont("./fonts/arial/arial.ttf", 24);
+    if (!font)
+    {
+        std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
+    }
 }
 
 void BrickBreaker::initSurface(uint32_t width, uint32_t height)
@@ -21,8 +27,8 @@ void BrickBreaker::initSurface(uint32_t width, uint32_t height)
     SDL_Color color;
     color.r = 0; color.g = 0; color.b = 255; color.a = 0;
     std::pair<uint32_t, uint32_t> center = {surface->w / 2, surface->h / 4};
-    std::pair<_Float32, _Float32> speed = {0.2, 0.5};
-    balls.push_back(std::make_unique<Ball>(surface->w / 60, center, color, speed));
+    std::pair<_Float32, _Float32> speed = {getInitialBallSpeed()/2, getInitialBallSpeed()};
+    balls.push_back(std::make_unique<Ball>(getBallRadius(), center, color, speed));
 
     color.r = 255; color.g = 0; color.b = 0; color.a = 0;
     platform = std::make_unique<Platform>(surface->w / 2 - surface->w / 14, surface->h * 9 / 10, surface->w / 7, surface->h / 30, color);
@@ -112,6 +118,16 @@ void BrickBreaker::createBricksFromLevel(const std::string& filename) {
     file.close();
 }
 
+void BrickBreaker::addBall(std::unique_ptr<Ball> ball)
+{
+    balls.push_back(std::move(ball));
+}
+
+const Platform& BrickBreaker::getPlatform() const
+{
+    return *platform;
+}
+
 void BrickBreaker::handleEvents(SDL_Event& event, std::shared_ptr<void> data1, std::shared_ptr<void> data2)
 {
     if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
@@ -155,7 +171,7 @@ void BrickBreaker::update(uint64_t delta_time)
     powerUps.erase(std::remove_if(powerUps.begin(), powerUps.end(), [this](const std::unique_ptr<PowerUp>& powerUp) {
         if (powerUp->resolveCollisionWithRectangle(platform->getRect()))
         {
-            powerUp->applyPowerUp();
+            powerUp->applyPowerUp(*this);
             std::cout << "Power up applied" << std::endl;
             return true;
         }
@@ -274,5 +290,45 @@ SDL_Surface* BrickBreaker::render()
     SDL_Color color = platform->getColor();
     SDL_FillRect(surface.get(), &(platform.get()->getRect()), SDL_MapRGBA(surface->format, color.r, color.g, color.b, color.a));
 
+    // Draw lives
+    std::stringstream ss;
+    ss << "Life: " << lifeCount;
+
+    SDL_Color textColor = {255, 255, 255, 255};
+    SDL_Surface* textSurface = TTF_RenderText_Solid(font, ss.str().c_str(), textColor);
+    if (!textSurface)
+    {
+        std::cerr << "Failed to render text: " << TTF_GetError() << std::endl;
+    }
+    else
+    {
+        int textWidth = textSurface->w;
+        int textHeight = textSurface->h;
+        SDL_Rect destRect = {surface->w - textWidth, 0, textWidth, textHeight};
+
+        SDL_BlitSurface(textSurface, nullptr, surface.get(), &destRect);
+        SDL_FreeSurface(textSurface);
+    }
+
     return surface.get();
+}
+
+_Float32 BrickBreaker::getBallRadius() const
+{
+    return static_cast<_Float32>(surface->w) / 60.0f;
+}
+
+_Float32 BrickBreaker::getInitialBallSpeed() const
+{
+    return static_cast<_Float32>(surface->w) / 1600.0f;
+}
+
+void BrickBreaker::incrementLifeCount()
+{
+    lifeCount++;
+}
+
+void BrickBreaker::decrementLifeCount()
+{
+    lifeCount--;
 }

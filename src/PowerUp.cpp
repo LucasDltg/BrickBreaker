@@ -1,4 +1,5 @@
 #include "../include/PowerUp.h"
+#include "../include/BrickBreaker.h"
 #include <memory>
 #include <iostream>
 
@@ -15,39 +16,28 @@ std::unique_ptr<PowerUp> initPowerUp(std::string name)
         return nullptr;
 }
 
-
 PowerUp::PowerUp()
+{}
+
+void SpeedUpPowerUp::applyPowerUp(BrickBreaker &game)
 {
-    // Initialize the power up
+    /*for (auto &ball : game.getBalls())
+    {
+        ball->setSpeed(ball->getSpeed() * 1.5f);
+    }   */
 }
 
-void SpeedUpPowerUp::applyPowerUp()
+void MultiBallPowerUp::applyPowerUp(BrickBreaker &game)
 {
-    // Increase the speed of the ball
+    SDL_Rect platformRect = game.getPlatform().getRect();
+    std::unique_ptr<Ball> ball = std::make_unique<Ball>(game.getBallRadius(), std::pair<_Float32, _Float32>{static_cast<_Float32>(platformRect.x) + static_cast<_Float32>(platformRect.w) / 2.0f, 
+                                                        static_cast<_Float32>(platformRect.y) - game.getBallRadius()}, SDL_Color{255, 0, 0, 0}, std::pair<_Float32, _Float32>{0, game.getInitialBallSpeed()});
+
+    game.addBall(std::move(ball));
+    game.incrementLifeCount();
 }
 
-void SpeedUpPowerUp::removePowerUp()
+void ExtraLifePowerUp::applyPowerUp(BrickBreaker &game)
 {
-    // Decrease the speed of the ball
+    game.incrementLifeCount();
 }
-
-void MultiBallPowerUp::applyPowerUp()
-{
-    
-}
-
-void MultiBallPowerUp::removePowerUp()
-{
-    // Remove the extra ball
-}
-
-void ExtraLifePowerUp::applyPowerUp()
-{
-    // Increase the number of lives
-}
-
-void ExtraLifePowerUp::removePowerUp()
-{
-    // Decrease the number of lives
-}
-

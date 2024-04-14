@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 #include <fstream>
+#include <SDL2/SDL_ttf.h>
 
 enum class BrickShape {RECTANGLE, HEXAGON};
 
@@ -20,6 +21,13 @@ public:
     virtual void update(uint64_t delta_time) override;
     virtual SDL_Surface* render() override;
     virtual void initSurface(uint32_t width, uint32_t height) override;
+    virtual void addBall(std::unique_ptr<Ball> ball);
+    virtual const Platform& getPlatform() const;
+
+    _Float32 getBallRadius() const;
+    _Float32 getInitialBallSpeed() const;
+    void incrementLifeCount();
+    void decrementLifeCount();
 
 private:
     std::vector<std::unique_ptr<Brick>> bricks;
@@ -28,6 +36,9 @@ private:
     std::unique_ptr<Platform> platform;
     std::pair<uint32_t, uint32_t> gridDimensions;
     BrickShape brickShape;
+    uint32_t lifeCount;
+    TTF_Font* font;
+    
 
     // Helper function to create bricks from level data
     void createBricksFromLevel(const std::string& filename);
