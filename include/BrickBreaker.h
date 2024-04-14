@@ -17,30 +17,27 @@ public:
     static constexpr float BRICK_HEIGHT_LIMIT = 0.3f;
 
     BrickBreaker(const std::string& filename); // Constructor to read level from file
-    virtual void handleEvents(SDL_Event& event, std::shared_ptr<void> data1, std::shared_ptr<void> data2) override;
-    virtual void update(uint64_t delta_time) override;
-    virtual SDL_Surface* render() override;
-    virtual void initSurface(uint32_t width, uint32_t height) override;
-    virtual void addBall(std::unique_ptr<Ball> ball);
-    virtual const Platform& getPlatform() const;
+    void handleEvents(SDL_Event& event, std::shared_ptr<void> data1, std::shared_ptr<void> data2) override;
+    void update(uint64_t delta_time) override;
+    SDL_Surface* render() override;
+    void initSurface(uint32_t width, uint32_t height) override;
+    void addBall(Ball& ball);
+    const Platform& getPlatform() const;
 
-    _Float32 getBallRadius() const;
-    _Float32 getInitialBallSpeed() const;
-    void incrementLifeCount();
-    void decrementLifeCount();
+    const _Float32 getBallRadius() const;
+    const _Float32 getInitialBallSpeed() const;
+    void setBallsSpeed(_Float32 speed_x, _Float32 speed_y);
 
 private:
-    std::vector<std::unique_ptr<Brick>> bricks;
-    std::vector<std::unique_ptr<Ball>> balls;
+    std::vector<Brick> bricks;
+    std::vector<Ball> balls;
     std::vector<std::unique_ptr<PowerUp>> powerUps;
-    std::unique_ptr<Platform> platform;
+    Platform platform;
     std::pair<uint32_t, uint32_t> gridDimensions;
     BrickShape brickShape;
     uint32_t lifeCount;
     TTF_Font* font;
     
-
-    // Helper function to create bricks from level data
     void createBricksFromLevel(const std::string& filename);
     void handleResize(std::pair<int, int> previousSize, std::pair<int, int> newSize);
 };

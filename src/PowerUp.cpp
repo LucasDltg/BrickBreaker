@@ -30,14 +30,13 @@ void SpeedUpPowerUp::applyPowerUp(BrickBreaker &game)
 void MultiBallPowerUp::applyPowerUp(BrickBreaker &game)
 {
     SDL_Rect platformRect = game.getPlatform().getRect();
-    std::unique_ptr<Ball> ball = std::make_unique<Ball>(game.getBallRadius(), std::pair<_Float32, _Float32>{static_cast<_Float32>(platformRect.x) + static_cast<_Float32>(platformRect.w) / 2.0f, 
-                                                        static_cast<_Float32>(platformRect.y) - game.getBallRadius()}, SDL_Color{255, 0, 0, 0}, std::pair<_Float32, _Float32>{0, game.getInitialBallSpeed()});
+    Ball ball = Ball(game.getBallRadius(), std::pair<_Float32, _Float32>{static_cast<_Float32>(platformRect.x) + static_cast<_Float32>(platformRect.w) / 2.0f, 
+                    static_cast<_Float32>(platformRect.y) - game.getBallRadius()}, SDL_Color{255, 0, 0, 0}, std::pair<_Float32, _Float32>{0, game.getInitialBallSpeed()});
 
-    game.addBall(std::move(ball));
-    game.incrementLifeCount();
+    game.addBall(ball);
 }
 
 void ExtraLifePowerUp::applyPowerUp(BrickBreaker &game)
 {
-    game.incrementLifeCount();
+
 }

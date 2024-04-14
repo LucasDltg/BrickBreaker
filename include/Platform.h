@@ -6,6 +6,7 @@
 class Platform
 {
 public:
+    Platform();
     Platform(int pos_x, int pos_y, int width, int height, SDL_Color color);
 
     // Setters and getters

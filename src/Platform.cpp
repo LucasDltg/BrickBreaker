@@ -1,8 +1,12 @@
 #include <SDL2/SDL.h>
 #include "../include/Platform.h"
 
+Platform::Platform()
+    : rect({ 0, 0, 0, 0 }), color({ 0, 0, 0, 0 }), speed_x(0)
+{}
+
 Platform::Platform(int pos_x, int pos_y, int width, int height, SDL_Color color)
-    : rect({ pos_x, pos_y, width, height }), color(color)
+    : rect({ pos_x, pos_y, width, height }), color(color), speed_x(0)
 {}
 
 void Platform::setRect(const SDL_Rect& rect) {
