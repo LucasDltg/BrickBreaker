@@ -38,8 +38,8 @@ private:
     Platform platform;
     std::pair<uint32_t, uint32_t> gridDimensions;
     BrickShape brickShape;
-    uint32_t lifeCount;
     TTF_Font* font;
+    int32_t start_duration;
     
     void createBricksFromLevel(const std::string& filename);
     void handleResize(std::pair<int, int> previousSize, std::pair<int, int> newSize);

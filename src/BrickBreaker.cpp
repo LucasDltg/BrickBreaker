@@ -11,7 +11,7 @@
 #include "../include/Platform.h"
 
 BrickBreaker::BrickBreaker(const std::string& filename)
-: SDLComponent(), lifeCount(3)
+: SDLComponent(), start_duration(3000)
 {
     createBricksFromLevel(filename);
     
@@ -158,6 +158,9 @@ void BrickBreaker::handleEvents(SDL_Event& event, std::shared_ptr<void> data1, s
             case SDLK_RIGHT:
                 platform.setSpeedX(0);
                 break;
+            case SDLK_ESCAPE:
+                is_running = false;
+                break;
             default:
                 break;
         }
@@ -167,6 +170,12 @@ void BrickBreaker::handleEvents(SDL_Event& event, std::shared_ptr<void> data1, s
 
 void BrickBreaker::update(uint64_t delta_time)
 {
+    if(start_duration > 0)
+    {
+        start_duration -= delta_time;
+        return;
+    }
+    
     platform.update(delta_time, surface->w);
 
     for (auto& powerUp : powerUps)
@@ -251,8 +260,22 @@ void BrickBreaker::update(uint64_t delta_time)
 
 SDL_Surface* BrickBreaker::render()
 {
-    
     SDL_FillRect(surface.get(), nullptr, SDL_MapRGB(surface->format, 0, 0, 0));
+
+    if (start_duration > 0)
+    {
+        SDL_FillRect(surface.get(), nullptr, SDL_MapRGB(surface->format, 0, 0, 0));
+        if (font)
+        {
+            SDL_Color color = {255, 255, 255, 0};
+            std::stringstream ss;
+            ss << "Starting in " << std::fixed << std::setprecision(1) << start_duration / 1000.0f << " seconds";
+            SDL_Surface* textSurface = TTF_RenderText_Solid(font, ss.str().c_str(), color);
+            SDL_Rect destRect = {surface->w / 2 - textSurface->w / 2, surface->h / 2 - textSurface->h / 2, textSurface->w, textSurface->h};
+            SDL_BlitSurface(textSurface, nullptr, surface.get(), &destRect);
+            SDL_FreeSurface(textSurface);
+        }
+    }
 
     if (bricks.empty() || balls.empty() || gridDimensions.first == 0 || gridDimensions.second == 0)
     {

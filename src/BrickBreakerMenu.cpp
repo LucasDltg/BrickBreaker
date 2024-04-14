@@ -80,6 +80,18 @@ void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data
             }
         }
     }
+    else if (event.type == SDL_MOUSEMOTION)
+    {
+        int x = event.motion.x;
+        int y = event.motion.y;
+
+        for (size_t i = 0; i < levels.size(); ++i) {
+            if (x >= levels[i].rect.x && x <= levels[i].rect.x + levels[i].rect.w && y >= levels[i].rect.y && y <= levels[i].rect.y + levels[i].rect.h) {
+                selectedLevel = i;
+                break;
+            }
+        }
+    }
 }
 
 void BrickBreakerMenu::update(uint64_t delta_time)
