@@ -27,8 +27,8 @@ void BrickBreaker::initSurface(uint32_t width, uint32_t height)
     setSurfaceDimensions(width, height);
     SDL_Color color;
     color.r = 0; color.g = 0; color.b = 255; color.a = 0;
-    std::pair<uint32_t, uint32_t> center = {surface->w / 2, surface->h / 4};
-    std::pair<_Float32, _Float32> speed = {getInitialBallSpeed()/2, getInitialBallSpeed()};
+    std::pair<uint32_t, uint32_t> center = {surface->w / 2, surface->h * 3/ 4};
+    std::pair<_Float32, _Float32> speed = {getInitialBallSpeed() / 3, -getInitialBallSpeed()};
     balls.push_back(Ball(getBallRadius(), center, color, speed));
 
     color.r = 255; color.g = 0; color.b = 0; color.a = 0;
@@ -75,6 +75,7 @@ void BrickBreaker::createBricksFromLevel(const std::string& filename) {
     std::ifstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Failed to open level file: " << filename << std::endl;
+        is_running = false;
         return;
     }
 
@@ -87,10 +88,17 @@ void BrickBreaker::createBricksFromLevel(const std::string& filename) {
     else
     {
         std::cerr << "Invalid magic sequence in level file: " << filename << std::endl;
+        is_running = false;
         return;
     }
 
     file >> gridDimensions.first >> gridDimensions.second;
+    if (gridDimensions.first == 0 || gridDimensions.second == 0)
+    {
+        std::cerr << "Invalid grid dimensions in level file: " << filename << std::endl;
+        is_running = false;
+        return;
+    }
 
     std::string line;
     std::getline(file, line);
@@ -232,6 +240,9 @@ void BrickBreaker::update(uint64_t delta_time)
                         powerUps.back()->setRadius(static_cast<_Float32>(surface->w) / 80.0f);
                     }
                     bricks.erase(std::remove_if(bricks.begin(), bricks.end(), [&brick](const Brick& b) {return &b == &brick;}), bricks.end());
+                    
+                    if (bricks.empty())
+                        start_duration = 2000;
                 }
                 break;
             }
@@ -261,6 +272,22 @@ void BrickBreaker::update(uint64_t delta_time)
 SDL_Surface* BrickBreaker::render()
 {
     SDL_FillRect(surface.get(), nullptr, SDL_MapRGB(surface->format, 0, 0, 0));
+    if (bricks.empty() || balls.empty())
+    {
+        std::string text = bricks.empty() ? "You won!" : "You lost!";
+        if (start_duration < 0)
+            is_running = false;
+
+        if (font)
+        {
+            SDL_Color color = {255, 255, 255, 0};
+            SDL_Surface* textSurface = TTF_RenderText_Solid(font, text.c_str(), color);
+            SDL_Rect destRect = {surface->w / 2 - textSurface->w / 2, surface->h / 2 - textSurface->h / 2, textSurface->w, textSurface->h};
+            SDL_BlitSurface(textSurface, nullptr, surface.get(), &destRect);
+            SDL_FreeSurface(textSurface);
+        }
+        return surface.get();
+    }
 
     if (start_duration > 0)
     {
@@ -275,20 +302,6 @@ SDL_Surface* BrickBreaker::render()
             SDL_BlitSurface(textSurface, nullptr, surface.get(), &destRect);
             SDL_FreeSurface(textSurface);
         }
-    }
-
-    if (bricks.empty() || balls.empty() || gridDimensions.first == 0 || gridDimensions.second == 0)
-    {
-        if (font)
-        {
-            SDL_Color color = {255, 255, 255, 0};
-            SDL_Surface* textSurface = TTF_RenderText_Solid(font, "You won!", color);
-            SDL_Rect destRect = {surface->w / 2 - textSurface->w / 2, surface->h / 2 - textSurface->h / 2, textSurface->w, textSurface->h};
-            SDL_BlitSurface(textSurface, nullptr, surface.get(), &destRect);
-            SDL_FreeSurface(textSurface);
-        }
-        is_running = false;
-        return surface.get();
     }
 
     int brickWidth = surface->w / gridDimensions.first;
