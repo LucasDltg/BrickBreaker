@@ -10,7 +10,7 @@
 #include <fstream>
 #include <SDL2/SDL_ttf.h>
 
-enum class BrickShape {RECTANGLE, HEXAGON};
+enum class BrickShape {RECTANGLE, HEXAGON, TRIANGLE};
 
 class BrickBreaker : public SDLComponent {
 public:
@@ -32,7 +32,7 @@ public:
     std::vector<Ball>& getBalls();
 
 private:
-    std::vector<Brick> bricks;
+    std::vector<std::unique_ptr<Brick>> bricks;
     std::vector<Ball> balls;
     std::vector<std::unique_ptr<PowerUp>> powerUps;
     Platform platform;

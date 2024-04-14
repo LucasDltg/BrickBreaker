@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include "../include/Circle.hpp"
+#include "../include/Circle.h"
 
 class Ball : public Circle{
 public:

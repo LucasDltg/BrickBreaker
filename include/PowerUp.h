@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <string>
 #include <memory>
-#include "../include/Circle.hpp"
+#include "../include/Circle.h"
 
 class BrickBreaker;
 

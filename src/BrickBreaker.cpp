@@ -11,7 +11,7 @@
 #include "../include/Platform.h"
 
 BrickBreaker::BrickBreaker(const std::string& filename)
-: SDLComponent(), start_duration(3000)
+: SDLComponent(), start_duration(2000)
 {
     createBricksFromLevel(filename);
     
@@ -34,10 +34,22 @@ void BrickBreaker::initSurface(uint32_t width, uint32_t height)
     color.r = 255; color.g = 0; color.b = 0; color.a = 0;
     platform.setRect({surface->w / 2 - surface->w / 14, surface->h * 9 / 10, surface->w / 7, surface->h / 30});
     platform.setColor(color);
+
+    for (auto& brick : bricks)
+    {
+        brick->calculateVerticesWithPosition(gridDimensions, {static_cast<_Float32>(width), static_cast<_Float32>(height * BrickBreaker::BRICK_HEIGHT_LIMIT)});
+    }
 }
 
 void BrickBreaker::handleResize(std::pair<int, int> previousSize, std::pair<int, int> newSize)
 {
+    setSurfaceDimensions(newSize.first, newSize.second);
+
+    for (auto& brick : bricks)
+    {
+        brick->calculateVerticesWithPosition(gridDimensions, {static_cast<_Float32>(newSize.first), static_cast<_Float32>(newSize.second * BrickBreaker::BRICK_HEIGHT_LIMIT)});
+    }
+    
     for (auto& ball : balls)
     {
         std::pair<_Float32, _Float32> center = ball.getCenter();
@@ -85,6 +97,10 @@ void BrickBreaker::createBricksFromLevel(const std::string& filename) {
     {
         brickShape = BrickShape::RECTANGLE;
     }
+    else if (magicSequence == "triangle")
+    {
+        brickShape = BrickShape::TRIANGLE;
+    }
     else
     {
         std::cerr << "Invalid magic sequence in level file: " << filename << std::endl;
@@ -122,7 +138,8 @@ void BrickBreaker::createBricksFromLevel(const std::string& filename) {
 
         uint32_t mappedColor = SDL_MapRGBA(surface->format, color.r, color.g, color.b, color.a);
 
-        bricks.push_back(Brick(posX, posY, mappedColor, resistance, power_up));
+        if (brickShape == BrickShape::RECTANGLE)
+            bricks.push_back(std::make_unique<BrickRectangular>(std::make_pair(posX, posY), gridDimensions, std::make_pair(surface->w, surface->h * BrickBreaker::BRICK_HEIGHT_LIMIT), mappedColor, resistance, power_up));
     }
 
     file.close();
@@ -221,25 +238,34 @@ void BrickBreaker::update(uint64_t delta_time)
     {
         for(auto& brick : bricks)
         {
-            int brickWidth = surface->w / gridDimensions.first;
-            int brickHeight = surface->h * BrickBreaker::BRICK_HEIGHT_LIMIT / gridDimensions.second;
-            const std::pair<uint32_t, uint32_t> position = brick.getPosition();
-            SDL_Rect rect = {(int)position.first * brickWidth, (int)position.second * brickHeight, brickWidth, brickHeight};
-       
-            if(ball.resolveCollisionWithRectangle(rect))
+            std::vector<SDL_Vertex> v = brick->getVertices();
+            bool collision = false;
+            
+            for (size_t i = 0; i < v.size(); i++)
             {
-                brick.decreaseResistance();
-                if(brick.getResistance() == 0)
+                if (ball.resolveCollisionWithLine({v[i].position.x, v[i].position.y}, {v[(i + 1) % v.size()].position.x, v[(i + 1) % v.size()].position.y}))
                 {
-                    std::unique_ptr<PowerUp> powerUp = brick.getPowerUp();
+                    collision = true;
+                    break;
+                }
+            }
+
+            if(collision)
+            {
+                brick->decreaseResistance();
+                if(brick->getResistance() == 0)
+                {
+                    std::unique_ptr<PowerUp> powerUp = brick->getPowerUp();
                     if(powerUp)
                     {
                         powerUps.push_back(std::move(powerUp));
-                        powerUps.back()->setCenter({static_cast<_Float32>(rect.x) + static_cast<_Float32>(rect.w) / 2.0f, static_cast<_Float32>(rect.y) + static_cast<_Float32>(rect.h) / 2.0f});
+                        powerUps.back()->setRadius(getBallRadius() / 2);
+                        powerUps.back()->setCenter({brick->getCenter().first - powerUps.back()->getRadius() / 2, brick->getCenter().second - powerUps.back()->getRadius() / 2});
                         powerUps.back()->setSpeed({0, static_cast<_Float32>(surface->h) / 4000.0f});
-                        powerUps.back()->setRadius(static_cast<_Float32>(surface->w) / 80.0f);
                     }
-                    bricks.erase(std::remove_if(bricks.begin(), bricks.end(), [&brick](const Brick& b) {return &b == &brick;}), bricks.end());
+                    bricks.erase(std::remove_if(bricks.begin(), bricks.end(), [&brick](const std::unique_ptr<Brick>& b) {
+                        return b.get() == brick.get();
+                    }), bricks.end());
                     
                     if (bricks.empty())
                         start_duration = 2000;
@@ -304,14 +330,24 @@ SDL_Surface* BrickBreaker::render()
         }
     }
 
-    int brickWidth = surface->w / gridDimensions.first;
-    int brickHeight = surface->h * BrickBreaker::BRICK_HEIGHT_LIMIT / gridDimensions.second;
+    SDL_Renderer* renderer = SDL_CreateSoftwareRenderer(surface.get());
+    if (!renderer) {
+        std::cerr << "Failed to create renderer: " << SDL_GetError() << std::endl;
+        return nullptr;
+    }
+
     for (const auto& brick : bricks)
     {
-       const std::pair<uint32_t, uint32_t> position = brick.getPosition();
-       SDL_Rect rect = {(int)position.first * brickWidth, (int)position.second * brickHeight, brickWidth, brickHeight};
-       SDL_FillRect(surface.get(), &rect, brick.getColor());
+        std::vector<SDL_Vertex> vertices = brick->getVertices();
+        std::vector<int32_t> indices = brick->getIndices();
+        if (SDL_RenderGeometry(renderer, nullptr, vertices.data(), vertices.size(), indices.data(), 6) != 0) {
+            std::cerr << "Failed to render geometry: " << SDL_GetError() << std::endl;
+            SDL_DestroyRenderer(renderer);
+            return nullptr;
+        }
     }
+    SDL_RenderPresent(renderer);
+    SDL_DestroyRenderer(renderer);
 
     for (const auto& ball : balls)
     {
@@ -337,7 +373,8 @@ SDL_Surface* BrickBreaker::render()
             continue;
         }
         std::pair<_Float32, _Float32> position = powerUp->getCenter();
-        SDL_Rect rect = {static_cast<int>(position.first), static_cast<int>(position.second), 20, 20};
+        _Float32 radius = powerUp->getRadius();
+        SDL_Rect rect = {static_cast<int>(position.first - radius), static_cast<int>(position.second - radius), radius*2, radius*2};
 
         SDL_FillRect(surface.get(), &rect, SDL_MapRGBA(surface->format, 255, 255, 0, 0));
     }

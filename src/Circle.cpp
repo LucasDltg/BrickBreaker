@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
-#include "../include/Circle.hpp"
+#include "../include/Circle.h"
 
 Circle::Circle()
     : radius(0), center({0, 0}), color({0, 0, 0, 0}), speed({0, 0})
@@ -66,20 +66,61 @@ void Circle::update(uint64_t delta_time) {
 
 bool Circle::resolveCollisionWithRectangle(const SDL_Rect& rect)
 {
-    float closestX = std::max(static_cast<float>(rect.x), std::min(center.first, static_cast<float>(rect.x + rect.w)));
-    float closestY = std::max(static_cast<float>(rect.y), std::min(center.second, static_cast<float>(rect.y + rect.h)));
+    std::pair<_Float32, _Float32> p1, p2;
+    p1 = {static_cast<_Float32>(rect.x), static_cast<_Float32>(rect.y)};
+    p2 = {static_cast<_Float32>(rect.x + rect.w), static_cast<_Float32>(rect.y)};
+    if(resolveCollisionWithLine(p1, p2))
+        return true;
 
-    float distanceX = center.first - closestX;
-    float distanceY = center.second - closestY;
-    float distanceSquared = distanceX * distanceX + distanceY * distanceY;
+    p1 = {static_cast<_Float32>(rect.x + rect.w), static_cast<_Float32>(rect.y)};
+    p2 = {static_cast<_Float32>(rect.x + rect.w), static_cast<_Float32>(rect.y + rect.h)};
+    if(resolveCollisionWithLine(p1, p2))
+        return true;
 
-    if (distanceSquared < (radius * radius)) {
-        float distance = std::sqrt(distanceSquared);
+    p1 = {static_cast<_Float32>(rect.x + rect.w), static_cast<_Float32>(rect.y + rect.h)};
+    p2 = {static_cast<_Float32>(rect.x), static_cast<_Float32>(rect.y + rect.h)};
+    if(resolveCollisionWithLine(p1, p2))
+        return true;
+
+    p1 = {static_cast<_Float32>(rect.x), static_cast<_Float32>(rect.y + rect.h)};
+    p2 = {static_cast<_Float32>(rect.x), static_cast<_Float32>(rect.y)};
+    return resolveCollisionWithLine(p1, p2);
+}
+
+bool Circle::resolveCollisionWithLine(std::pair<_Float32, _Float32> p1, std::pair<_Float32, _Float32> p2)
+{
+    float A = center.first - p1.first;
+    float B = center.second - p1.second;
+    float C = p2.first - p1.first;
+    float D = p2.second - p1.second;
+
+    float dot = A * C + B * D;
+    float len_sq = C * C + D * D;
+    float param = dot / len_sq;
+
+    float xx, yy;
+
+    if (param < 0) {
+        xx = p1.first;
+        yy = p1.second;
+    } else if (param > 1) {
+        xx = p2.first;
+        yy = p2.second;
+    } else {
+        xx = p1.first + param * C;
+        yy = p1.second + param * D;
+    }
+
+    float dx = center.first - xx;
+    float dy = center.second - yy;
+    float distance = std::sqrt(dx * dx + dy * dy);
+
+    if (distance < radius && distance) {
         float overlap = radius - distance;
 
         if (distance > 0) {
-            float directionX = distanceX / distance;
-            float directionY = distanceY / distance;
+            float directionX = dx / distance;
+            float directionY = dy / distance;
 
             center.first += overlap * directionX;
             center.second += overlap * directionY;

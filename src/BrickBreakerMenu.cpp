@@ -25,7 +25,8 @@ BrickBreakerMenu::BrickBreakerMenu(std::string directory_path)
 
 void BrickBreakerMenu::handleResize(std::pair<int, int> previousSize, std::pair<int, int> newSize)
 {
-    for (auto& level : levels) {
+    for (auto& level : levels)
+    {
         level.rect.x = level.rect.x * newSize.first / previousSize.first;
         level.rect.y = level.rect.y * newSize.second / previousSize.second;
         level.rect.w = level.rect.w * newSize.first / previousSize.first;
@@ -35,17 +36,18 @@ void BrickBreakerMenu::handleResize(std::pair<int, int> previousSize, std::pair<
 
 void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data1, std::shared_ptr<void> data2)
 {
+    if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
+    {
+        handleResize({*(int*)data1.get(), *(int*)data2.get()}, {event.window.data1, event.window.data2});
+    }
+    
     if (brickBreaker != nullptr)
     {
         brickBreaker->handleEvents(event, data1, data2);
         return;
     }
 
-    if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
-    {
-        handleResize({*(int*)data1.get(), *(int*)data2.get()}, {event.window.data1, event.window.data2});
-    }
-    else if (event.type == SDL_KEYDOWN)
+    if (event.type == SDL_KEYDOWN)
     {
         switch(event.key.keysym.sym)
         {

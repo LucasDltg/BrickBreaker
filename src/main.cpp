@@ -7,6 +7,10 @@
 // consistence throw et cerr
 // const
 // public et private
+// collision rectangle
+// collsion bordure
+// portee
+
 
 int main()
 {
