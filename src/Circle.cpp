@@ -7,13 +7,24 @@ Circle::Circle()
     : radius(0), center({0, 0}), color({0, 0, 0, 0}), speed({0, 0})
     {}
 
+Circle::Circle(std::string image_path)
+    : radius(0), center({0, 0}), color({0, 0, 0, 0}), speed({0, 0})
+    {
+        if(image_path.empty())
+            return;
+
+        surface = std::shared_ptr<SDL_Surface>(IMG_Load(image_path.c_str()), SDL_FreeSurface);
+        if (!surface)
+        {
+            std::cerr << "Failed to load image: " << IMG_GetError() << std::endl;
+        }
+    }
+
 Circle::Circle(_Float32 radius, std::pair<_Float32, _Float32> center, SDL_Color color, std::pair<_Float32, _Float32> speed, std::string image_path)
     : radius(radius), center(center), color(color), speed(speed)
     {
         if(image_path.empty())
-        {
             return;
-        }
 
         surface = std::shared_ptr<SDL_Surface>(IMG_Load(image_path.c_str()), SDL_FreeSurface);
         if (!surface)

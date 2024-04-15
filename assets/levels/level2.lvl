@@ -1,7 +1,20 @@
-rectangle
+triangle
 10 5
-1 1 1 0x00FF0000 SpeedUp
-2 2 1 0x00FFFF00 SpeedUp
-0 0 1 0xFF00FF00 SpeedUp
-3 2 1 0x00FF0000 SpeedUp
-4 2 1 0x00FF0000 SpeedUp
+0 0 1 0xFF00FF00 ExtendPlatform
+1 0 1 0xFF00FF00 ExtendPlatform
+2 0 1 0xFF00FF00 ExtendPlatform
+0 1 1 0x00FF0000 ExtendPlatform
+1 1 1 0x00FF0000 ExtendPlatform
+2 1 1 0x00FF0000 ExtendPlatform
+2 2 1 0x00FFFF00 ExtendPlatform
+3 2 1 0x00FF0000 ExtendPlatform
+4 2 1 0x00FF0000 ExtendPlatform
+2 3 1 0x00FFFF00 ExtendPlatform
+3 3 1 0x00FF0000 ExtendPlatform
+4 3 1 0x00FF0000 ExtendPlatform
+9 4 1 0x00FF0000 ExtendPlatform
+9 5 1 0x00FF0000 ExtendPlatform
+9 6 1 0x00FF0000 ExtendPlatform
+9 7 1 0x00FF0000 ExtendPlatform
+9 8 1 0x00FF0000 ExtendPlatform
+9 9 1 0x00FF0000 ExtendPlatform

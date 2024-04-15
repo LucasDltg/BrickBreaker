@@ -20,6 +20,8 @@ BrickBreaker::BrickBreaker(const std::string& filename)
     {
         std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
     }
+
+    renderer = nullptr;
 }
 
 void BrickBreaker::initSurface(uint32_t width, uint32_t height)
@@ -38,6 +40,12 @@ void BrickBreaker::initSurface(uint32_t width, uint32_t height)
     for (auto& brick : bricks)
     {
         brick->calculateVerticesWithPosition(gridDimensions, {static_cast<_Float32>(width), static_cast<_Float32>(height * BrickBreaker::BRICK_HEIGHT_LIMIT)});
+    }
+
+    renderer = SDL_CreateSoftwareRenderer(surface.get());
+    if (!renderer) {
+        std::cerr << "Failed to create renderer: " << SDL_GetError() << std::endl;
+        throw std::runtime_error("Failed to create renderer");
     }
 }
 
@@ -81,6 +89,13 @@ void BrickBreaker::handleResize(std::pair<int, int> previousSize, std::pair<int,
     rect.w = static_cast<uint32_t>(static_cast<float>(rect.w) * (static_cast<float>(newSize.first) / static_cast<float>(previousSize.first)));
     rect.h = static_cast<uint32_t>(static_cast<float>(rect.h) * (static_cast<float>(newSize.second) / static_cast<float>(previousSize.second)));
     platform.setRect(rect); 
+
+    SDL_DestroyRenderer(renderer);
+    renderer = SDL_CreateSoftwareRenderer(surface.get());
+    if (!renderer) {
+        std::cerr << "Failed to create renderer: " << SDL_GetError() << std::endl;
+        throw std::runtime_error("Failed to create renderer");
+    }
 }
 
 void BrickBreaker::createBricksFromLevel(const std::string& filename) {
@@ -94,13 +109,11 @@ void BrickBreaker::createBricksFromLevel(const std::string& filename) {
     std::string magicSequence;
     file >> magicSequence;
     if (magicSequence == "rectangle")
-    {
         brickShape = BrickShape::RECTANGLE;
-    }
     else if (magicSequence == "triangle")
-    {
         brickShape = BrickShape::TRIANGLE;
-    }
+    else if (magicSequence == "hexagon")
+        brickShape = BrickShape::HEXAGON;
     else
     {
         std::cerr << "Invalid magic sequence in level file: " << filename << std::endl;
@@ -109,7 +122,7 @@ void BrickBreaker::createBricksFromLevel(const std::string& filename) {
     }
 
     file >> gridDimensions.first >> gridDimensions.second;
-    if (gridDimensions.first == 0 || gridDimensions.second == 0)
+    if (gridDimensions.first <= 0 || gridDimensions.second <= 0)
     {
         std::cerr << "Invalid grid dimensions in level file: " << filename << std::endl;
         is_running = false;
@@ -121,7 +134,7 @@ void BrickBreaker::createBricksFromLevel(const std::string& filename) {
     while (std::getline(file, line))
     {
         std::istringstream iss(line);
-        int posX, posY, resistance;
+        int32_t posX, posY, resistance;
         std::string colorHex;
         std::string power_up;
 
@@ -131,15 +144,42 @@ void BrickBreaker::createBricksFromLevel(const std::string& filename) {
             continue;
         }
         iss >> power_up;
+        if(brickShape == BrickShape::RECTANGLE)
+        {
+            if(posX < 0 || posX >= gridDimensions.first || posY < 0 || posY >= gridDimensions.second)
+            {
+                std::cerr << "Invalid brick position in level file: " << filename << std::endl;
+                continue;
+            }   
+        }
+        else if(brickShape == BrickShape::TRIANGLE)
+        {
+            if(posX < 0 || posX >= gridDimensions.first || posY < 0 || posY >= gridDimensions.second * 2)
+            {
+                std::cerr << "Invalid brick position in level file: " << filename << std::endl;
+                continue;
+            }
+        }
+        else if(brickShape == BrickShape::HEXAGON)
+        {
+            if(posX < 0 || posX >= gridDimensions.first || posY < 0 || posY >= gridDimensions.second * 2)
+            {
+                std::cerr << "Invalid brick position in level file: " << filename << std::endl;
+                continue;
+            }
+        }
 
         Uint32 colorValue;
         std::stringstream(colorHex) >> std::hex >> colorValue >> std::dec;
         SDL_Color color = { (uint8_t)((colorValue >> 24) & 0xFF), (uint8_t)((colorValue >> 16) & 0xFF), (uint8_t)((colorValue >> 8) & 0xFF), (uint8_t)(colorValue & 0xFF)};
-
         uint32_t mappedColor = SDL_MapRGBA(surface->format, color.r, color.g, color.b, color.a);
 
         if (brickShape == BrickShape::RECTANGLE)
             bricks.push_back(std::make_unique<BrickRectangular>(std::make_pair(posX, posY), gridDimensions, std::make_pair(surface->w, surface->h * BrickBreaker::BRICK_HEIGHT_LIMIT), mappedColor, resistance, power_up));
+        else if (brickShape == BrickShape::TRIANGLE)
+            bricks.push_back(std::make_unique<BrickTriangular>(std::make_pair(posX, posY), gridDimensions, std::make_pair(surface->w, surface->h * BrickBreaker::BRICK_HEIGHT_LIMIT), mappedColor, resistance, power_up));
+        else if (brickShape == BrickShape::HEXAGON)
+            bricks.push_back(std::make_unique<BrickHexagonal>(std::make_pair(posX, posY), gridDimensions, std::make_pair(surface->w, surface->h * BrickBreaker::BRICK_HEIGHT_LIMIT), mappedColor, resistance, power_up));
     }
 
     file.close();
@@ -291,7 +331,6 @@ void BrickBreaker::update(uint64_t delta_time)
         }
 
         ball.update(delta_time);
-
     }
 }
 
@@ -330,24 +369,34 @@ SDL_Surface* BrickBreaker::render()
         }
     }
 
-    SDL_Renderer* renderer = SDL_CreateSoftwareRenderer(surface.get());
-    if (!renderer) {
-        std::cerr << "Failed to create renderer: " << SDL_GetError() << std::endl;
-        return nullptr;
-    }
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
     for (const auto& brick : bricks)
     {
         std::vector<SDL_Vertex> vertices = brick->getVertices();
         std::vector<int32_t> indices = brick->getIndices();
-        if (SDL_RenderGeometry(renderer, nullptr, vertices.data(), vertices.size(), indices.data(), 6) != 0) {
+
+        if (SDL_RenderGeometry(renderer, nullptr, vertices.data(), vertices.size(), indices.data(), indices.size()) != 0) {
             std::cerr << "Failed to render geometry: " << SDL_GetError() << std::endl;
-            SDL_DestroyRenderer(renderer);
             return nullptr;
+        }
+
+        std::vector<SDL_Point> points;
+        points.reserve(vertices.size());
+        for (const auto& vertex : vertices)
+        {
+            points.push_back({static_cast<int>(vertex.position.x), static_cast<int>(vertex.position.y)});
+        }
+
+        for (size_t i = 0; i < points.size(); i++)
+        {
+            if (SDL_RenderDrawLine(renderer, points[i].x, points[i].y, points[(i + 1) % points.size()].x, points[(i + 1) % points.size()].y) != 0) {
+                std::cerr << "Failed to render line: " << SDL_GetError() << std::endl;
+                return nullptr;
+            }
         }
     }
     SDL_RenderPresent(renderer);
-    SDL_DestroyRenderer(renderer);
 
     for (const auto& ball : balls)
     {
@@ -374,9 +423,15 @@ SDL_Surface* BrickBreaker::render()
         }
         std::pair<_Float32, _Float32> position = powerUp->getCenter();
         _Float32 radius = powerUp->getRadius();
-        SDL_Rect rect = {static_cast<int>(position.first - radius), static_cast<int>(position.second - radius), radius*2, radius*2};
+        SDL_Rect rect = {static_cast<int>(position.first - radius), static_cast<int>(position.second - radius), static_cast<int>(2 * radius), static_cast<int>(2 * radius)};
 
-        SDL_FillRect(surface.get(), &rect, SDL_MapRGBA(surface->format, 255, 255, 0, 0));
+        SDL_Surface* powerUpSurface = powerUp->getSurface().get();
+        if (powerUpSurface != nullptr)
+        {
+            SDL_BlitSurface(powerUp->getSurface().get(), nullptr, surface.get(), &rect);
+        }
+        else        
+            SDL_FillRect(surface.get(), &rect, SDL_MapRGBA(surface->format, 255, 255, 0, 0));
     }
 
 
@@ -404,4 +459,10 @@ Platform& BrickBreaker::getPlatform()
 std::vector<Ball>& BrickBreaker::getBalls()
 {
     return balls;
+}
+
+BrickBreaker::~BrickBreaker()
+{
+    TTF_CloseFont(font);
+    SDL_DestroyRenderer(renderer);
 }

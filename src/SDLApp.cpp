@@ -63,7 +63,7 @@ void SDLApp::addComponent(std::shared_ptr<SDLComponent> obj)
 
 void SDLApp::run()
 {
-    const int DESIRED_FPS = 60;
+    const int DESIRED_FPS = 120;
     const __uint64_t FRAME_TIME = 1000 / DESIRED_FPS;
 
     __uint64_t lastTime = SDL_GetTicks64();
@@ -83,7 +83,7 @@ void SDLApp::run()
         if (elapsedTime < FRAME_TIME)
             SDL_Delay(FRAME_TIME - elapsedTime);
 
-        double fps = 1000.0 / (SDL_GetTicks64() - lastTime);
+        // double fps = 1000.0 / (SDL_GetTicks64() - lastTime);
         // std::cout << "FPS: " << fps << std::endl;
     }
 }

@@ -40,7 +40,7 @@ void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data
     {
         handleResize({*(int*)data1.get(), *(int*)data2.get()}, {event.window.data1, event.window.data2});
     }
-    
+
     if (brickBreaker != nullptr)
     {
         brickBreaker->handleEvents(event, data1, data2);

@@ -11,7 +11,7 @@ class BrickBreaker;
 class PowerUp : public Circle
 {
 public:
-    PowerUp(int32_t current_duration = 0);
+    PowerUp(int32_t current_duration = 0, std::string image_path = "");
     virtual void applyPowerUp(BrickBreaker &game) = 0;
     virtual void unApplyPowerUp(BrickBreaker &game) = 0;
     bool isActive() const;

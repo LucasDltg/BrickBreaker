@@ -11,6 +11,7 @@
 class Circle {
 public:
     Circle();
+    Circle(std::string image_path);
     Circle(_Float32 radius, std::pair<_Float32, _Float32> center, SDL_Color color, std::pair<_Float32, _Float32> speed, std::string image_path = "");
 
     _Float32 getRadius() const;

@@ -1,0 +1,17 @@
+hexagon
+10 6
+0 0 1 0xFF00FF00 ExtendPlatform
+1 0 1 0xFF00FF00 ExtendPlatform
+2 0 1 0xFF00FF00 ExtendPlatform
+0 2 1 0x00FFFF00 ExtendPlatform
+1 2 1 0x00FF0000 ExtendPlatform
+2 2 1 0x00FF0000 ExtendPlatform
+0 1 1 0x00FF0000 ExtendPlatform
+1 1 1 0x00FF0000 ExtendPlatform
+2 1 1 0x00FF0000 ExtendPlatform
+2 3 1 0x00FFFF00 ExtendPlatform
+3 3 1 0x00FF0000 ExtendPlatform
+4 3 1 0x00FF0000 ExtendPlatform
+4 4 1 0x00FF0000 ExtendPlatform
+9 10 1 0x00FF0000 ExtendPlatform
+9 11 1 0x00FF0000 ExtendPlatform

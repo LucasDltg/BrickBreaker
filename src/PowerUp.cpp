@@ -15,8 +15,8 @@ std::unique_ptr<PowerUp> initPowerUp(std::string name)
         return nullptr;
 }
 
-PowerUp::PowerUp(int32_t current_duration)
-: current_duration(current_duration), active(false)
+PowerUp::PowerUp(int32_t current_duration, std::string image_path)
+: Circle(image_path), current_duration(current_duration), active(false)
 {}
 
 bool PowerUp::isActive() const
@@ -54,7 +54,7 @@ void MultiBallPowerUp::unApplyPowerUp(BrickBreaker &game)
 {}
 
 ExtendPlatformPowerUp::ExtendPlatformPowerUp()
-: PowerUp(5000)
+: PowerUp(5000, "ball.png")
 {}
 
 void ExtendPlatformPowerUp::applyPowerUp(BrickBreaker &game)
