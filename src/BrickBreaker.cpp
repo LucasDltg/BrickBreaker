@@ -288,7 +288,7 @@ void BrickBreaker::update(uint64_t delta_time)
             }
         }
 
-
+        // Check for collision with platform
         ball.resolveCollisionWithRectangle(platform.getRect());
 
         // Check for collision with borders
@@ -299,16 +299,21 @@ void BrickBreaker::update(uint64_t delta_time)
             {0, static_cast<_Float32>(surface->h)},
         };
         
-        for (size_t i = 0; i < borders.size(); i++)
-        {
-            if (ball.resolveCollisionWithLine({borders[i].first, borders[i].second}, {borders[(i + 1) % borders.size()].first, borders[(i + 1) % borders.size()].second}))
-            {
-                break;
-            }
-        }
+        ball.resolveCollisionWithLine(borders[0], borders[1]);
+        ball.resolveCollisionWithLine(borders[1], borders[2]);
+        // ball.resolveCollisionWithLine(borders[2], borders[3]);
+        ball.resolveCollisionWithLine(borders[3], borders[0]);
 
         ball.update(delta_time);
     }
+
+    // remove balls that are out of bounds
+    balls.erase(std::remove_if(balls.begin(), balls.end(), [this](const Ball& ball) {
+        return ball.getCenter().second - ball.getRadius() > surface->h;
+    }), balls.end());
+
+    if (balls.empty())
+        start_duration = 2000;
 }
 
 std::shared_ptr<SDL_Surface> BrickBreaker::render()
@@ -316,7 +321,7 @@ std::shared_ptr<SDL_Surface> BrickBreaker::render()
     SDL_FillRect(surface.get(), nullptr, SDL_MapRGB(surface->format, 0, 0, 0));
     if (bricks.empty() || balls.empty())
     {
-        std::string text = bricks.empty() ? "You won!" : "You lost!";
+        std::string text = balls.empty() ? "You lost!" : "You won!";
         if (start_duration < 0)
             is_running = false;
 

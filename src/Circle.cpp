@@ -122,7 +122,6 @@ bool Circle::resolveCollisionWithRectangle(const SDL_Rect& rect) {
     return false;
 }
 
-
 bool Circle::resolveCollisionWithLine(std::pair<_Float32, _Float32> p1, std::pair<_Float32, _Float32> p2)
 {
     float A = center.first - p1.first;
