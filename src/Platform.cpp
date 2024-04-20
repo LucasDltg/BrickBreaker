@@ -53,3 +53,7 @@ void Platform::update(uint64_t delta_time, int screen_width)
 std::shared_ptr<SDL_Surface> Platform::getSurface() const {
     return surface;
 }
+
+const int32_t Platform::getSpeedX() const {
+    return speed_x;
+}

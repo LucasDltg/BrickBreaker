@@ -19,6 +19,7 @@ public:
     void setSpeedX(int32_t speed_x);
     void update(uint64_t delta_time, int screen_width);
     std::shared_ptr<SDL_Surface> getSurface() const;
+    const int32_t getSpeedX() const;
 
 private:
     SDL_Rect rect;

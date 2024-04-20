@@ -105,6 +105,10 @@ void BrickBreaker::createBricksFromLevel(const std::string& filename) {
         return;
     }
 
+    // skip first line containing image path
+    std::string line;
+    std::getline(file, line);
+
     std::string magicSequence;
     file >> magicSequence;
     if (magicSequence == "rectangle")
@@ -128,7 +132,6 @@ void BrickBreaker::createBricksFromLevel(const std::string& filename) {
         return;
     }
 
-    std::string line;
     std::getline(file, line);
     while (std::getline(file, line))
     {
@@ -194,11 +197,11 @@ void BrickBreaker::handleEvents(SDL_Event& event, std::shared_ptr<void> data1, s
     }
     else if (state[SDL_SCANCODE_LEFT])
     {
-        platform.setSpeedX(surface->w / -700);
+        platform.setSpeedX(-getInitialPlatformSpeed());
     }
     else if (state[SDL_SCANCODE_RIGHT])
     {
-        platform.setSpeedX(surface->w / 700);
+        platform.setSpeedX(getInitialPlatformSpeed());
     }
     else
     {
@@ -449,4 +452,9 @@ std::vector<Ball>& BrickBreaker::getBalls()
 BrickBreaker::~BrickBreaker()
 {
     
+}
+
+const _Float32 BrickBreaker::getInitialPlatformSpeed() const
+{
+    return static_cast<_Float32>(surface->w) / 700.0f;
 }

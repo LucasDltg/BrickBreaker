@@ -18,6 +18,7 @@ class BrickBreakerMenuLevel
     SDL_Rect rect;
     std::string name;
     std::string path;
+    std::shared_ptr<SDL_Surface> surface;
 };
 
 class BrickBreakerMenu : public SDLComponent
@@ -32,11 +33,13 @@ public:
 private:
     uint32_t getPadding() const;
     void handleResize(std::pair<int, int> previousSize, std::pair<int, int> newSize);
+    void reloadBackground();
     size_t selectedLevel;
     uint32_t num_rows;
     uint32_t num_columns;
     std::vector<BrickBreakerMenuLevel> levels;
     std::unique_ptr<BrickBreaker> brickBreaker;
+    std::unique_ptr<BrickBreaker> background;
 
     std::unique_ptr<TTF_Font, void(*)(TTF_Font*)> font;
 };

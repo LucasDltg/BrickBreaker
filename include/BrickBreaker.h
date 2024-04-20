@@ -30,6 +30,7 @@ public:
     Platform& getPlatform();
     const _Float32 getBallRadius() const;
     const _Float32 getInitialBallSpeed() const;
+    const _Float32 getInitialPlatformSpeed() const;
     std::vector<Ball>& getBalls();
 
 private:

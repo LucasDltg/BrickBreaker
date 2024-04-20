@@ -1,11 +1,12 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <iostream>
 #include <filesystem>
 #include <vector>
 #include "../include/BrickBreakerMenu.h"
 
 BrickBreakerMenu::BrickBreakerMenu(std::string directory_path)
-:  selectedLevel(0), num_rows(3), num_columns(3), brickBreaker(nullptr), font(nullptr, nullptr)
+:  selectedLevel(0), num_rows(3), num_columns(3), brickBreaker(nullptr), background(nullptr), font(nullptr, nullptr)
 {
     font = std::unique_ptr<TTF_Font, void(*)(TTF_Font*)>(TTF_OpenFont("./assets/fonts/arial/arial.ttf", 24), TTF_CloseFont);
     if (!font.get())
@@ -20,8 +21,31 @@ BrickBreakerMenu::BrickBreakerMenu(std::string directory_path)
                 continue;
             
             levels.push_back({entry.path().string()});
+            
+            // check first line of file to find path to image
+            std::ifstream file(entry.path().string());
+            if (file.is_open())
+            {
+                std::string line;
+                if (std::getline(file, line))
+                {
+                    levels.back().surface = std::shared_ptr<SDL_Surface>(IMG_Load(line.c_str()), SDL_FreeSurface);
+                    if (!levels.back().surface)
+                    {
+                        std::cerr << "Failed to load image for level " << entry.path().string() << ": " << IMG_GetError() << std::endl;
+                    }
+                }
+            }
+            file.close();
         }
-    } 
+    }
+
+    if(levels.empty())
+    {
+        std::cerr << "No levels found in " << directory_path << std::endl;
+        return;
+    }
+    srand(time(nullptr));
 }
 
 void BrickBreakerMenu::handleResize(std::pair<int, int> previousSize, std::pair<int, int> newSize)
@@ -105,6 +129,26 @@ void BrickBreakerMenu::update(uint64_t delta_time)
         if (!brickBreaker->isRunning())
         {
             brickBreaker = nullptr;
+            reloadBackground();
+        }
+    }
+    else // update background with an automated platform
+    {
+        background->update(delta_time);
+        
+        const SDL_Rect& platformRect = background->getPlatform().getRect();
+        const Ball& ball = background->getBalls().front();
+        _Float32 initialPlatformSpeed = background->getInitialPlatformSpeed();
+        
+        if (ball.getCenter().first < platformRect.x)
+            background->getPlatform().setSpeedX(-initialPlatformSpeed);
+        else if (ball.getCenter().first > (platformRect.x + platformRect.w))
+            background->getPlatform().setSpeedX(initialPlatformSpeed);
+
+
+        if (!background->isRunning())
+        {
+            reloadBackground();
         }
     }
 }
@@ -117,6 +161,11 @@ std::shared_ptr<SDL_Surface> BrickBreakerMenu::render()
     }
 
     SDL_FillRect(surface.get(), nullptr, SDL_MapRGB(surface->format, 0, 0, 0));
+    if (background != nullptr)
+    {
+        std::shared_ptr<SDL_Surface> backgroundSurface = background->render();
+        SDL_BlitSurface(backgroundSurface.get(), nullptr, surface.get(), nullptr);
+    }
 
     SDL_Rect selectedRect = levels[selectedLevel].rect;
     uint32_t padding = getPadding();
@@ -124,8 +173,15 @@ std::shared_ptr<SDL_Surface> BrickBreakerMenu::render()
     selectedRect.w += padding / 8;  selectedRect.h += padding / 8;
     SDL_FillRect(surface.get(), &selectedRect, SDL_MapRGB(surface->format, 0, 0, 255));
 
-    for (const auto& level : levels) {
-        SDL_FillRect(surface.get(), &level.rect, SDL_MapRGB(surface->format, 255, 255, 255));
+    for (const auto& level : levels)
+    {
+        if (level.surface)
+        {
+            SDL_Rect imageRect = {level.rect.x, level.rect.y, level.rect.w, level.rect.h};
+            SDL_BlitScaled(level.surface.get(), nullptr, surface.get(), &imageRect);
+        }
+        else
+            SDL_FillRect(surface.get(), &level.rect, SDL_MapRGB(surface->format, 255, 255, 255));
 
         SDL_Color textColor = {0, 0, 0};
         SDL_Surface* textSurface = TTF_RenderText_Solid(font.get(), level.name.c_str(), textColor);
@@ -155,6 +211,7 @@ void BrickBreakerMenu::initSurface(uint32_t width, uint32_t height) {
 
         levels[i].rect = {x, y, rectWidth, rectHeight};
     }
+    reloadBackground();
 }
 
 uint32_t BrickBreakerMenu::getPadding() const
@@ -162,3 +219,9 @@ uint32_t BrickBreakerMenu::getPadding() const
     return surface->w / 10;
 }
 
+void BrickBreakerMenu::reloadBackground()
+{
+    uint32_t level = rand() % levels.size();
+    background = std::make_unique<BrickBreaker>(levels[level].path);
+    background->initSurface(surface->w, surface->h);
+}
