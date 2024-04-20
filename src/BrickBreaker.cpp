@@ -11,17 +11,15 @@
 #include "../include/Platform.h"
 
 BrickBreaker::BrickBreaker(const std::string& filename)
-: SDLComponent(), start_duration(2000)
+: SDLComponent(), start_duration(1000), font(nullptr, TTF_CloseFont), renderer(nullptr, SDL_DestroyRenderer)
 {
     createBricksFromLevel(filename);
     
-    font = TTF_OpenFont("./assets/fonts/arial/arial.ttf", 24);
-    if (!font)
+    font = std::unique_ptr<TTF_Font, void(*)(TTF_Font*)>(TTF_OpenFont("./assets/fonts/arial/arial.ttf", 24), TTF_CloseFont);
+    if (!font.get())
     {
         std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
     }
-
-    renderer = nullptr;
 }
 
 void BrickBreaker::initSurface(uint32_t width, uint32_t height)
@@ -42,8 +40,9 @@ void BrickBreaker::initSurface(uint32_t width, uint32_t height)
         brick->calculateVerticesWithPosition(gridDimensions, {static_cast<_Float32>(width), static_cast<_Float32>(height * BrickBreaker::BRICK_HEIGHT_LIMIT)});
     }
 
-    renderer = SDL_CreateSoftwareRenderer(surface.get());
-    if (!renderer) {
+    renderer = std::unique_ptr<SDL_Renderer, void(*)(SDL_Renderer*)>(SDL_CreateSoftwareRenderer(surface.get()), SDL_DestroyRenderer);
+    if (!renderer.get())
+    {
         std::cerr << "Failed to create renderer: " << SDL_GetError() << std::endl;
         throw std::runtime_error("Failed to create renderer");
     }
@@ -90,9 +89,9 @@ void BrickBreaker::handleResize(std::pair<int, int> previousSize, std::pair<int,
     rect.h = static_cast<uint32_t>(static_cast<float>(rect.h) * (static_cast<float>(newSize.second) / static_cast<float>(previousSize.second)));
     platform.setRect(rect); 
 
-    SDL_DestroyRenderer(renderer);
-    renderer = SDL_CreateSoftwareRenderer(surface.get());
-    if (!renderer) {
+    renderer = std::unique_ptr<SDL_Renderer, void(*)(SDL_Renderer*)>(SDL_CreateSoftwareRenderer(surface.get()), SDL_DestroyRenderer);
+    if (!renderer.get())
+    {
         std::cerr << "Failed to create renderer: " << SDL_GetError() << std::endl;
         throw std::runtime_error("Failed to create renderer");
     }
@@ -201,36 +200,28 @@ void BrickBreaker::handleEvents(SDL_Event& event, std::shared_ptr<void> data1, s
     {
         handleResize({*(int*)data1.get(), *(int*)data2.get()}, {event.window.data1, event.window.data2});
     }
-    else if(event.type == SDL_KEYDOWN)
+    else if (event.type == SDL_MOUSEMOTION)
     {
-        switch(event.key.keysym.sym)
-        {
-            case SDLK_LEFT:
-                platform.setSpeedX(surface->w / -700);
-                break;
-            case SDLK_RIGHT:
-                platform.setSpeedX(surface->w / 700);
-                break;
-            default:
-                break;
-        }
+        platform.setRect({event.motion.x - platform.getRect().w / 2, platform.getRect().y, platform.getRect().w, platform.getRect().h});
     }
-    else if(event.type == SDL_KEYUP)
+
+    const uint8_t* state = SDL_GetKeyboardState(nullptr);
+    if(state[SDL_SCANCODE_ESCAPE])
     {
-        switch(event.key.keysym.sym)
-        {
-            case SDLK_LEFT:
-            case SDLK_RIGHT:
-                platform.setSpeedX(0);
-                break;
-            case SDLK_ESCAPE:
-                is_running = false;
-                break;
-            default:
-                break;
-        }
+        is_running = false;
     }
-    
+    else if (state[SDL_SCANCODE_LEFT])
+    {
+        platform.setSpeedX(surface->w / -700);
+    }
+    else if (state[SDL_SCANCODE_RIGHT])
+    {
+        platform.setSpeedX(surface->w / 700);
+    }
+    else
+    {
+        platform.setSpeedX(0);
+    }
 }
 
 void BrickBreaker::update(uint64_t delta_time)
@@ -299,7 +290,7 @@ void BrickBreaker::update(uint64_t delta_time)
                     if(powerUp)
                     {
                         powerUps.push_back(std::move(powerUp));
-                        powerUps.back()->setRadius(getBallRadius() / 2);
+                        powerUps.back()->setRadius(getBallRadius());
                         powerUps.back()->setCenter({brick->getCenter().first - powerUps.back()->getRadius() / 2, brick->getCenter().second - powerUps.back()->getRadius() / 2});
                         powerUps.back()->setSpeed({0, static_cast<_Float32>(surface->h) / 4000.0f});
                     }
@@ -334,7 +325,7 @@ void BrickBreaker::update(uint64_t delta_time)
     }
 }
 
-SDL_Surface* BrickBreaker::render()
+std::shared_ptr<SDL_Surface> BrickBreaker::render()
 {
     SDL_FillRect(surface.get(), nullptr, SDL_MapRGB(surface->format, 0, 0, 0));
     if (bricks.empty() || balls.empty())
@@ -343,40 +334,35 @@ SDL_Surface* BrickBreaker::render()
         if (start_duration < 0)
             is_running = false;
 
-        if (font)
-        {
-            SDL_Color color = {255, 255, 255, 0};
-            SDL_Surface* textSurface = TTF_RenderText_Solid(font, text.c_str(), color);
-            SDL_Rect destRect = {surface->w / 2 - textSurface->w / 2, surface->h / 2 - textSurface->h / 2, textSurface->w, textSurface->h};
-            SDL_BlitSurface(textSurface, nullptr, surface.get(), &destRect);
-            SDL_FreeSurface(textSurface);
-        }
-        return surface.get();
+        SDL_Color color = {255, 255, 255, 0};
+        SDL_Surface* textSurface = TTF_RenderText_Solid(font.get(), text.c_str(), color);
+        SDL_Rect destRect = {surface->w / 2 - textSurface->w / 2, surface->h / 2 - textSurface->h / 2, textSurface->w, textSurface->h};
+        SDL_BlitSurface(textSurface, nullptr, surface.get(), &destRect);
+        SDL_FreeSurface(textSurface);
+        
+        return surface;
     }
 
     if (start_duration > 0)
     {
         SDL_FillRect(surface.get(), nullptr, SDL_MapRGB(surface->format, 0, 0, 0));
-        if (font)
-        {
-            SDL_Color color = {255, 255, 255, 0};
-            std::stringstream ss;
-            ss << "Starting in " << std::fixed << std::setprecision(1) << start_duration / 1000.0f << " seconds";
-            SDL_Surface* textSurface = TTF_RenderText_Solid(font, ss.str().c_str(), color);
-            SDL_Rect destRect = {surface->w / 2 - textSurface->w / 2, surface->h / 2 - textSurface->h / 2, textSurface->w, textSurface->h};
-            SDL_BlitSurface(textSurface, nullptr, surface.get(), &destRect);
-            SDL_FreeSurface(textSurface);
-        }
+        SDL_Color color = {255, 255, 255, 0};
+        std::stringstream ss;
+        ss << "Starting in " << std::fixed << std::setprecision(1) << start_duration / 1000.0f << " seconds";
+        SDL_Surface* textSurface = TTF_RenderText_Solid(font.get(), ss.str().c_str(), color);
+        SDL_Rect destRect = {surface->w / 2 - textSurface->w / 2, surface->h / 2 - textSurface->h / 2, textSurface->w, textSurface->h};
+        SDL_BlitSurface(textSurface, nullptr, surface.get(), &destRect);
+        SDL_FreeSurface(textSurface);
     }
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
 
     for (const auto& brick : bricks)
     {
         std::vector<SDL_Vertex> vertices = brick->getVertices();
         std::vector<int32_t> indices = brick->getIndices();
 
-        if (SDL_RenderGeometry(renderer, nullptr, vertices.data(), vertices.size(), indices.data(), indices.size()) != 0) {
+        if (SDL_RenderGeometry(renderer.get(), nullptr, vertices.data(), vertices.size(), indices.data(), indices.size()) != 0) {
             std::cerr << "Failed to render geometry: " << SDL_GetError() << std::endl;
             return nullptr;
         }
@@ -390,13 +376,13 @@ SDL_Surface* BrickBreaker::render()
 
         for (size_t i = 0; i < points.size(); i++)
         {
-            if (SDL_RenderDrawLine(renderer, points[i].x, points[i].y, points[(i + 1) % points.size()].x, points[(i + 1) % points.size()].y) != 0) {
+            if (SDL_RenderDrawLine(renderer.get(), points[i].x, points[i].y, points[(i + 1) % points.size()].x, points[(i + 1) % points.size()].y) != 0) {
                 std::cerr << "Failed to render line: " << SDL_GetError() << std::endl;
                 return nullptr;
             }
         }
     }
-    SDL_RenderPresent(renderer);
+    SDL_RenderPresent(renderer.get());
 
     for (const auto& ball : balls)
     {
@@ -428,17 +414,16 @@ SDL_Surface* BrickBreaker::render()
         SDL_Surface* powerUpSurface = powerUp->getSurface().get();
         if (powerUpSurface != nullptr)
         {
-            SDL_BlitSurface(powerUp->getSurface().get(), nullptr, surface.get(), &rect);
+            SDL_BlitScaled(powerUpSurface, nullptr, surface.get(), &rect);
         }
         else        
             SDL_FillRect(surface.get(), &rect, SDL_MapRGBA(surface->format, 255, 255, 0, 0));
     }
 
-
     SDL_Color color = platform.getColor();
     SDL_FillRect(surface.get(), &(platform.getRect()), SDL_MapRGBA(surface->format, color.r, color.g, color.b, color.a));
 
-    return surface.get();
+    return surface;
 }
 
 const _Float32 BrickBreaker::getBallRadius() const
@@ -463,6 +448,5 @@ std::vector<Ball>& BrickBreaker::getBalls()
 
 BrickBreaker::~BrickBreaker()
 {
-    TTF_CloseFont(font);
-    SDL_DestroyRenderer(renderer);
+    
 }

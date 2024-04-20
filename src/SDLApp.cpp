@@ -4,7 +4,7 @@
 #include <SDL2/SDL_ttf.h>
 
 SDLApp::SDLApp(int screen_width, int screen_height, uint32_t flags)
-    : window(nullptr, &SDL_DestroyWindow), renderer(nullptr, &SDL_DestroyRenderer), is_running(false), last_time(0)
+    : window(nullptr, SDL_DestroyWindow), renderer(nullptr, SDL_DestroyRenderer), is_running(false), last_time(0)
 {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
         std::cerr << "SDL initialization failed: " << SDL_GetError() << std::endl;
@@ -26,7 +26,7 @@ SDLApp::SDLApp(int screen_width, int screen_height, uint32_t flags)
 
     window.reset(SDL_CreateWindow("SDL Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                   screen_width, screen_height, SDL_WINDOW_SHOWN | flags));
-    if (!window)
+    if (!window.get())
     {
         std::cerr << "Window creation failed: " << SDL_GetError() << std::endl;
         SDL_Quit();
@@ -34,7 +34,7 @@ SDLApp::SDLApp(int screen_width, int screen_height, uint32_t flags)
     }
 
     renderer.reset(SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_ACCELERATED));
-    if (!renderer)
+    if (!renderer.get())
     {
         std::cerr << "Renderer creation failed: " << SDL_GetError() << std::endl;
         SDL_Quit();
@@ -46,16 +46,12 @@ SDLApp::SDLApp(int screen_width, int screen_height, uint32_t flags)
     window_dimensions = {screen_width, screen_height};
 }
 
-SDLApp::~SDLApp()
-{
-    SDL_Quit();
-}
-
 
 void SDLApp::addComponent(std::shared_ptr<SDLComponent> obj)
 {
     // a changer pour pouvoir afficher plusieurs objets
     components.push_back(obj);
+    
     int windowWidth, windowHeight;
     SDL_GetWindowSize(window.get(), &windowWidth, &windowHeight);
     components.back()->initSurface(windowWidth, windowHeight);
@@ -136,16 +132,15 @@ void SDLApp::render()
 
     for (auto& obj : components)
     {
-        SDL_Surface* surface = obj->render();
-        SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer.get(), surface);
-        if(!texture)
+        std::shared_ptr<SDL_Surface> surface = obj->render();
+        std::unique_ptr<SDL_Texture, decltype(&SDL_DestroyTexture)> texture(SDL_CreateTextureFromSurface(renderer.get(), surface.get()), &SDL_DestroyTexture);
+        if(!texture.get())
         {
             std::cerr << "Failed to create texture: " << SDL_GetError() << std::endl;
             continue;
         }
         SDL_Rect destRect = {0, 0, surface->w, surface->h};
-        SDL_RenderCopy(renderer.get(), texture, nullptr, &destRect);
-        SDL_DestroyTexture(texture);
+        SDL_RenderCopy(renderer.get(), texture.get(), nullptr, &destRect);
     }
 
     SDL_RenderPresent(renderer.get());

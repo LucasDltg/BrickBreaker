@@ -54,7 +54,7 @@ void MultiBallPowerUp::unApplyPowerUp(BrickBreaker &game)
 {}
 
 ExtendPlatformPowerUp::ExtendPlatformPowerUp()
-: PowerUp(5000, "ball.png")
+: PowerUp(5000, "./assets/textures/bubble_extend.png")
 {}
 
 void ExtendPlatformPowerUp::applyPowerUp(BrickBreaker &game)
@@ -71,7 +71,7 @@ void ExtendPlatformPowerUp::unApplyPowerUp(BrickBreaker &game)
 }
 
 SpeedUpPowerUp::SpeedUpPowerUp()
-: PowerUp(5000)
+: PowerUp(5000, "./assets/textures/bubble_speed.png")
 {}
 
 void SpeedUpPowerUp::applyPowerUp(BrickBreaker &game)

@@ -5,10 +5,11 @@
 #include "../include/BrickBreakerMenu.h"
 
 BrickBreakerMenu::BrickBreakerMenu(std::string directory_path)
-: selectedLevel(0), num_rows(3), num_columns(3), brickBreaker(nullptr)
+:  selectedLevel(0), num_rows(3), num_columns(3), brickBreaker(nullptr), font(nullptr, nullptr)
 {
-    font = TTF_OpenFont("./assets/fonts/arial/arial.ttf", 24);
-    if (!font) {
+    font = std::unique_ptr<TTF_Font, void(*)(TTF_Font*)>(TTF_OpenFont("./assets/fonts/arial/arial.ttf", 24), TTF_CloseFont);
+    if (!font.get())
+    {
         std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
         return;
     }
@@ -108,7 +109,7 @@ void BrickBreakerMenu::update(uint64_t delta_time)
     }
 }
 
-SDL_Surface* BrickBreakerMenu::render()
+std::shared_ptr<SDL_Surface> BrickBreakerMenu::render()
 {
     if (brickBreaker != nullptr)
     {
@@ -127,13 +128,13 @@ SDL_Surface* BrickBreakerMenu::render()
         SDL_FillRect(surface.get(), &level.rect, SDL_MapRGB(surface->format, 255, 255, 255));
 
         SDL_Color textColor = {0, 0, 0};
-        SDL_Surface* textSurface = TTF_RenderText_Solid(font, level.name.c_str(), textColor);
+        SDL_Surface* textSurface = TTF_RenderText_Solid(font.get(), level.name.c_str(), textColor);
         SDL_Rect textRect = {level.rect.x + level.rect.w / 2 - textSurface->w / 2, level.rect.y + level.rect.h / 2 - textSurface->h / 2, textSurface->w, textSurface->h};
         SDL_BlitSurface(textSurface, nullptr, surface.get(), &textRect);
         SDL_FreeSurface(textSurface);
     }
 
-    return surface.get();
+    return surface;
 }
 
 void BrickBreakerMenu::initSurface(uint32_t width, uint32_t height) {

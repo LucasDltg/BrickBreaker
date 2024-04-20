@@ -26,7 +26,7 @@ public:
     BrickBreakerMenu(std::string directory_path = "./assets/levels");
     void handleEvents(SDL_Event& event, std::shared_ptr<void> data1, std::shared_ptr<void> data2) override;
     void update(uint64_t delta_time) override;
-    SDL_Surface* render() override;
+    std::shared_ptr<SDL_Surface> render() override;
     void initSurface(uint32_t width, uint32_t height) override;
 
 private:
@@ -38,7 +38,7 @@ private:
     std::vector<BrickBreakerMenuLevel> levels;
     std::unique_ptr<BrickBreaker> brickBreaker;
 
-    TTF_Font* font;
+    std::unique_ptr<TTF_Font, void(*)(TTF_Font*)> font;
 };
 
 #endif // BRICKBREAKERMENU_H
