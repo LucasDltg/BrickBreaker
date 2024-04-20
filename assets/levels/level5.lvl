@@ -1,10 +1,10 @@
 triangle
 10 5
-1 1 1 0x00FF0000 SpeedUp
-2 2 1 0x00FF0000 SpeedUp
-0 0 1 0xFF000000 SpeedUp
-3 2 1 0x00FF0000 SpeedUp
-4 2 1 0x00FF0000 SpeedUp
-7 4 1 0x00FF0000 SpeedUp
-8 4 1 0x00FF0000 SpeedUp
-9 4 1 0x00FF0000 SpeedUp
+1 1 1 0x00FF0000 DuplicateBall
+2 2 1 0x00FF0000 DuplicateBall
+0 0 1 0xFF000000 DuplicateBall
+3 2 1 0x00FF0000 DuplicateBall
+4 2 1 0x00FF0000 DuplicateBall
+7 4 1 0x00FF0000 DuplicateBall
+8 4 1 0x00FF0000 DuplicateBall
+9 4 1 0x00FF0000 DuplicateBall

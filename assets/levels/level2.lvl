@@ -1,6 +1,6 @@
 triangle
 3 2
-0 0 1 0xFF00FF00 SpeedUp
+0 0 -1 0xFF00FF00 SpeedUp
 1 0 1 0xFF00FF00 SpeedUp
 2 0 1 0xFF00FF00 SpeedUp
 0 1 1 0xFF00FF00 SpeedUp

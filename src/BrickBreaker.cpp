@@ -301,16 +301,16 @@ void BrickBreaker::update(uint64_t delta_time)
         
         ball.resolveCollisionWithLine(borders[0], borders[1]);
         ball.resolveCollisionWithLine(borders[1], borders[2]);
-        // ball.resolveCollisionWithLine(borders[2], borders[3]);
+        ball.resolveCollisionWithLine(borders[2], borders[3]);
         ball.resolveCollisionWithLine(borders[3], borders[0]);
 
         ball.update(delta_time);
     }
 
     // remove balls that are out of bounds
-    balls.erase(std::remove_if(balls.begin(), balls.end(), [this](const Ball& ball) {
+    /*balls.erase(std::remove_if(balls.begin(), balls.end(), [this](const Ball& ball) {
         return ball.getCenter().second - ball.getRadius() > surface->h;
-    }), balls.end());
+    }), balls.end());*/
 
     if (balls.empty())
         start_duration = 2000;
@@ -318,8 +318,14 @@ void BrickBreaker::update(uint64_t delta_time)
 
 std::shared_ptr<SDL_Surface> BrickBreaker::render()
 {
+    // reset surface
     SDL_FillRect(surface.get(), nullptr, SDL_MapRGB(surface->format, 0, 0, 0));
-    if (bricks.empty() || balls.empty())
+    
+    // check if all balls are lost or all bricks are destroyed or have resisitance < 0
+    
+    if (balls.empty() || std::all_of(bricks.begin(), bricks.end(), [](const std::unique_ptr<Brick>& brick) {
+        return brick->getResistance() <= 0;
+    }))
     {
         std::string text = balls.empty() ? "You lost!" : "You won!";
         if (start_duration < 0)

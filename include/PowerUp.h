@@ -33,10 +33,18 @@ class SpeedUpPowerUp : public PowerUp
     void unApplyPowerUp(BrickBreaker &game) override;
 };
 
-class MultiBallPowerUp : public PowerUp
+class AddBallPowerUp : public PowerUp
 {
     public:
-    MultiBallPowerUp();
+    AddBallPowerUp();
+    void applyPowerUp(BrickBreaker &game) override;
+    void unApplyPowerUp(BrickBreaker &game) override;
+};
+
+class DuplicateBallPowerUp : public PowerUp
+{
+    public:
+    DuplicateBallPowerUp();
     void applyPowerUp(BrickBreaker &game) override;
     void unApplyPowerUp(BrickBreaker &game) override;
 };

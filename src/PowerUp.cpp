@@ -7,8 +7,10 @@ std::unique_ptr<PowerUp> initPowerUp(std::string name)
 {
     if (name == "SpeedUp")
         return std::make_unique<SpeedUpPowerUp>();
-    else if (name == "MultiBall")
-        return std::make_unique<MultiBallPowerUp>();
+    else if (name == "AddBall")
+        return std::make_unique<AddBallPowerUp>();
+    else if (name == "DuplicateBall")
+        return std::make_unique<DuplicateBallPowerUp>();
     else if (name == "ExtendPlatform")
         return std::make_unique<ExtendPlatformPowerUp>();
     else
@@ -35,11 +37,11 @@ int64_t PowerUp::getDuration() const
     return current_duration;
 }
 
-MultiBallPowerUp::MultiBallPowerUp()
+AddBallPowerUp::AddBallPowerUp()
 : PowerUp(0, "./assets/textures/bubble_multi.png")
 {}
 
-void MultiBallPowerUp::applyPowerUp(BrickBreaker &game)
+void AddBallPowerUp::applyPowerUp(BrickBreaker &game)
 {
     active = true;
     
@@ -50,7 +52,33 @@ void MultiBallPowerUp::applyPowerUp(BrickBreaker &game)
     game.addBall(ball);
 }
 
-void MultiBallPowerUp::unApplyPowerUp(BrickBreaker &game)
+void AddBallPowerUp::unApplyPowerUp(BrickBreaker &game)
+{}
+
+DuplicateBallPowerUp::DuplicateBallPowerUp()
+: PowerUp(0, "./assets/textures/bubble_duplicate.png")
+{}
+
+void DuplicateBallPowerUp::applyPowerUp(BrickBreaker &game)
+{
+    active = true;
+    
+    for (auto &ball : game.getBalls()) {
+        
+        Ball duplicateBall = Ball(ball.getRadius(), ball.getCenter(), ball.getColor(), ball.getSpeed());
+        
+        double originalAngle = atan2(ball.getSpeed().second, ball.getSpeed().first);
+        double newAngle = originalAngle + (30 * M_PI / 180); // Add 30° to the original angle
+        double speedMagnitude = sqrt(pow(ball.getSpeed().first, 2) + pow(ball.getSpeed().second, 2));
+        double newSpeedX = cos(newAngle) * speedMagnitude;
+        double newSpeedY = sin(newAngle) * speedMagnitude;
+        
+        duplicateBall.setSpeed(std::make_pair(newSpeedX, newSpeedY));
+        game.addBall(duplicateBall);
+    }
+}
+
+void DuplicateBallPowerUp::unApplyPowerUp(BrickBreaker &game)
 {}
 
 ExtendPlatformPowerUp::ExtendPlatformPowerUp()
