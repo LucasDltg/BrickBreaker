@@ -36,7 +36,7 @@ int64_t PowerUp::getDuration() const
 }
 
 MultiBallPowerUp::MultiBallPowerUp()
-: PowerUp()
+: PowerUp(0, "./assets/textures/bubble_multi.png")
 {}
 
 void MultiBallPowerUp::applyPowerUp(BrickBreaker &game)
