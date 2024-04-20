@@ -91,7 +91,7 @@ void BrickTriangular::calculateVerticesWithPosition(std::pair<_Float32, _Float32
     vertices.clear();
 
     int brickWidth = surface_size.first / grid_dimensions.first;
-    int brickHeight = surface_size.second / grid_dimensions.second;
+    int brickHeight = static_cast<int>(grid_dimensions.second) % 2 == 0 ? surface_size.second / (grid_dimensions.second / 2): surface_size.second / ((grid_dimensions.second + 1) / 2);
 
     if (position.second % 2 == 0)
     {
@@ -134,12 +134,12 @@ BrickHexagonal::BrickHexagonal(std::pair<uint32_t, uint32_t> position, std::pair
 
 void BrickHexagonal::calculateVerticesWithPosition(std::pair<_Float32, _Float32> grid_dimensions, std::pair<_Float32, _Float32> surface_size)
 {
-    SDL_Color SD; SD.r = color >> 24; SD.g = color >> 16; SD.b = color >> 8; SD.a = color;
+    SDL_Color SD = {static_cast<uint8_t>(color >> 24), static_cast<uint8_t>(color >> 16), static_cast<uint8_t>(color >> 8), static_cast<uint8_t>(color)};
 
     vertices.clear();
 
     float brickWidth = surface_size.first / (grid_dimensions.first * 1.5f + 0.25f);
-    float brickHeight = surface_size.second / (grid_dimensions.second + 0.5f);
+    int brickHeight = static_cast<int>(grid_dimensions.second) % 2 == 0 ? surface_size.second / ((grid_dimensions.second) / 2 + 0.5f): surface_size.second / ((grid_dimensions.second + 1) / 2);
 
     if(position.second % 2 == 0)
     {

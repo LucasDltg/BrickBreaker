@@ -143,29 +143,11 @@ void BrickBreaker::createBricksFromLevel(const std::string& filename) {
             continue;
         }
         iss >> power_up;
-        if(brickShape == BrickShape::RECTANGLE)
+        
+        if(posX < 0 || posX >= gridDimensions.first || posY < 0 || posY >= gridDimensions.second)
         {
-            if(posX < 0 || posX >= gridDimensions.first || posY < 0 || posY >= gridDimensions.second)
-            {
-                std::cerr << "Invalid brick position in level file: " << filename << std::endl;
-                continue;
-            }   
-        }
-        else if(brickShape == BrickShape::TRIANGLE)
-        {
-            if(posX < 0 || posX >= gridDimensions.first || posY < 0 || posY >= gridDimensions.second * 2)
-            {
-                std::cerr << "Invalid brick position in level file: " << filename << std::endl;
-                continue;
-            }
-        }
-        else if(brickShape == BrickShape::HEXAGON)
-        {
-            if(posX < 0 || posX >= gridDimensions.first || posY < 0 || posY >= gridDimensions.second * 2)
-            {
-                std::cerr << "Invalid brick position in level file: " << filename << std::endl;
-                continue;
-            }
+            std::cerr << "Invalid brick position in level file: " << filename << std::endl;
+            continue;
         }
 
         Uint32 colorValue;
@@ -294,6 +276,7 @@ void BrickBreaker::update(uint64_t delta_time)
                         powerUps.back()->setCenter({brick->getCenter().first - powerUps.back()->getRadius() / 2, brick->getCenter().second - powerUps.back()->getRadius() / 2});
                         powerUps.back()->setSpeed({0, static_cast<_Float32>(surface->h) / 4000.0f});
                     }
+                    // we remove the brick from the vector here, because we don't want to check for collision with it anymore
                     bricks.erase(std::remove_if(bricks.begin(), bricks.end(), [&brick](const std::unique_ptr<Brick>& b) {
                         return b.get() == brick.get();
                     }), bricks.end());
@@ -308,17 +291,20 @@ void BrickBreaker::update(uint64_t delta_time)
 
         ball.resolveCollisionWithRectangle(platform.getRect());
 
-        // collisions with borders
-        SDL_Rect borders[4] = {
-            {0, 0, surface->w, 30},
-            {0, 0, 30, surface->h},
-            {0, surface->h - 1, surface->w, 30},
-            {surface->w - 1, 0, 30, surface->h}
+        // Check for collision with borders
+        std::vector<std::pair<_Float32, _Float32>> borders = {
+            {0, 0},
+            {static_cast<_Float32>(surface->w), 0},
+            {static_cast<_Float32>(surface->w), static_cast<_Float32>(surface->h)},
+            {0, static_cast<_Float32>(surface->h)},
         };
         
-        for (const auto& border : borders)
+        for (size_t i = 0; i < borders.size(); i++)
         {
-            ball.resolveCollisionWithRectangle(border);
+            if (ball.resolveCollisionWithLine({borders[i].first, borders[i].second}, {borders[(i + 1) % borders.size()].first, borders[(i + 1) % borders.size()].second}))
+            {
+                break;
+            }
         }
 
         ball.update(delta_time);
