@@ -11,7 +11,7 @@
 #include "../include/Platform.h"
 
 BrickBreaker::BrickBreaker(const std::string& filename)
-: SDLComponent(), start_duration(1000), font(nullptr, TTF_CloseFont), renderer(nullptr, SDL_DestroyRenderer)
+: SDLComponent(), platform(), start_duration(1000), font(nullptr, TTF_CloseFont), renderer(nullptr, SDL_DestroyRenderer)
 {
     createBricksFromLevel(filename);
     
@@ -418,7 +418,10 @@ std::shared_ptr<SDL_Surface> BrickBreaker::render()
     }
 
     SDL_Color color = platform.getColor();
-    SDL_FillRect(surface.get(), &(platform.getRect()), SDL_MapRGBA(surface->format, color.r, color.g, color.b, color.a));
+    if(platform.getSurface().get() != nullptr)
+        SDL_BlitScaled(platform.getSurface().get(), nullptr, surface.get(), &platform.getRect());
+    else
+        SDL_FillRect(surface.get(), &(platform.getRect()), SDL_MapRGBA(surface->format, color.r, color.g, color.b, color.a));
 
     return surface;
 }
