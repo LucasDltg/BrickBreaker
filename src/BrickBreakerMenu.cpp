@@ -8,7 +8,7 @@
 BrickBreakerMenu::BrickBreakerMenu(std::string directory_path)
 :  selectedLevel(0), num_rows(3), num_columns(3), brickBreaker(nullptr), background(nullptr), font(nullptr, nullptr)
 {
-    font = std::unique_ptr<TTF_Font, void(*)(TTF_Font*)>(TTF_OpenFont("./assets/fonts/arial/arial.ttf", 24), TTF_CloseFont);
+    font = std::unique_ptr<TTF_Font, void(*)(TTF_Font*)>(TTF_OpenFont("./assets/fonts/arial/arial.ttf", 30), TTF_CloseFont);
     if (!font.get())
     {
         std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;

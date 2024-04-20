@@ -284,7 +284,8 @@ void BrickBreaker::update(uint64_t delta_time)
                         return b.get() == brick.get();
                     }), bricks.end());
                     
-                    if (bricks.empty())
+                    if (bricks.empty() || balls.empty() || std::all_of(bricks.begin(), bricks.end(), [](const std::unique_ptr<Brick>& brick) {
+                                                                return brick->getResistance() <= 0;}))
                         start_duration = 2000;
                 }
                 break;
@@ -325,7 +326,6 @@ std::shared_ptr<SDL_Surface> BrickBreaker::render()
     SDL_FillRect(surface.get(), nullptr, SDL_MapRGB(surface->format, 0, 0, 0));
     
     // check if all balls are lost or all bricks are destroyed or have resisitance < 0
-    
     if (balls.empty() || std::all_of(bricks.begin(), bricks.end(), [](const std::unique_ptr<Brick>& brick) {
         return brick->getResistance() <= 0;
     }))
