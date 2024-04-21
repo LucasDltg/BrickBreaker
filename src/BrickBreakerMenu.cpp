@@ -51,13 +51,6 @@ BrickBreakerMenu::BrickBreakerMenu(std::string directory_path)
 
 void BrickBreakerMenu::handleResize(std::pair<int, int> previousSize, std::pair<int, int> newSize)
 {
-    for (auto& level : levels)
-    {
-        level.rect.x = level.rect.x * newSize.first / previousSize.first;
-        level.rect.y = level.rect.y * newSize.second / previousSize.second;
-        level.rect.w = level.rect.w * newSize.first / previousSize.first;
-        level.rect.h = level.rect.h * newSize.second / previousSize.second;
-    }
     TTF_SetFontSize(font.get(), getFontSize());
 }
 
@@ -121,9 +114,20 @@ void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data
         int y = event.button.y;
 
         // check if a level was clicked
-        for (const auto& level : levels) {
-            if (x >= level.rect.x && x <= level.rect.x + level.rect.w && y >= level.rect.y && y <= level.rect.y + level.rect.h) {
-                brickBreaker = std::make_unique<BrickBreaker>(level.path);
+        for (size_t i(current_page * num_rows * num_columns); i < levels.size() && i < num_rows * num_columns * (current_page + 1); ++i)
+        {
+            const uint32_t padding = getPadding();
+            const _Float32 totalWidth = surface->w - 2 * padding;
+            const _Float32 totalHeight = surface->h - 2 * padding;
+            const _Float32 rectWidth = (totalWidth - (num_columns - 1) * padding / 2) / num_columns;
+            const _Float32 rectHeight = (totalHeight - (num_rows - 1) * padding / 2) / num_rows;
+
+            int32_t row = (i % (num_rows * num_columns)) / num_columns;
+            int32_t col = (i % (num_rows * num_columns)) % num_columns;
+
+            if (x >= padding + col * (rectWidth + padding / 2) && x <= padding + col * (rectWidth + padding / 2) + rectWidth && y >= padding + row * (rectHeight + padding / 2) && y <= padding + row * (rectHeight + padding / 2) + rectHeight)
+            {
+                brickBreaker = std::make_unique<BrickBreaker>(levels[i].path);
                 brickBreaker->initSurface(surface->w, surface->h);
                 break;
             }
@@ -157,8 +161,18 @@ void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data
 
         for (size_t i(current_page * num_rows * num_columns); i < levels.size() && i < num_rows * num_columns * (current_page + 1); ++i)
         {
-            if (x >= levels[i].rect.x && x <= levels[i].rect.x + levels[i].rect.w && y >= levels[i].rect.y && y <= levels[i].rect.y + levels[i].rect.h) {
-                selectedLevel = i;
+            const uint32_t padding = getPadding();
+            const _Float32 totalWidth = surface->w - 2 * padding;
+            const _Float32 totalHeight = surface->h - 2 * padding;
+            const _Float32 rectWidth = (totalWidth - (num_columns - 1) * padding / 2) / num_columns;
+            const _Float32 rectHeight = (totalHeight - (num_rows - 1) * padding / 2) / num_rows;
+
+            int32_t row = (i % (num_rows * num_columns)) / num_columns;
+            int32_t col = (i % (num_rows * num_columns)) % num_columns;
+            
+            if (x >= padding + col * (rectWidth + padding / 2) && x <= padding + col * (rectWidth + padding / 2) + rectWidth && y >= padding + row * (rectHeight + padding / 2) && y <= padding + row * (rectHeight + padding / 2) + rectHeight)
+            {
+                selectedLevel = i % (num_rows * num_columns);
                 break;
             }
         }
@@ -224,51 +238,46 @@ std::shared_ptr<SDL_Surface> BrickBreakerMenu::render()
         SDL_BlitSurface(backgroundSurface.get(), nullptr, surface.get(), nullptr);
     }
 
-    uint32_t padding = getPadding();
+    const uint32_t padding = getPadding();
+    const _Float32 totalWidth = surface->w - 2 * padding;
+    const _Float32 totalHeight = surface->h - 2 * padding;
+    const _Float32 rectWidth = (totalWidth - (num_columns - 1) * padding / 2) / num_columns;
+    const _Float32 rectHeight = (totalHeight - (num_rows - 1) * padding / 2) / num_rows;
 
     for (size_t i(num_columns * num_rows * current_page); i < levels.size() && i < num_columns * num_rows * (current_page + 1); ++i)
     {
+        int32_t row = (i % (num_rows * num_columns)) / num_columns;
+        int32_t col = (i % (num_rows * num_columns)) % num_columns;
+
+        _Float32 x = padding + col * (rectWidth + padding / 2);
+        _Float32 y = padding + row * (rectHeight + padding / 2);
+
+        SDL_Rect rect = {static_cast<int32_t>(x), static_cast<int32_t>(y), static_cast<int32_t>(rectWidth), static_cast<int32_t>(rectHeight)};
         if (levels[i].surface)
         {
             if (i == selectedLevel + num_columns * num_rows * current_page)
-            {
-                SDL_FRect selectedRect = levels[selectedLevel].rect;
-                SDL_Rect s_rect = {static_cast<int32_t>(selectedRect.x), static_cast<int32_t>(selectedRect.y), static_cast<int32_t>(selectedRect.w), static_cast<int32_t>(selectedRect.h)};
-                s_rect.x -= padding / 16; s_rect.y -= padding / 16; s_rect.w += padding / 8; s_rect.h += padding / 8;
-                SDL_BlitScaled(levels[i].surface.get(), nullptr, surface.get(), &s_rect);
-            }   
-            else
-            {
-                SDL_Rect imageRect = {static_cast<int32_t>(levels[i].rect.x), static_cast<int32_t>(levels[i].rect.y), static_cast<int32_t>(levels[i].rect.w), static_cast<int32_t>(levels[i].rect.h)};
-                SDL_BlitScaled(levels[i].surface.get(), nullptr, surface.get(), &imageRect);
-            }
+                {rect.x -= padding / 16; rect.y -= padding / 16; rect.w += padding / 8; rect.h += padding / 8;}
+            
+            SDL_BlitScaled(levels[i].surface.get(), nullptr, surface.get(), &rect);
         }
         else
         {
             if (i == selectedLevel + num_columns * num_rows * current_page)
-            {
-                SDL_FRect selectedRect = levels[selectedLevel].rect;
-                SDL_Rect s_rect = {static_cast<int32_t>(selectedRect.x), static_cast<int32_t>(selectedRect.y), static_cast<int32_t>(selectedRect.w), static_cast<int32_t>(selectedRect.h)};
-                s_rect.x -= padding / 16; s_rect.y -= padding / 16; s_rect.w += padding / 8; s_rect.h += padding / 8;
-                SDL_FillRect(surface.get(), &s_rect, SDL_MapRGB(surface->format, 255, 255, 255));
-            }   
-            else
-            {
-                SDL_Rect s_rect = {static_cast<int32_t>(levels[i].rect.x), static_cast<int32_t>(levels[i].rect.y), static_cast<int32_t>(levels[i].rect.w), static_cast<int32_t>(levels[i].rect.h)};
-                SDL_FillRect(surface.get(), &s_rect, SDL_MapRGB(surface->format, 255, 255, 255));
-            }
+                {rect.x -= padding / 16; rect.y -= padding / 16; rect.w += padding / 8; rect.h += padding / 8;}
+            
+            SDL_FillRect(surface.get(), &rect, SDL_MapRGB(surface->format, 255, 255, 255));
         }
 
         SDL_Color textColor = {0, 0, 0};
         SDL_Surface* textSurface = TTF_RenderText_Solid(font.get(), levels[i].name.c_str(), textColor);
-        SDL_Rect textRect = {static_cast<int32_t>(levels[i].rect.x + levels[i].rect.w / 2 - textSurface->w / 2), static_cast<int32_t>(levels[i].rect.y + levels[i].rect.h / 2 - textSurface->h / 2), textSurface->w, textSurface->h};
+        SDL_Rect textRect = {static_cast<int32_t>(x + rectWidth / 2 - textSurface->w / 2), static_cast<int32_t>(y + rectHeight / 2 - textSurface->h / 2), textSurface->w, textSurface->h};
         SDL_BlitSurface(textSurface, nullptr, surface.get(), &textRect);
         SDL_FreeSurface(textSurface);
     }
 
     // draw squares for pages numbers
-    int totalWidth = num_pages * padding / 4 + (num_pages - 1) * padding / 2;
-    int startX = surface->w / 2 - totalWidth / 2;
+    const int totalWidthp = num_pages * padding / 4 + (num_pages - 1) * padding / 2;
+    int startX = surface->w / 2 - totalWidthp / 2;
     for (size_t i(0); i < num_pages; ++i)
     {
         SDL_Rect pageRect = {
@@ -284,25 +293,9 @@ std::shared_ptr<SDL_Surface> BrickBreakerMenu::render()
     return surface;
 }
 
-void BrickBreakerMenu::initSurface(uint32_t width, uint32_t height) {
+void BrickBreakerMenu::initSurface(uint32_t width, uint32_t height)
+{
     setSurfaceDimensions(width, height);
-    uint32_t padding = getPadding();
-
-    const _Float32 totalWidth = width - 2 * padding;
-    const _Float32 totalHeight = height - 2 * padding;
-    const _Float32 rectWidth = (totalWidth - (num_columns - 1) * padding / 2) / num_columns;
-    const _Float32 rectHeight = (totalHeight - (num_rows - 1) * padding / 2) / num_rows;
-
-    for (size_t i(0); i < levels.size(); ++i)
-    {
-        int32_t row = (i % (num_rows * num_columns)) / num_columns;
-        int32_t col = (i % (num_rows * num_columns)) % num_columns;
-
-        _Float32 x = padding + col * (rectWidth + padding / 2);
-        _Float32 y = padding + row * (rectHeight + padding / 2);
-
-        levels[i].rect = {x, y, rectWidth, rectHeight};
-    }
     reloadBackground();
     TTF_SetFontSize(font.get(), getFontSize());
 }
