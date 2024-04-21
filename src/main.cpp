@@ -13,6 +13,7 @@
 // fix ball leaving the screen at low fps
 // change platform rect to have float values
 // nom de variable
+// bug mineur avec menu, deplacement
 
 int main()
 {

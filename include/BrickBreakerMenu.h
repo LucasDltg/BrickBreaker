@@ -15,7 +15,7 @@ class BrickBreakerMenuLevel
     BrickBreakerMenuLevel(std::string path) : path(path) { std::filesystem::path p(path); name = p.stem().string(); }
 
     private:
-    SDL_Rect rect;
+    SDL_FRect rect;
     std::string name;
     std::string path;
     std::shared_ptr<SDL_Surface> surface;

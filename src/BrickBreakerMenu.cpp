@@ -223,10 +223,7 @@ std::shared_ptr<SDL_Surface> BrickBreakerMenu::render()
         SDL_BlitSurface(backgroundSurface.get(), nullptr, surface.get(), nullptr);
     }
 
-    SDL_Rect selectedRect = levels[selectedLevel].rect;
     uint32_t padding = getPadding();
-    selectedRect.x -= padding / 16; selectedRect.y -= padding / 16;
-    selectedRect.w += padding / 8;  selectedRect.h += padding / 8;
 
     for (size_t i(num_columns * num_rows * current_page); i < levels.size() && i < num_columns * num_rows * (current_page + 1); ++i)
     {
@@ -234,11 +231,14 @@ std::shared_ptr<SDL_Surface> BrickBreakerMenu::render()
         {
             if (i == selectedLevel)
             {
-                SDL_BlitScaled(levels[i].surface.get(), nullptr, surface.get(), &selectedRect);
+                SDL_FRect selectedRect = levels[selectedLevel].rect;
+                SDL_Rect s_rect = {static_cast<int32_t>(selectedRect.x), static_cast<int32_t>(selectedRect.y), static_cast<int32_t>(selectedRect.w), static_cast<int32_t>(selectedRect.h)};
+                s_rect.x -= padding / 16; s_rect.y -= padding / 16; s_rect.w += padding / 8; s_rect.h += padding / 8;
+                SDL_BlitScaled(levels[i].surface.get(), nullptr, surface.get(), &s_rect);
             }   
             else
             {
-                SDL_Rect imageRect = {levels[i].rect.x, levels[i].rect.y, levels[i].rect.w, levels[i].rect.h};
+                SDL_Rect imageRect = {static_cast<int32_t>(levels[i].rect.x), static_cast<int32_t>(levels[i].rect.y), static_cast<int32_t>(levels[i].rect.w), static_cast<int32_t>(levels[i].rect.h)};
                 SDL_BlitScaled(levels[i].surface.get(), nullptr, surface.get(), &imageRect);
             }
         }
@@ -246,17 +246,21 @@ std::shared_ptr<SDL_Surface> BrickBreakerMenu::render()
         {
             if (i == selectedLevel)
             {
-                SDL_FillRect(surface.get(), &selectedRect, SDL_MapRGB(surface->format, 255, 255, 255));
+                SDL_FRect selectedRect = levels[selectedLevel].rect;
+                SDL_Rect s_rect = {static_cast<int32_t>(selectedRect.x), static_cast<int32_t>(selectedRect.y), static_cast<int32_t>(selectedRect.w), static_cast<int32_t>(selectedRect.h)};
+                s_rect.x -= padding / 16; s_rect.y -= padding / 16; s_rect.w += padding / 8; s_rect.h += padding / 8;
+                SDL_FillRect(surface.get(), &s_rect, SDL_MapRGB(surface->format, 255, 255, 255));
             }   
             else
             {
-                SDL_FillRect(surface.get(), &levels[i].rect, SDL_MapRGB(surface->format, 255, 255, 255));
+                SDL_Rect s_rect = {static_cast<int32_t>(levels[i].rect.x), static_cast<int32_t>(levels[i].rect.y), static_cast<int32_t>(levels[i].rect.w), static_cast<int32_t>(levels[i].rect.h)};
+                SDL_FillRect(surface.get(), &s_rect, SDL_MapRGB(surface->format, 255, 255, 255));
             }
         }
 
         SDL_Color textColor = {0, 0, 0};
         SDL_Surface* textSurface = TTF_RenderText_Solid(font.get(), levels[i].name.c_str(), textColor);
-        SDL_Rect textRect = {levels[i].rect.x + levels[i].rect.w / 2 - textSurface->w / 2, levels[i].rect.y + levels[i].rect.h / 2 - textSurface->h / 2, textSurface->w, textSurface->h};
+        SDL_Rect textRect = {static_cast<int32_t>(levels[i].rect.x + levels[i].rect.w / 2 - textSurface->w / 2), static_cast<int32_t>(levels[i].rect.y + levels[i].rect.h / 2 - textSurface->h / 2), textSurface->w, textSurface->h};
         SDL_BlitSurface(textSurface, nullptr, surface.get(), &textRect);
         SDL_FreeSurface(textSurface);
     }
@@ -284,18 +288,18 @@ void BrickBreakerMenu::initSurface(uint32_t width, uint32_t height) {
     setSurfaceDimensions(width, height);
     uint32_t padding = getPadding();
 
-    const int totalWidth = width - 2 * padding;
-    const int totalHeight = height - 2 * padding;
-    const int rectWidth = (totalWidth - (num_columns - 1) * padding / 2) / num_columns;
-    const int rectHeight = (totalHeight - (num_rows - 1) * padding / 2) / num_rows;
+    const _Float32 totalWidth = width - 2 * padding;
+    const _Float32 totalHeight = height - 2 * padding;
+    const _Float32 rectWidth = (totalWidth - (num_columns - 1) * padding / 2) / num_columns;
+    const _Float32 rectHeight = (totalHeight - (num_rows - 1) * padding / 2) / num_rows;
 
     for (size_t i(0); i < levels.size(); ++i)
     {
-        int row = (i % (num_rows * num_columns)) / num_columns;
-        int col = (i % (num_rows * num_columns)) % num_columns;
+        int32_t row = (i % (num_rows * num_columns)) / num_columns;
+        int32_t col = (i % (num_rows * num_columns)) % num_columns;
 
-        int x = padding + col * (rectWidth + padding / 2);
-        int y = padding + row * (rectHeight + padding / 2);
+        _Float32 x = padding + col * (rectWidth + padding / 2);
+        _Float32 y = padding + row * (rectHeight + padding / 2);
 
         levels[i].rect = {x, y, rectWidth, rectHeight};
     }
@@ -317,5 +321,5 @@ void BrickBreakerMenu::reloadBackground()
 
 uint32_t BrickBreakerMenu::getFontSize() const
 {
-    return surface->w / 40;
+    return surface->w / 45;
 }
