@@ -88,7 +88,7 @@ void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data
                 if(static_cast<int>(selectedLevel) % num_columns == 0)
                 {
                     current_page = (current_page + num_pages - 1) % num_pages;
-                    selectedLevel = 0;
+                    selectedLevel = num_columns * selectedLevel / num_columns + num_columns - 1;
                 }
                 else
                     selectedLevel -= 1;
@@ -97,10 +97,11 @@ void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data
                 if(selectedLevel % num_columns == num_columns - 1)
                 {
                     current_page = (current_page + 1) % num_pages;
-                    selectedLevel = 0;
+                    selectedLevel = num_columns * selectedLevel / num_columns - num_columns + 1;
                 }
                 else if (selectedLevel + current_page * num_rows * num_columns < levels.size() - 1)
                     selectedLevel += 1;
+                
                 break;
             case SDLK_UP:
                 selectedLevel = (selectedLevel + num_columns * (num_rows - 1)) % (num_rows * num_columns);
@@ -229,7 +230,7 @@ std::shared_ptr<SDL_Surface> BrickBreakerMenu::render()
     {
         if (levels[i].surface)
         {
-            if (i == selectedLevel)
+            if (i == selectedLevel + num_columns * num_rows * current_page)
             {
                 SDL_FRect selectedRect = levels[selectedLevel].rect;
                 SDL_Rect s_rect = {static_cast<int32_t>(selectedRect.x), static_cast<int32_t>(selectedRect.y), static_cast<int32_t>(selectedRect.w), static_cast<int32_t>(selectedRect.h)};
@@ -244,7 +245,7 @@ std::shared_ptr<SDL_Surface> BrickBreakerMenu::render()
         }
         else
         {
-            if (i == selectedLevel)
+            if (i == selectedLevel + num_columns * num_rows * current_page)
             {
                 SDL_FRect selectedRect = levels[selectedLevel].rect;
                 SDL_Rect s_rect = {static_cast<int32_t>(selectedRect.x), static_cast<int32_t>(selectedRect.y), static_cast<int32_t>(selectedRect.w), static_cast<int32_t>(selectedRect.h)};
