@@ -99,7 +99,7 @@ void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data
                     current_page = (current_page + 1) % num_pages;
                     selectedLevel = 0;
                 }
-                else
+                else if (selectedLevel + current_page * num_rows * num_columns < levels.size() - 1)
                     selectedLevel += 1;
                 break;
             case SDLK_UP:
