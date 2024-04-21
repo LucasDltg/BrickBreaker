@@ -45,7 +45,7 @@ void AddBallPowerUp::applyPowerUp(BrickBreaker &game)
 {
     active = true;
     
-    SDL_Rect platformRect = game.getPlatform().getRect();
+    const SDL_FRect& platformRect = game.getPlatform().getRect();
     Ball ball = Ball(game.getBallRadius(), std::pair<_Float32, _Float32>{static_cast<_Float32>(platformRect.x) + static_cast<_Float32>(platformRect.w) / 2.0f, 
                     static_cast<_Float32>(platformRect.y) - game.getBallRadius()}, SDL_Color{255, 0, 0, 0}, std::pair<_Float32, _Float32>{0, game.getInitialBallSpeed()});
 
@@ -89,14 +89,14 @@ void ExtendPlatformPowerUp::applyPowerUp(BrickBreaker &game)
 {
     active = true;
     Platform& p = game.getPlatform();
-    p.setRect({static_cast<int32_t>(p.getRect().x) , p.getRect().y, static_cast<int32_t>(p.getRect().w * 1.5f), p.getRect().h});
+    p.setRect({p.getRect().x , p.getRect().y, p.getRect().w * 1.5f, p.getRect().h});
     // p.setRect({static_cast<int32_t>(p.getRect().x - (p.getRect().w * 0.25f)), p.getRect().y, static_cast<int32_t>(p.getRect().w * 1.5f), p.getRect().h});
 }
 
 void ExtendPlatformPowerUp::unApplyPowerUp(BrickBreaker &game)
 {
     Platform& p = game.getPlatform();
-    p.setRect({static_cast<int32_t>(p.getRect().x) , p.getRect().y, static_cast<int32_t>(p.getRect().w / 1.5f), p.getRect().h});
+    p.setRect({p.getRect().x , p.getRect().y, p.getRect().w / 1.5f, p.getRect().h});
     // p.setRect({static_cast<int32_t>(p.getRect().x + (p.getRect().w * 0.25f)), p.getRect().y, static_cast<int32_t>(p.getRect().w / 1.5f), p.getRect().h});
 }
 

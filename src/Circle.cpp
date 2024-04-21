@@ -75,7 +75,7 @@ void Circle::update(uint64_t delta_time) {
     center.second += speed.second * delta_time;
 }
 
-bool Circle::resolveCollisionWithRectangle(const SDL_Rect& rect) {
+bool Circle::resolveCollisionWithRectangle(const SDL_FRect& rect) {
     float closestX = center.first;
     float closestY = center.second;
 

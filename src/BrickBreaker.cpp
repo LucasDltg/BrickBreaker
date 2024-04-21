@@ -32,7 +32,7 @@ void BrickBreaker::initSurface(uint32_t width, uint32_t height)
     balls.push_back(Ball(getBallRadius(), center, color, speed));
 
     color.r = 255; color.g = 0; color.b = 0; color.a = 0;
-    platform.setRect({surface->w / 2 - surface->w / 14, surface->h * 9 / 10, surface->w / 7, surface->h / 30});
+    platform.setRect({static_cast<_Float32>(surface->w) / 2.0f - static_cast<_Float32>(surface->w) / 14.0f, static_cast<_Float32>(surface->h) * 0.9f, static_cast<_Float32>(surface->w) / 7.0f, static_cast<_Float32>(surface->h) / 30.0f});
     platform.setColor(color);
 
     for (auto& brick : bricks)
@@ -82,11 +82,11 @@ void BrickBreaker::handleResize(std::pair<int, int> previousSize, std::pair<int,
     }
 
     // Resize platform
-    SDL_Rect rect = platform.getRect();
-    rect.x = static_cast<uint32_t>(static_cast<float>(rect.x) * (static_cast<float>(newSize.first) / static_cast<float>(previousSize.first)));
-    rect.y = static_cast<uint32_t>(static_cast<float>(rect.y) * (static_cast<float>(newSize.second) / static_cast<float>(previousSize.second)));
-    rect.w = static_cast<uint32_t>(static_cast<float>(rect.w) * (static_cast<float>(newSize.first) / static_cast<float>(previousSize.first)));
-    rect.h = static_cast<uint32_t>(static_cast<float>(rect.h) * (static_cast<float>(newSize.second) / static_cast<float>(previousSize.second)));
+    SDL_FRect rect = platform.getRect();
+    rect.x = static_cast<_Float32>(rect.x) * (static_cast<_Float32>(newSize.first) / static_cast<float>(previousSize.first));
+    rect.y = static_cast<_Float32>(rect.y) * (static_cast<_Float32>(newSize.second) / static_cast<float>(previousSize.second));
+    rect.w = static_cast<_Float32>(rect.w) * (static_cast<_Float32>(newSize.first) / static_cast<float>(previousSize.first));
+    rect.h = static_cast<_Float32>(rect.h) * (static_cast<_Float32>(newSize.second) / static_cast<float>(previousSize.second));
     platform.setRect(rect); 
 
     renderer = std::unique_ptr<SDL_Renderer, void(*)(SDL_Renderer*)>(SDL_CreateSoftwareRenderer(surface.get()), SDL_DestroyRenderer);
@@ -419,10 +419,13 @@ std::shared_ptr<SDL_Surface> BrickBreaker::render()
     }
 
     SDL_Color color = platform.getColor();
+    const SDL_FRect& rect = platform.getRect();
+    SDL_Rect destRect = {static_cast<int>(rect.x), static_cast<int>(rect.y), static_cast<int>(rect.w), static_cast<int>(rect.h)};
+
     if(platform.getSurface().get() != nullptr)
-        SDL_BlitScaled(platform.getSurface().get(), nullptr, surface.get(), &platform.getRect());
+        SDL_BlitScaled(platform.getSurface().get(), nullptr, surface.get(), &destRect);
     else
-        SDL_FillRect(surface.get(), &(platform.getRect()), SDL_MapRGBA(surface->format, color.r, color.g, color.b, color.a));
+        SDL_FillRect(surface.get(), &destRect, SDL_MapRGBA(surface->format, color.r, color.g, color.b, color.a));
 
     return surface;
 }

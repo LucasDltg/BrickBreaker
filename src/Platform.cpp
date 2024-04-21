@@ -16,7 +16,7 @@ Platform::Platform(std::string image_path)
     }
 }
 
-void Platform::setRect(const SDL_Rect& rect) {
+void Platform::setRect(const SDL_FRect& rect) {
     this->rect = rect;
 }
 
@@ -24,11 +24,11 @@ void Platform::setColor(const SDL_Color& color) {
     this->color = color;
 }
 
-const SDL_Rect& Platform::getRect() const {
+const SDL_FRect& Platform::getRect() const {
     return rect;
 }
 
-SDL_Rect& Platform::getRect() {
+SDL_FRect& Platform::getRect() {
     return rect;
 }
 
@@ -36,7 +36,7 @@ const SDL_Color Platform::getColor() const {
     return color;
 }
 
-void Platform::setSpeedX(int32_t speed_x)
+void Platform::setSpeedX(_Float32 speed_x)
 {
     this->speed_x = speed_x;
 }

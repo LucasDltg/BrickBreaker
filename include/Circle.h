@@ -26,7 +26,7 @@ public:
     void setSpeed(std::pair<_Float32, _Float32> newSpeed);
 
     void update(uint64_t delta_time);
-    bool resolveCollisionWithRectangle(const SDL_Rect& rect);
+    bool resolveCollisionWithRectangle(const SDL_FRect& rect);
     bool resolveCollisionWithLine(std::pair<_Float32, _Float32> p1, std::pair<_Float32, _Float32> p2);
 
 private:

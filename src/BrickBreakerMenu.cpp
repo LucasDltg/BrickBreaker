@@ -192,7 +192,7 @@ void BrickBreakerMenu::update(uint64_t delta_time)
     {
         background->update(delta_time);
         
-        const SDL_Rect& platformRect = background->getPlatform().getRect();
+        const SDL_FRect& platformRect = background->getPlatform().getRect();
         const Ball& ball = background->getBalls().front();
         _Float32 initialPlatformSpeed = background->getInitialPlatformSpeed();
         
@@ -279,7 +279,6 @@ std::shared_ptr<SDL_Surface> BrickBreakerMenu::render()
         if (i == current_page)
             SDL_FillRect(surface.get(), &pageRect, SDL_MapRGB(surface->format, 0, 0, 255));
     }
-
 
     return surface;
 }
