@@ -10,7 +10,9 @@
 // collision rectangle
 // collsion bordure
 // portee
-
+// fix ball leaving the screen at low fps
+// change platform rect to have float values
+// nom de variable
 
 int main()
 {

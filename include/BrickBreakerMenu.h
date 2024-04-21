@@ -32,6 +32,7 @@ public:
 
 private:
     uint32_t getPadding() const;
+    uint32_t getFontSize() const;
     void handleResize(std::pair<int, int> previousSize, std::pair<int, int> newSize);
     void reloadBackground();
     size_t selectedLevel;
@@ -40,6 +41,8 @@ private:
     std::vector<BrickBreakerMenuLevel> levels;
     std::unique_ptr<BrickBreaker> brickBreaker;
     std::unique_ptr<BrickBreaker> background;
+    uint32_t current_page;
+    uint32_t num_pages;
 
     std::unique_ptr<TTF_Font, void(*)(TTF_Font*)> font;
 };

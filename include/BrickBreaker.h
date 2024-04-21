@@ -14,7 +14,7 @@ enum class BrickShape {RECTANGLE, HEXAGON, TRIANGLE};
 
 class BrickBreaker : public SDLComponent {
 public:
-    static constexpr float BRICK_HEIGHT_LIMIT = 0.3f;
+    static constexpr float BRICK_HEIGHT_LIMIT = 0.4f;
 
     BrickBreaker(const std::string& filename);
     ~BrickBreaker();

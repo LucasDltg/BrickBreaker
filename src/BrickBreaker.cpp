@@ -153,10 +153,8 @@ void BrickBreaker::createBricksFromLevel(const std::string& filename) {
             continue;
         }
 
-        Uint32 colorValue;
-        std::stringstream(colorHex) >> std::hex >> colorValue >> std::dec;
-        SDL_Color color = { (uint8_t)((colorValue >> 24) & 0xFF), (uint8_t)((colorValue >> 16) & 0xFF), (uint8_t)((colorValue >> 8) & 0xFF), (uint8_t)(colorValue & 0xFF)};
-        uint32_t mappedColor = SDL_MapRGBA(surface->format, color.r, color.g, color.b, color.a);
+        uint32_t mappedColor;
+        std::stringstream(colorHex) >> std::hex >> mappedColor >> std::dec;
 
         if (brickShape == BrickShape::RECTANGLE)
             bricks.push_back(std::make_unique<BrickRectangular>(std::make_pair(posX, posY), gridDimensions, std::make_pair(surface->w, surface->h * BrickBreaker::BRICK_HEIGHT_LIMIT), mappedColor, resistance, power_up));
@@ -431,7 +429,7 @@ std::shared_ptr<SDL_Surface> BrickBreaker::render()
 
 const _Float32 BrickBreaker::getBallRadius() const
 {
-    return static_cast<_Float32>(surface->w) / 60.0f;
+    return static_cast<_Float32>(surface->w) / 80.0f;
 }
 
 const _Float32 BrickBreaker::getInitialBallSpeed() const
