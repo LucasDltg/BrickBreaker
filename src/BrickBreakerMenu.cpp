@@ -73,7 +73,6 @@ void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data
         switch(event.key.keysym.sym)
         {
             case SDLK_RETURN:
-                std::cout << "Selected level: " << selectedLevel << " " << current_page << std::endl;
                 brickBreaker = std::make_unique<BrickBreaker>(levels[selectedLevel + current_page * num_rows * num_columns].path);
                 brickBreaker->initSurface(surface->w, surface->h);
                 break;

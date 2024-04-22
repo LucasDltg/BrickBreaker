@@ -14,6 +14,7 @@
 // change platform rect to have float values
 // nom de variable
 // bug mineur avec menu, deplacement
+// empecher resize ne conserve pas les dimensions
 
 int main()
 {

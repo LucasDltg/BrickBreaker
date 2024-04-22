@@ -32,6 +32,8 @@ protected:
     uint32_t color;
     int resistance;
     std::unique_ptr<PowerUp> powerUp;
+
+    std::vector<SDL_Color> GenerateTintAndShadeColors(const SDL_Color& originalColor, int n);
 };
 
 class BrickRectangular : public Brick
