@@ -40,7 +40,9 @@ void BrickBreaker::initSurface()
         brick->calculateVerticesWithPosition(gridDimensions, {static_cast<_Float32>(surface->w), static_cast<_Float32>(surface->h * BrickBreaker::BRICK_HEIGHT_LIMIT)});
     }
 
-    textureManager.loadTexture("assets/textures/small.png", "small", renderer);
+    textureManager.loadTexture("assets/textures/small_crack.png", "small", renderer, SDL_BLENDMODE_MUL);
+    textureManager.loadTexture("assets/textures/medium_crack.png", "medium", renderer, SDL_BLENDMODE_MUL);
+    textureManager.loadTexture("assets/textures/big_crack.png", "big", renderer, SDL_BLENDMODE_MUL);
     textureManager.loadTexture("assets/textures/ball.png", typeid(Ball).name(), renderer);
     textureManager.loadTexture("assets/textures/platform.png", typeid(Platform).name(), renderer);
     textureManager.loadTexture("assets/textures/bubble_duplicate.png", typeid(DuplicateBallPowerUp).name(), renderer);
@@ -263,7 +265,7 @@ void BrickBreaker::update(uint64_t delta_time)
                     {
                         powerUps.push_back(std::move(powerUp));
                         powerUps.back()->setRadius(getBallRadius());
-                        powerUps.back()->setCenter({brick->getCenter().first - powerUps.back()->getRadius() / 2, brick->getCenter().second - powerUps.back()->getRadius() / 2});
+                        powerUps.back()->setCenter(brick->getCenter());
                         powerUps.back()->setSpeed({0, static_cast<_Float32>(surface->h) / 4000.0f});
                     }
                     // we remove the brick from the vector here, because we don't want to check for collision with it anymore
@@ -351,9 +353,27 @@ std::shared_ptr<SDL_Surface> BrickBreaker::render()
             return nullptr;
         }
         
-        //
-        SDL_Rect destRect = {static_cast<int>(vertices[0].position.x), static_cast<int>(vertices[0].position.y), static_cast<int>(vertices[2].position.x - vertices[0].position.x), static_cast<int>(vertices[2].position.y - vertices[0].position.y)};
-        SDL_RenderCopy(renderer.get(), textureManager.getTexture("small").get(), nullptr, &destRect);
+        // draw resistance texture on brick
+        _Float32 resistancePercentage = brick->getResistancePercentage();
+        // skip brick with infinite resistance or full resistance
+        if (brick->getResistance() > 0 && resistancePercentage >= 0.25f)
+        {
+            std::shared_ptr<SDL_Texture> texture;
+            
+            if (resistancePercentage >= 0.75f)
+                texture = textureManager.getTexture("big");
+            else if (resistancePercentage >= 0.50f)
+                texture = textureManager.getTexture("medium");
+            else
+                texture = textureManager.getTexture("small");
+        
+            vertices = brick->getVerticesWithoutColor();
+            if(SDL_RenderGeometry(renderer.get(), texture.get(), vertices.data(), vertices.size(), indices.data(), indices.size()) != 0)
+            {    
+                std::cerr << "Failed to render geometry: " << SDL_GetError() << std::endl;
+                return nullptr;
+            }
+        }
 
         for (size_t i = 0; i < vertices.size(); i++)
         {

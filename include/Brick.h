@@ -15,20 +15,23 @@ public:
 
     int getResistance() const;
     void decreaseResistance();
+    _Float32 getResistancePercentage() const;
 
     const uint32_t& getColor() const;
     std::unique_ptr<PowerUp> getPowerUp();
     std::vector<SDL_Vertex> getVertices() const;
+    std::vector<SDL_Vertex> getVerticesWithoutColor() const;
 
     virtual std::vector<int32_t> getIndices() const = 0;
-    virtual std::pair<_Float32, _Float32> getCenter() const = 0;
     virtual void calculateVerticesWithPosition(std::pair<_Float32, _Float32> grid_dimensions, std::pair<_Float32, _Float32> surface_size) = 0;
+    virtual std::pair<_Float32, _Float32> getCenter() const = 0;
 
 protected:
     std::pair<uint32_t, uint32_t> position;
     std::vector<SDL_Vertex> vertices;
     uint32_t color;
     int resistance;
+    int32_t _max_resistance;
     std::unique_ptr<PowerUp> powerUp;
 
     std::vector<SDL_Color> GenerateTintAndShadeColors(const SDL_Color& originalColor, int n);
