@@ -17,7 +17,6 @@ class BrickBreakerMenuLevel
     private:
     std::string name;
     std::string path;
-    std::shared_ptr<SDL_Surface> surface;
 };
 
 class BrickBreakerMenu : public SDLComponent

@@ -97,10 +97,6 @@ void BrickBreaker::createBricksFromLevel(const std::string& filename) {
         return;
     }
 
-    // skip first line containing image path
-    std::string line;
-    std::getline(file, line);
-
     std::string magicSequence;
     file >> magicSequence;
     if (magicSequence == "rectangle")
@@ -124,6 +120,7 @@ void BrickBreaker::createBricksFromLevel(const std::string& filename) {
         return;
     }
 
+    std::string line;
     std::getline(file, line);
     while (std::getline(file, line))
     {

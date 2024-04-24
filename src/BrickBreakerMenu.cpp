@@ -21,22 +21,6 @@ BrickBreakerMenu::BrickBreakerMenu(std::shared_ptr<SDL_Renderer> renderer, std::
                 continue;
             
             levels.push_back({entry.path().string()});
-            
-            // check first line of file to find path to image
-            std::ifstream file(entry.path().string());
-            if (file.is_open())
-            {
-                std::string line;
-                if (std::getline(file, line))
-                {
-                    levels.back().surface = std::shared_ptr<SDL_Surface>(IMG_Load(line.c_str()), SDL_FreeSurface);
-                    if (!levels.back().surface)
-                    {
-                        std::cerr << "Failed to load image for level " << entry.path().string() << ": " << IMG_GetError() << std::endl;
-                    }
-                }
-            }
-            file.close();
         }
     }
 
@@ -261,12 +245,12 @@ std::shared_ptr<SDL_Surface> BrickBreakerMenu::render()
         _Float32 y = padding + row * (rectHeight + padding / 2);
 
         SDL_Rect rect = {static_cast<int32_t>(x), static_cast<int32_t>(y), static_cast<int32_t>(rectWidth), static_cast<int32_t>(rectHeight)};
-        if (levels[i].surface)
+        if (textureManager.getTexture("button").get() != nullptr)
         {
             if (i == selectedLevel + num_columns * num_rows * current_page)
                 {rect.x -= padding / 16; rect.y -= padding / 16; rect.w += padding / 8; rect.h += padding / 8;}
             
-            SDL_BlitScaled(levels[i].surface.get(), nullptr, surface.get(), &rect);
+            SDL_RenderCopy(renderer.get(), textureManager.getTexture("button").get(), nullptr, &rect);
         }
         else
         {
@@ -305,6 +289,8 @@ void BrickBreakerMenu::initSurface()
 {
     reloadBackground();
     TTF_SetFontSize(font.get(), getFontSize());
+
+    textureManager.loadTexture("./assets/textures/platform.png", "button", renderer);
 }
 
 uint32_t BrickBreakerMenu::getPadding() const

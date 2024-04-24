@@ -1,4 +1,3 @@
-./assets/textures/platform.png
 rectangle
 10 6
 1 1 1 0x00FF0000 AddBall
