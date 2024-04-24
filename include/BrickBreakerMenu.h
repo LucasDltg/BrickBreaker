@@ -23,7 +23,7 @@ class BrickBreakerMenuLevel
 class BrickBreakerMenu : public SDLComponent
 {
 public:
-    BrickBreakerMenu(std::string directory_path = "./assets/levels");
+    BrickBreakerMenu(std::shared_ptr<SDL_Renderer> renderer, std::string directory_path = "./assets/levels");
     void handleEvents(SDL_Event& event, std::shared_ptr<void> data1, std::shared_ptr<void> data2) override;
     void update(uint64_t delta_time) override;
     std::shared_ptr<SDL_Surface> render() override;

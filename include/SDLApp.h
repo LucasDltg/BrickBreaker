@@ -12,10 +12,13 @@ public:
 
     void addComponent(std::shared_ptr<SDLComponent> component);
     void run();
+    std::shared_ptr<SDL_Window> getWindow() const;
+    std::shared_ptr<SDL_Renderer> getRenderer() const;
+    
 
 private:
-    std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)> window;
-    std::unique_ptr<SDL_Renderer, decltype(&SDL_DestroyRenderer)> renderer;
+    std::shared_ptr<SDL_Window> window;
+    std::shared_ptr<SDL_Renderer> renderer;
     bool is_running;
     std::vector<std::shared_ptr<SDLComponent>> components;
     uint32_t last_time;

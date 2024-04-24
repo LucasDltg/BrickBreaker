@@ -25,7 +25,7 @@ SDLApp::SDLApp(int screen_width, int screen_height, uint32_t flags)
     }
 
     window.reset(SDL_CreateWindow("SDL Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                                  screen_width, screen_height, SDL_WINDOW_SHOWN | flags));
+                                  screen_width, screen_height, SDL_WINDOW_SHOWN | flags), SDL_DestroyWindow);
     if (!window.get())
     {
         std::cerr << "Window creation failed: " << SDL_GetError() << std::endl;
@@ -33,7 +33,7 @@ SDLApp::SDLApp(int screen_width, int screen_height, uint32_t flags)
         return;
     }
 
-    renderer.reset(SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_ACCELERATED));
+    renderer.reset(SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_ACCELERATED), SDL_DestroyRenderer);
     if (!renderer.get())
     {
         std::cerr << "Renderer creation failed: " << SDL_GetError() << std::endl;
@@ -144,4 +144,14 @@ void SDLApp::render()
     }
 
     SDL_RenderPresent(renderer.get());
+}
+
+std::shared_ptr<SDL_Window> SDLApp::getWindow() const
+{
+    return window;
+}
+
+std::shared_ptr<SDL_Renderer> SDLApp::getRenderer() const
+{
+    return renderer;
 }

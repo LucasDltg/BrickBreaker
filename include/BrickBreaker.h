@@ -5,6 +5,7 @@
 #include "../include/Brick.h"
 #include "../include/Ball.h"
 #include "../include/Platform.h"
+#include "../include/TextureManager.h"
 #include <memory>
 #include <vector>
 #include <fstream>
@@ -16,7 +17,7 @@ class BrickBreaker : public SDLComponent {
 public:
     static constexpr float BRICK_HEIGHT_LIMIT = 0.4f;
 
-    BrickBreaker(const std::string& filename);
+    BrickBreaker(std::shared_ptr<SDL_Renderer> renderer, const std::string& filename);
     ~BrickBreaker();
 
     void handleEvents(SDL_Event& event, std::shared_ptr<void> data1, std::shared_ptr<void> data2) override;
@@ -42,7 +43,7 @@ private:
     BrickShape brickShape;
     int32_t start_duration;
     std::unique_ptr<TTF_Font, void(*)(TTF_Font*)> font;
-    std::unique_ptr<SDL_Renderer, void(*)(SDL_Renderer*)> renderer;
+    TextureManager textureManager;
     
     void createBricksFromLevel(const std::string& filename);
     void handleResize(std::pair<int, int> previousSize, std::pair<int, int> newSize);

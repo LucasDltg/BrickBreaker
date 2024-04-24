@@ -1,15 +1,15 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <iostream>
 #include <memory>
 #include <vector>
 #include <cstdint>
 #include <string>
-#include <ctime>
 #include <cstdlib>
 #include "../include/Brick.h"
 #include "../include/PowerUp.h"
 
-Brick::Brick(std::pair<uint32_t, uint32_t> position, std::pair<_Float32, _Float32> grid_dimensions, std::pair<_Float32, _Float32> surface_size, uint32_t color, int resistance, std::string power_up)
+Brick::Brick(std::pair<uint32_t, uint32_t> position, std::pair<_Float32, _Float32> grid_dimensions, std::pair<_Float32, _Float32> surface_size, uint32_t color, int resistance, std::string power_up, const std::shared_ptr<SDL_Renderer> renderer)
 : position(position), color(color), resistance(resistance), powerUp(initPowerUp(power_up)) 
 {}
 
@@ -24,11 +24,6 @@ void Brick::decreaseResistance()
         resistance--;
 }
 
-void Brick::setVertices(std::vector<SDL_Vertex> vertices)
-{
-    this->vertices = vertices;
-}
-
 const uint32_t& Brick::getColor() const
 {
     return color;
@@ -40,8 +35,8 @@ std::unique_ptr<PowerUp> Brick::getPowerUp()
 }
 
 
-BrickRectangular::BrickRectangular(std::pair<uint32_t, uint32_t> position, std::pair<_Float32, _Float32> grid_dimensions, std::pair<_Float32, _Float32> surface_size, uint32_t color, int resistance, std::string power_up)
-: Brick(position, grid_dimensions, surface_size, color, resistance, power_up)
+BrickRectangular::BrickRectangular(std::pair<uint32_t, uint32_t> position, std::pair<_Float32, _Float32> grid_dimensions, std::pair<_Float32, _Float32> surface_size, uint32_t color, int resistance, std::string power_up, const std::shared_ptr<SDL_Renderer> renderer)
+: Brick(position, grid_dimensions, surface_size, color, resistance, power_up, renderer)
 {
     calculateVerticesWithPosition(grid_dimensions, surface_size);
 }
@@ -60,10 +55,10 @@ void BrickRectangular::calculateVerticesWithPosition(std::pair<_Float32, _Float3
     float x = position.first * brickWidth;
     float y = position.second * brickHeight;
 
-    vertices.push_back(SDL_Vertex{SDL_FPoint{x, y}, colors[0], SDL_FPoint{0}});
-    vertices.push_back(SDL_Vertex{SDL_FPoint{x + brickWidth, y}, colors[1], SDL_FPoint{0}});
-    vertices.push_back(SDL_Vertex{SDL_FPoint{x + brickWidth, y + brickHeight}, colors[2], SDL_FPoint{0}});
-    vertices.push_back(SDL_Vertex{SDL_FPoint{x, y + brickHeight}, colors[3], SDL_FPoint{0}});
+    vertices.push_back(SDL_Vertex{SDL_FPoint{x, y}, colors[0], SDL_FPoint{0.0f, 0.0f}});
+    vertices.push_back(SDL_Vertex{SDL_FPoint{x + brickWidth, y}, colors[1], SDL_FPoint{1.0f, 0.0f}});
+    vertices.push_back(SDL_Vertex{SDL_FPoint{x + brickWidth, y + brickHeight}, colors[2], SDL_FPoint{1.0f, 1.0f}});
+    vertices.push_back(SDL_Vertex{SDL_FPoint{x, y + brickHeight}, colors[3], SDL_FPoint{0.0f, 1.0f}});
 }
 
 std::vector<SDL_Vertex> Brick::getVertices() const
@@ -84,8 +79,8 @@ std::pair<_Float32, _Float32> BrickRectangular::getCenter() const
     return {x, y};
 }
 
-BrickTriangular::BrickTriangular(std::pair<uint32_t, uint32_t> position, std::pair<_Float32, _Float32> grid_dimensions, std::pair<_Float32, _Float32> surface_size, uint32_t color, int resistance, std::string power_up)
-: Brick(position, grid_dimensions, surface_size, color, resistance, power_up)
+BrickTriangular::BrickTriangular(std::pair<uint32_t, uint32_t> position, std::pair<_Float32, _Float32> grid_dimensions, std::pair<_Float32, _Float32> surface_size, uint32_t color, int resistance, std::string power_up, const std::shared_ptr<SDL_Renderer> renderer)
+: Brick(position, grid_dimensions, surface_size, color, resistance, power_up, renderer)
 {
     calculateVerticesWithPosition(grid_dimensions, surface_size);
 }
@@ -133,8 +128,8 @@ std::pair<_Float32, _Float32> BrickTriangular::getCenter() const
 }
 
 
-BrickHexagonal::BrickHexagonal(std::pair<uint32_t, uint32_t> position, std::pair<_Float32, _Float32> grid_dimensions, std::pair<_Float32, _Float32> surface_size, uint32_t color, int resistance, std::string power_up)
-: Brick(position, grid_dimensions, surface_size, color, resistance, power_up)
+BrickHexagonal::BrickHexagonal(std::pair<uint32_t, uint32_t> position, std::pair<_Float32, _Float32> grid_dimensions, std::pair<_Float32, _Float32> surface_size, uint32_t color, int resistance, std::string power_up, const std::shared_ptr<SDL_Renderer> renderer)
+: Brick(position, grid_dimensions, surface_size, color, resistance, power_up, renderer)
 {
     calculateVerticesWithPosition(grid_dimensions, surface_size);
 }

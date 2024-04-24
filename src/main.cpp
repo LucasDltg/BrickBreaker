@@ -22,7 +22,7 @@ int main()
     const int SCREEN_HEIGHT = 600;
 
     SDLApp app(SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE);
-    app.addComponent(std::make_shared<BrickBreakerMenu>());
+    app.addComponent(std::make_shared<BrickBreakerMenu>(app.getRenderer()));
     
     app.run();
 

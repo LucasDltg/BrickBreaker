@@ -3,8 +3,8 @@
 #include <memory>
 #include <stdexcept>
 
-SDLComponent::SDLComponent() 
-    : surface(SDL_CreateRGBSurface(0, 0, 0, 32, 0, 0, 0, 0), SDL_FreeSurface), is_running(true)
+SDLComponent::SDLComponent(std::shared_ptr<SDL_Renderer> renderer) 
+    : surface(SDL_CreateRGBSurface(0, 0, 0, 32, 0, 0, 0, 0), SDL_FreeSurface), is_running(true), renderer(renderer)
 {
     if (!surface.get())
     {

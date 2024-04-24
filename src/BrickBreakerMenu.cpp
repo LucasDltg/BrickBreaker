@@ -5,8 +5,8 @@
 #include <vector>
 #include "../include/BrickBreakerMenu.h"
 
-BrickBreakerMenu::BrickBreakerMenu(std::string directory_path)
-:  selectedLevel(0), num_rows(3), num_columns(3), brickBreaker(nullptr), background(nullptr), current_page(0), font(nullptr, nullptr)
+BrickBreakerMenu::BrickBreakerMenu(std::shared_ptr<SDL_Renderer> renderer, std::string directory_path)
+: SDLComponent(renderer), selectedLevel(0), num_rows(3), num_columns(3), brickBreaker(nullptr), background(nullptr), current_page(0), font(nullptr, nullptr)
 {
     font = std::unique_ptr<TTF_Font, void(*)(TTF_Font*)>(TTF_OpenFont("./assets/fonts/arial/arial.ttf", getFontSize()), TTF_CloseFont);
     if (!font.get())
@@ -73,7 +73,7 @@ void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data
         switch(event.key.keysym.sym)
         {
             case SDLK_RETURN:
-                brickBreaker = std::make_unique<BrickBreaker>(levels[selectedLevel + current_page * num_rows * num_columns].path);
+                brickBreaker = std::make_unique<BrickBreaker>(renderer, levels[selectedLevel + current_page * num_rows * num_columns].path);
                 brickBreaker->initSurface(surface->w, surface->h);
                 break;
             case SDLK_LEFT:
@@ -126,7 +126,7 @@ void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data
 
             if (x >= padding + col * (rectWidth + padding / 2) && x <= padding + col * (rectWidth + padding / 2) + rectWidth && y >= padding + row * (rectHeight + padding / 2) && y <= padding + row * (rectHeight + padding / 2) + rectHeight)
             {
-                brickBreaker = std::make_unique<BrickBreaker>(levels[i].path);
+                brickBreaker = std::make_unique<BrickBreaker>(renderer, levels[i].path);
                 brickBreaker->initSurface(surface->w, surface->h);
                 break;
             }
@@ -307,7 +307,7 @@ uint32_t BrickBreakerMenu::getPadding() const
 void BrickBreakerMenu::reloadBackground()
 {
     uint32_t level = rand() % levels.size();
-    background = std::make_unique<BrickBreaker>(levels[level].path);
+    background = std::make_unique<BrickBreaker>(renderer, levels[level].path);
     background->initSurface(surface->w, surface->h);
 }
 

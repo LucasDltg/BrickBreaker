@@ -6,12 +6,13 @@
 #include <algorithm>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
 #include "../include/Brick.h"
 #include "../include/Ball.h"
 #include "../include/Platform.h"
 
-BrickBreaker::BrickBreaker(const std::string& filename)
-: SDLComponent(), platform(), start_duration(1000), font(nullptr, TTF_CloseFont), renderer(nullptr, SDL_DestroyRenderer)
+BrickBreaker::BrickBreaker(std::shared_ptr<SDL_Renderer> renderer, const std::string& filename)
+: SDLComponent(), platform(), start_duration(1000), font(nullptr, TTF_CloseFont), textureManager()
 {
     createBricksFromLevel(filename);
     
@@ -40,12 +41,13 @@ void BrickBreaker::initSurface(uint32_t width, uint32_t height)
         brick->calculateVerticesWithPosition(gridDimensions, {static_cast<_Float32>(width), static_cast<_Float32>(height * BrickBreaker::BRICK_HEIGHT_LIMIT)});
     }
 
-    renderer = std::unique_ptr<SDL_Renderer, void(*)(SDL_Renderer*)>(SDL_CreateSoftwareRenderer(surface.get()), SDL_DestroyRenderer);
+    renderer = std::shared_ptr<SDL_Renderer>(SDL_CreateSoftwareRenderer(surface.get()), SDL_DestroyRenderer);
     if (!renderer.get())
     {
         std::cerr << "Failed to create renderer: " << SDL_GetError() << std::endl;
         throw std::runtime_error("Failed to create renderer");
     }
+    textureManager.loadTexture("assets/textures/small.png", "small", renderer);
 }
 
 void BrickBreaker::handleResize(std::pair<int, int> previousSize, std::pair<int, int> newSize)
@@ -87,14 +89,15 @@ void BrickBreaker::handleResize(std::pair<int, int> previousSize, std::pair<int,
     rect.y = static_cast<_Float32>(rect.y) * (static_cast<_Float32>(newSize.second) / static_cast<float>(previousSize.second));
     rect.w = static_cast<_Float32>(rect.w) * (static_cast<_Float32>(newSize.first) / static_cast<float>(previousSize.first));
     rect.h = static_cast<_Float32>(rect.h) * (static_cast<_Float32>(newSize.second) / static_cast<float>(previousSize.second));
-    platform.setRect(rect); 
+    platform.setRect(rect);
 
-    renderer = std::unique_ptr<SDL_Renderer, void(*)(SDL_Renderer*)>(SDL_CreateSoftwareRenderer(surface.get()), SDL_DestroyRenderer);
+    renderer = std::shared_ptr<SDL_Renderer>(SDL_CreateSoftwareRenderer(surface.get()), SDL_DestroyRenderer);
     if (!renderer.get())
     {
         std::cerr << "Failed to create renderer: " << SDL_GetError() << std::endl;
         throw std::runtime_error("Failed to create renderer");
     }
+    textureManager.updateTextures(renderer);
 }
 
 void BrickBreaker::createBricksFromLevel(const std::string& filename) {
@@ -157,11 +160,11 @@ void BrickBreaker::createBricksFromLevel(const std::string& filename) {
         std::stringstream(colorHex) >> std::hex >> mappedColor >> std::dec;
 
         if (brickShape == BrickShape::RECTANGLE)
-            bricks.push_back(std::make_unique<BrickRectangular>(std::make_pair(posX, posY), gridDimensions, std::make_pair(surface->w, surface->h * BrickBreaker::BRICK_HEIGHT_LIMIT), mappedColor, resistance, power_up));
+            bricks.push_back(std::make_unique<BrickRectangular>(std::make_pair(posX, posY), gridDimensions, std::make_pair(surface->w, surface->h * BrickBreaker::BRICK_HEIGHT_LIMIT), mappedColor, resistance, power_up, renderer));
         else if (brickShape == BrickShape::TRIANGLE)
-            bricks.push_back(std::make_unique<BrickTriangular>(std::make_pair(posX, posY), gridDimensions, std::make_pair(surface->w, surface->h * BrickBreaker::BRICK_HEIGHT_LIMIT), mappedColor, resistance, power_up));
+            bricks.push_back(std::make_unique<BrickTriangular>(std::make_pair(posX, posY), gridDimensions, std::make_pair(surface->w, surface->h * BrickBreaker::BRICK_HEIGHT_LIMIT), mappedColor, resistance, power_up, renderer));
         else if (brickShape == BrickShape::HEXAGON)
-            bricks.push_back(std::make_unique<BrickHexagonal>(std::make_pair(posX, posY), gridDimensions, std::make_pair(surface->w, surface->h * BrickBreaker::BRICK_HEIGHT_LIMIT), mappedColor, resistance, power_up));
+            bricks.push_back(std::make_unique<BrickHexagonal>(std::make_pair(posX, posY), gridDimensions, std::make_pair(surface->w, surface->h * BrickBreaker::BRICK_HEIGHT_LIMIT), mappedColor, resistance, power_up, renderer));
     }
 
     file.close();
@@ -281,10 +284,6 @@ void BrickBreaker::update(uint64_t delta_time)
                     bricks.erase(std::remove_if(bricks.begin(), bricks.end(), [&brick](const std::unique_ptr<Brick>& b) {
                         return b.get() == brick.get();
                     }), bricks.end());
-                    
-                    if (bricks.empty() || balls.empty() || std::all_of(bricks.begin(), bricks.end(), [](const std::unique_ptr<Brick>& brick) {
-                                                                return brick->getResistance() <= 0;}))
-                        start_duration = 2000;
                 }
                 break;
             }
@@ -305,7 +304,7 @@ void BrickBreaker::update(uint64_t delta_time)
         ball.resolveCollisionWithLine(borders[1], borders[2]);
         ball.resolveCollisionWithLine(borders[2], borders[3]);
         ball.resolveCollisionWithLine(borders[3], borders[0]);
-
+        
         ball.update(delta_time);
     }
 
@@ -314,7 +313,8 @@ void BrickBreaker::update(uint64_t delta_time)
         return ball.getCenter().second - ball.getRadius() > surface->h;
     }), balls.end());*/
 
-    if (balls.empty())
+    if (bricks.empty() || balls.empty() || std::all_of(bricks.begin(), bricks.end(), [](const std::unique_ptr<Brick>& brick) {
+            return brick->getResistance() <= 0;}))
         start_duration = 2000;
 }
 
@@ -324,12 +324,12 @@ std::shared_ptr<SDL_Surface> BrickBreaker::render()
     SDL_FillRect(surface.get(), nullptr, SDL_MapRGB(surface->format, 0, 0, 0));
     
     // check if all balls are lost or all bricks are destroyed or have resisitance < 0
-    if (balls.empty() || std::all_of(bricks.begin(), bricks.end(), [](const std::unique_ptr<Brick>& brick) {
+    if (balls.empty() || bricks.empty() || std::all_of(bricks.begin(), bricks.end(), [](const std::unique_ptr<Brick>& brick) {
         return brick->getResistance() <= 0;
     }))
     {
         std::string text = balls.empty() ? "You lost!" : "You won!";
-        if (start_duration < 0)
+        if (start_duration <= 0)
             is_running = false;
 
         SDL_Color color = {255, 255, 255, 0};
@@ -364,23 +364,20 @@ std::shared_ptr<SDL_Surface> BrickBreaker::render()
             std::cerr << "Failed to render geometry: " << SDL_GetError() << std::endl;
             return nullptr;
         }
+        
+        //SDL_Rect destRect = {static_cast<int>(vertices[0].position.x), static_cast<int>(vertices[0].position.y), static_cast<int>(vertices[2].position.x - vertices[0].position.x), static_cast<int>(vertices[2].position.y - vertices[0].position.y)};
+        //SDL_RenderCopy(renderer.get(), textureManager.getTexture("small"), nullptr, &destRect);
 
-        std::vector<SDL_Point> points;
-        points.reserve(vertices.size());
-        for (const auto& vertex : vertices)
-        {
-            points.push_back({static_cast<int>(vertex.position.x), static_cast<int>(vertex.position.y)});
-        }
 
-        for (size_t i = 0; i < points.size(); i++)
+        for (size_t i = 0; i < vertices.size(); i++)
         {
-            if (SDL_RenderDrawLine(renderer.get(), points[i].x, points[i].y, points[(i + 1) % points.size()].x, points[(i + 1) % points.size()].y) != 0) {
+            if (SDL_RenderDrawLine(renderer.get(), static_cast<int32_t>(vertices[i].position.x), static_cast<int32_t>(vertices[i].position.y), static_cast<int32_t>(vertices[(i + 1) % vertices.size()].position.x), static_cast<int32_t>(vertices[(i + 1) % vertices.size()].position.y)) != 0)
+            {
                 std::cerr << "Failed to render line: " << SDL_GetError() << std::endl;
                 return nullptr;
             }
         }
     }
-    SDL_RenderPresent(renderer.get());
 
     for (const auto& ball : balls)
     {
