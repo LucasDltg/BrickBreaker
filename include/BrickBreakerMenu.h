@@ -27,7 +27,7 @@ public:
     void handleEvents(SDL_Event& event, std::shared_ptr<void> data1, std::shared_ptr<void> data2) override;
     void update(uint64_t delta_time) override;
     std::shared_ptr<SDL_Surface> render() override;
-    void initSurface(uint32_t width, uint32_t height) override;
+    void initSurface() override;
 
 private:
     uint32_t getPadding() const;

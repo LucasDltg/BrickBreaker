@@ -27,3 +27,11 @@ void TextureManager::updateTextures(const std::shared_ptr<SDL_Renderer> renderer
         }
     }
 }
+
+void TextureManager::clearTextures()
+{
+    for (auto& texture : textures)
+    {
+        texture.second.second.reset();
+    }
+}

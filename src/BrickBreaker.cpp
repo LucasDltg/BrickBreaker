@@ -12,7 +12,7 @@
 #include "../include/Platform.h"
 
 BrickBreaker::BrickBreaker(std::shared_ptr<SDL_Renderer> renderer, const std::string& filename)
-: SDLComponent(), platform(), start_duration(1000), font(nullptr, TTF_CloseFont), textureManager()
+: SDLComponent(), platform(), start_duration(1000), font(nullptr, TTF_CloseFont)
 {
     createBricksFromLevel(filename);
     
@@ -23,9 +23,8 @@ BrickBreaker::BrickBreaker(std::shared_ptr<SDL_Renderer> renderer, const std::st
     }
 }
 
-void BrickBreaker::initSurface(uint32_t width, uint32_t height)
+void BrickBreaker::initSurface()
 {
-    setSurfaceDimensions(width, height);
     SDL_Color color;
     color.r = 0; color.g = 0; color.b = 255; color.a = 0;
     std::pair<uint32_t, uint32_t> center = {surface->w / 2, surface->h * 3/ 4};
@@ -38,22 +37,20 @@ void BrickBreaker::initSurface(uint32_t width, uint32_t height)
 
     for (auto& brick : bricks)
     {
-        brick->calculateVerticesWithPosition(gridDimensions, {static_cast<_Float32>(width), static_cast<_Float32>(height * BrickBreaker::BRICK_HEIGHT_LIMIT)});
+        brick->calculateVerticesWithPosition(gridDimensions, {static_cast<_Float32>(surface->w), static_cast<_Float32>(surface->h * BrickBreaker::BRICK_HEIGHT_LIMIT)});
     }
 
-    renderer = std::shared_ptr<SDL_Renderer>(SDL_CreateSoftwareRenderer(surface.get()), SDL_DestroyRenderer);
-    if (!renderer.get())
-    {
-        std::cerr << "Failed to create renderer: " << SDL_GetError() << std::endl;
-        throw std::runtime_error("Failed to create renderer");
-    }
     textureManager.loadTexture("assets/textures/small.png", "small", renderer);
+    textureManager.loadTexture("assets/textures/ball.png", typeid(Ball).name(), renderer);
+    textureManager.loadTexture("assets/textures/platform.png", typeid(Platform).name(), renderer);
+    textureManager.loadTexture("assets/textures/bubble_duplicate.png", typeid(DuplicateBallPowerUp).name(), renderer);
+    textureManager.loadTexture("assets/textures/bubble_multi.png", typeid(AddBallPowerUp).name(), renderer);
+    textureManager.loadTexture("assets/textures/bubble_extend.png", typeid(ExtendPlatformPowerUp).name(), renderer);
+    textureManager.loadTexture("assets/textures/bubble_speed.png", typeid(SpeedUpPowerUp).name(), renderer);
 }
 
 void BrickBreaker::handleResize(std::pair<int, int> previousSize, std::pair<int, int> newSize)
 {
-    setSurfaceDimensions(newSize.first, newSize.second);
-
     for (auto& brick : bricks)
     {
         brick->calculateVerticesWithPosition(gridDimensions, {static_cast<_Float32>(newSize.first), static_cast<_Float32>(newSize.second * BrickBreaker::BRICK_HEIGHT_LIMIT)});
@@ -90,14 +87,6 @@ void BrickBreaker::handleResize(std::pair<int, int> previousSize, std::pair<int,
     rect.w = static_cast<_Float32>(rect.w) * (static_cast<_Float32>(newSize.first) / static_cast<float>(previousSize.first));
     rect.h = static_cast<_Float32>(rect.h) * (static_cast<_Float32>(newSize.second) / static_cast<float>(previousSize.second));
     platform.setRect(rect);
-
-    renderer = std::shared_ptr<SDL_Renderer>(SDL_CreateSoftwareRenderer(surface.get()), SDL_DestroyRenderer);
-    if (!renderer.get())
-    {
-        std::cerr << "Failed to create renderer: " << SDL_GetError() << std::endl;
-        throw std::runtime_error("Failed to create renderer");
-    }
-    textureManager.updateTextures(renderer);
 }
 
 void BrickBreaker::createBricksFromLevel(const std::string& filename) {
@@ -365,9 +354,9 @@ std::shared_ptr<SDL_Surface> BrickBreaker::render()
             return nullptr;
         }
         
-        //SDL_Rect destRect = {static_cast<int>(vertices[0].position.x), static_cast<int>(vertices[0].position.y), static_cast<int>(vertices[2].position.x - vertices[0].position.x), static_cast<int>(vertices[2].position.y - vertices[0].position.y)};
-        //SDL_RenderCopy(renderer.get(), textureManager.getTexture("small"), nullptr, &destRect);
-
+        //
+        SDL_Rect destRect = {static_cast<int>(vertices[0].position.x), static_cast<int>(vertices[0].position.y), static_cast<int>(vertices[2].position.x - vertices[0].position.x), static_cast<int>(vertices[2].position.y - vertices[0].position.y)};
+        SDL_RenderCopy(renderer.get(), textureManager.getTexture("small").get(), nullptr, &destRect);
 
         for (size_t i = 0; i < vertices.size(); i++)
         {
@@ -383,7 +372,6 @@ std::shared_ptr<SDL_Surface> BrickBreaker::render()
     {
         const std::pair<uint32_t, uint32_t> position = ball.getCenter();
         float radius = ball.getRadius();
-        // SDL_Color color = ball->getColor();
 
         SDL_Rect destRect = {
             static_cast<int>(position.first - radius),
@@ -392,8 +380,7 @@ std::shared_ptr<SDL_Surface> BrickBreaker::render()
             static_cast<int>(2 * radius)
         };
 
-        SDL_BlitScaled(ball.getSurface().get(), nullptr, surface.get(), &destRect);
-
+        SDL_RenderCopy(renderer.get(), textureManager.getTexture(typeid(ball).name()).get(), nullptr, &destRect);
     }
 
     for (const auto& powerUp : powerUps)
@@ -406,10 +393,10 @@ std::shared_ptr<SDL_Surface> BrickBreaker::render()
         _Float32 radius = powerUp->getRadius();
         SDL_Rect rect = {static_cast<int>(position.first - radius), static_cast<int>(position.second - radius), static_cast<int>(2 * radius), static_cast<int>(2 * radius)};
 
-        SDL_Surface* powerUpSurface = powerUp->getSurface().get();
-        if (powerUpSurface != nullptr)
+        std::shared_ptr<SDL_Texture> powerUpSurface = textureManager.getTexture(typeid(*powerUp).name());
+        if (powerUpSurface.get() != nullptr)
         {
-            SDL_BlitScaled(powerUpSurface, nullptr, surface.get(), &rect);
+            SDL_RenderCopy(renderer.get(), powerUpSurface.get(), nullptr, &rect);
         }
         else        
             SDL_FillRect(surface.get(), &rect, SDL_MapRGBA(surface->format, 255, 255, 0, 0));
@@ -418,9 +405,10 @@ std::shared_ptr<SDL_Surface> BrickBreaker::render()
     SDL_Color color = platform.getColor();
     const SDL_FRect& rect = platform.getRect();
     SDL_Rect destRect = {static_cast<int>(rect.x), static_cast<int>(rect.y), static_cast<int>(rect.w), static_cast<int>(rect.h)};
+    std::shared_ptr<SDL_Texture> platformSurface = textureManager.getTexture(typeid(platform).name());
 
-    if(platform.getSurface().get() != nullptr)
-        SDL_BlitScaled(platform.getSurface().get(), nullptr, surface.get(), &destRect);
+    if(platformSurface.get() != nullptr)
+        SDL_RenderCopy(renderer.get(), platformSurface.get(), nullptr, &destRect);
     else
         SDL_FillRect(surface.get(), &destRect, SDL_MapRGBA(surface->format, color.r, color.g, color.b, color.a));
 

@@ -11,14 +11,12 @@
 class Circle {
 public:
     Circle();
-    Circle(std::string image_path);
-    Circle(_Float32 radius, std::pair<_Float32, _Float32> center, SDL_Color color, std::pair<_Float32, _Float32> speed, std::string image_path = "");
+    Circle(_Float32 radius, std::pair<_Float32, _Float32> center, SDL_Color color, std::pair<_Float32, _Float32> speed);
 
     _Float32 getRadius() const;
     const std::pair<_Float32, _Float32>& getCenter() const;
     SDL_Color getColor() const;
     std::pair<_Float32, _Float32> getSpeed() const;
-    std::shared_ptr<SDL_Surface> getSurface() const;
 
     void setRadius(_Float32 newRadius);
     void setCenter(std::pair<_Float32, _Float32> newCenter);
@@ -34,7 +32,6 @@ private:
     std::pair<_Float32, _Float32> center;
     SDL_Color color;
     std::pair<_Float32, _Float32> speed;
-    std::shared_ptr<SDL_Surface> surface;
 };
 
 #endif // CIRCLE_H

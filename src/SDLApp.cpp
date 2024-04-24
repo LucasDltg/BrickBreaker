@@ -54,7 +54,8 @@ void SDLApp::addComponent(std::shared_ptr<SDLComponent> obj)
     
     int windowWidth, windowHeight;
     SDL_GetWindowSize(window.get(), &windowWidth, &windowHeight);
-    components.back()->initSurface(windowWidth, windowHeight);
+    components.back()->setSurfaceDimensions(windowWidth, windowHeight);
+    components.back()->initSurface();
 }
 
 void SDLApp::run()

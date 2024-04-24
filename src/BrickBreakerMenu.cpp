@@ -6,7 +6,7 @@
 #include "../include/BrickBreakerMenu.h"
 
 BrickBreakerMenu::BrickBreakerMenu(std::shared_ptr<SDL_Renderer> renderer, std::string directory_path)
-: SDLComponent(renderer), selectedLevel(0), num_rows(3), num_columns(3), brickBreaker(nullptr), background(nullptr), current_page(0), font(nullptr, nullptr)
+: SDLComponent(), selectedLevel(0), num_rows(3), num_columns(3), brickBreaker(nullptr), background(nullptr), current_page(0), font(nullptr, nullptr)
 {
     font = std::unique_ptr<TTF_Font, void(*)(TTF_Font*)>(TTF_OpenFont("./assets/fonts/arial/arial.ttf", getFontSize()), TTF_CloseFont);
     if (!font.get())
@@ -56,25 +56,33 @@ void BrickBreakerMenu::handleResize(std::pair<int, int> previousSize, std::pair<
 
 void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data1, std::shared_ptr<void> data2)
 {
+    // il faut gérer le cas où la fenêtre est redimensionnée et que le jeu est en cours
     if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
     {
         handleResize({*(int*)data1.get(), *(int*)data2.get()}, {event.window.data1, event.window.data2});
+        
+        background->setSurfaceDimensions(event.window.data1, event.window.data2);
         background->handleEvents(event, data1, data2);
     }
 
     if (brickBreaker != nullptr)
     {
+        if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
+            brickBreaker->setSurfaceDimensions(event.window.data1, event.window.data2);
+        
         brickBreaker->handleEvents(event, data1, data2);
         return;
     }
-
+    
+    
     if (event.type == SDL_KEYDOWN)
     {
         switch(event.key.keysym.sym)
         {
             case SDLK_RETURN:
                 brickBreaker = std::make_unique<BrickBreaker>(renderer, levels[selectedLevel + current_page * num_rows * num_columns].path);
-                brickBreaker->initSurface(surface->w, surface->h);
+                brickBreaker->setSurfaceDimensions(surface->w, surface->h);
+                brickBreaker->initSurface();
                 break;
             case SDLK_LEFT:
                 if(static_cast<int>(selectedLevel) % num_columns == 0)
@@ -127,7 +135,8 @@ void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data
             if (x >= padding + col * (rectWidth + padding / 2) && x <= padding + col * (rectWidth + padding / 2) + rectWidth && y >= padding + row * (rectHeight + padding / 2) && y <= padding + row * (rectHeight + padding / 2) + rectHeight)
             {
                 brickBreaker = std::make_unique<BrickBreaker>(renderer, levels[i].path);
-                brickBreaker->initSurface(surface->w, surface->h);
+                brickBreaker->setSurfaceDimensions(surface->w, surface->h);
+                brickBreaker->initSurface();
                 break;
             }
         }
@@ -292,9 +301,8 @@ std::shared_ptr<SDL_Surface> BrickBreakerMenu::render()
     return surface;
 }
 
-void BrickBreakerMenu::initSurface(uint32_t width, uint32_t height)
+void BrickBreakerMenu::initSurface()
 {
-    setSurfaceDimensions(width, height);
     reloadBackground();
     TTF_SetFontSize(font.get(), getFontSize());
 }
@@ -308,7 +316,8 @@ void BrickBreakerMenu::reloadBackground()
 {
     uint32_t level = rand() % levels.size();
     background = std::make_unique<BrickBreaker>(renderer, levels[level].path);
-    background->initSurface(surface->w, surface->h);
+    background->setSurfaceDimensions(surface->w, surface->h);
+    background->initSurface();
 }
 
 uint32_t BrickBreakerMenu::getFontSize() const

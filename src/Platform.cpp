@@ -3,18 +3,9 @@
 #include "../include/Platform.h"
 #include <iostream>
 
-Platform::Platform(std::string image_path)
+Platform::Platform()
 : rect({ 0, 0, 0, 0 }), color({ 0, 0, 0, 0 }), speed_x(0)
-{
-    if (image_path.empty())
-        return;
-
-    surface = std::shared_ptr<SDL_Surface>(IMG_Load(image_path.c_str()), SDL_FreeSurface);
-    if (!surface)
-    {
-        std::cerr << "Failed to load image: " << IMG_GetError() << std::endl;
-    }
-}
+{}
 
 void Platform::setRect(const SDL_FRect& rect) {
     this->rect = rect;
@@ -48,10 +39,6 @@ void Platform::update(uint64_t delta_time, int screen_width)
         rect.x = screen_width - rect.w;
     else if (rect.x + speed_x < 0)
         rect.x = 0;
-}
-
-std::shared_ptr<SDL_Surface> Platform::getSurface() const {
-    return surface;
 }
 
 const int32_t Platform::getSpeedX() const {

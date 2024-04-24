@@ -13,6 +13,7 @@ public:
     void loadTexture(const char* fileName, const char* key, const std::shared_ptr<SDL_Renderer> renderer);
     std::shared_ptr<SDL_Texture> getTexture(const char* key);
     void updateTextures(const std::shared_ptr<SDL_Renderer> renderer);
+    void clearTextures();
 
 private:
     std::map<std::string, std::pair<std::string, std::shared_ptr<SDL_Texture>> > textures; 
