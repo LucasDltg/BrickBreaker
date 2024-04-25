@@ -11,8 +11,8 @@ SDLApp::SDLApp(int screen_width, int screen_height, uint32_t flags)
         return;
     }
 
-    int imgFlags = IMG_INIT_PNG;
-    if (!(IMG_Init(imgFlags) & imgFlags)) {
+    int img_flags = IMG_INIT_PNG;
+    if (!(IMG_Init(img_flags) & img_flags)) {
         std::cerr << "SDL_image initialization failed: " << IMG_GetError() << std::endl;
         SDL_Quit();
         return;
@@ -60,27 +60,27 @@ void SDLApp::addComponent(std::shared_ptr<SDLComponent> obj)
 
 void SDLApp::run()
 {
-    const int DESIRED_FPS = 120;
-    const __uint64_t FRAME_TIME = 1000 / DESIRED_FPS;
+    const int desired_fps = 120;
+    const __uint64_t frame_time = 1000 / desired_fps;
 
-    __uint64_t lastTime = SDL_GetTicks64();
+    __uint64_t last_time = SDL_GetTicks64();
     while (_is_running)
     {
         handleEvents();
     
-        __uint64_t currentTime = SDL_GetTicks64();
-        __uint64_t deltaTime = currentTime - lastTime;
-        lastTime = currentTime;
+        __uint64_t current_time = SDL_GetTicks64();
+        __uint64_t delta_time = current_time - last_time;
+        last_time = current_time;
 
-        update(deltaTime);
+        update(delta_time);
 
         render();
 
-        __uint64_t elapsedTime = SDL_GetTicks64() - currentTime;
-        if (elapsedTime < FRAME_TIME)
-            SDL_Delay(FRAME_TIME - elapsedTime);
+        __uint64_t elapsed_time = SDL_GetTicks64() - current_time;
+        if (elapsed_time < frame_time)
+            SDL_Delay(frame_time - elapsed_time);
 
-        // double fps = 1000.0 / (SDL_GetTicks64() - lastTime);
+        // double fps = 1000.0 / (SDL_GetTicks64() - last_time);
         // std::cout << "FPS: " << fps << std::endl;
     }
 }
@@ -140,10 +140,9 @@ void SDLApp::render()
             std::cerr << "Failed to create texture: " << SDL_GetError() << std::endl;
             continue;
         }
-        SDL_Rect destRect = {0, 0, surface->w, surface->h};
-        SDL_RenderCopy(_renderer.get(), texture.get(), nullptr, &destRect);
+        SDL_Rect dest_rect = {0, 0, surface->w, surface->h};
+        SDL_RenderCopy(_renderer.get(), texture.get(), nullptr, &dest_rect);
     }
-
     SDL_RenderPresent(_renderer.get());
 }
 

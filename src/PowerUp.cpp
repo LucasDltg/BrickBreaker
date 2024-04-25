@@ -45,9 +45,9 @@ void AddBallPowerUp::applyPowerUp(BrickBreaker &game)
 {
     _active = true;
     
-    const SDL_FRect& platformRect = game.getPlatform().getRect();
-    Ball ball = Ball(game.getBallRadius(), std::pair<_Float32, _Float32>{static_cast<_Float32>(platformRect.x) + static_cast<_Float32>(platformRect.w) / 2.0f, 
-                    static_cast<_Float32>(platformRect.y) - game.getBallRadius()}, SDL_Color{255, 0, 0, 0}, std::pair<_Float32, _Float32>{0, game.getInitialBallSpeed()});
+    const SDL_FRect& platform_rect = game.getPlatform().getRect();
+    Ball ball = Ball(game.getBallRadius(), std::pair<_Float32, _Float32>{static_cast<_Float32>(platform_rect.x) + static_cast<_Float32>(platform_rect.w) / 2.0f, 
+                    static_cast<_Float32>(platform_rect.y) - game.getBallRadius()}, SDL_Color{255, 0, 0, 0}, std::pair<_Float32, _Float32>{0, game.getInitialBallSpeed()});
 
     game.addBall(ball);
 }
@@ -65,16 +65,16 @@ void DuplicateBallPowerUp::applyPowerUp(BrickBreaker &game)
     
     for (auto &ball : game.getBalls()) {
         
-        Ball duplicateBall = Ball(ball.getRadius(), ball.getCenter(), ball.getColor(), ball.getSpeed());
+        Ball duplicate_ball = Ball(ball.getRadius(), ball.getCenter(), ball.getColor(), ball.getSpeed());
         
-        double originalAngle = atan2(ball.getSpeed().second, ball.getSpeed().first);
-        double newAngle = originalAngle + (30 * M_PI / 180); // Add 30° to the original angle
-        double speedMagnitude = sqrt(pow(ball.getSpeed().first, 2) + pow(ball.getSpeed().second, 2));
-        double newSpeedX = cos(newAngle) * speedMagnitude;
-        double newSpeedY = sin(newAngle) * speedMagnitude;
+        double original_angle = atan2(ball.getSpeed().second, ball.getSpeed().first);
+        double new_angle = original_angle + (30 * M_PI / 180); // Add 30° to the original angle
+        double speed_magnitude = sqrt(pow(ball.getSpeed().first, 2) + pow(ball.getSpeed().second, 2));
+        double new_speed_x = cos(new_angle) * speed_magnitude;
+        double new_speed_y = sin(new_angle) * speed_magnitude;
         
-        duplicateBall.setSpeed(std::make_pair(newSpeedX, newSpeedY));
-        game.addBall(duplicateBall);
+        duplicate_ball.setSpeed(std::make_pair(new_speed_x, new_speed_y));
+        game.addBall(duplicate_ball);
     }
 }
 

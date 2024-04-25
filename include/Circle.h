@@ -18,10 +18,10 @@ public:
     SDL_Color getColor() const;
     std::pair<_Float32, _Float32> getSpeed() const;
 
-    void setRadius(_Float32 newRadius);
-    void setCenter(std::pair<_Float32, _Float32> newCenter);
-    void setColor(SDL_Color newColor);
-    void setSpeed(std::pair<_Float32, _Float32> newSpeed);
+    void setRadius(_Float32 new_radius);
+    void setCenter(std::pair<_Float32, _Float32> new_center);
+    void setColor(SDL_Color new_color);
+    void setSpeed(std::pair<_Float32, _Float32> new_speed);
 
     void update(uint64_t delta_time);
     bool resolveCollisionWithRectangle(const SDL_FRect& rect);

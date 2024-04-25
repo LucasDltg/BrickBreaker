@@ -19,7 +19,7 @@ protected:
     std::shared_ptr<SDL_Surface> _surface;
     bool _is_running;
     std::shared_ptr<SDL_Renderer> _renderer;
-    TextureManager _textureManager;
+    TextureManager _texture_manager;
 };
 
 #endif

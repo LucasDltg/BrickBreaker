@@ -10,7 +10,7 @@
 class TextureManager
 {
 public:
-    void loadTexture(const char* fileName, const char* key, const std::shared_ptr<SDL_Renderer> renderer, int32_t blending_mode = SDL_BLENDMODE_INVALID);
+    void loadTexture(const char* file_name, const char* key, const std::shared_ptr<SDL_Renderer> renderer, int32_t blending_mode = SDL_BLENDMODE_INVALID);
     std::shared_ptr<SDL_Texture> getTexture(const char* key);
     void updateTextures(const std::shared_ptr<SDL_Renderer> renderer);
     void clearTextures();

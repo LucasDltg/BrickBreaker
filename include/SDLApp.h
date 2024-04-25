@@ -8,7 +8,7 @@
 
 class SDLApp {
 public:
-    SDLApp(int screenWidth, int screenHeight, uint32_t windowFlags = 0);
+    SDLApp(int screen_width, int screen_height, uint32_t window_flags = 0);
 
     void addComponent(std::shared_ptr<SDLComponent> component);
     void run();

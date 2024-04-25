@@ -31,13 +31,13 @@ public:
 private:
     uint32_t getPadding() const;
     uint32_t getFontSize() const;
-    void handleResize(std::pair<int, int> previousSize, std::pair<int, int> newSize);
+    void handleResize(std::pair<int, int> previous_size, std::pair<int, int> new_size);
     void reloadBackground();
-    size_t _selectedLevel;
+    size_t _selected_level;
     uint32_t _num_rows;
     uint32_t _num_columns;
     std::vector<BrickBreakerMenuLevel> _levels;
-    std::unique_ptr<BrickBreaker> _brickBreaker;
+    std::unique_ptr<BrickBreaker> _brick_breaker;
     std::unique_ptr<BrickBreaker> _background;
     uint32_t _current_page;
     uint32_t _num_pages;

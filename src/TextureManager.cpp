@@ -2,10 +2,10 @@
 #include <iostream>
 #include <algorithm>
 
-void TextureManager::loadTexture(const char* fileName, const char* key, const std::shared_ptr<SDL_Renderer> renderer, int32_t blending_mode)
+void TextureManager::loadTexture(const char* file_name, const char* key, const std::shared_ptr<SDL_Renderer> renderer, int32_t blending_mode)
 {
-    _textures[key] = std::tuple<std::string, SDL_BlendMode, std::shared_ptr<SDL_Texture>>(std::string(fileName), SDL_BLENDMODE_INVALID, std::shared_ptr<SDL_Texture>(IMG_LoadTexture(renderer.get(), fileName), SDL_DestroyTexture));
-    //std::make_pair(std::string(fileName), std::shared_ptr<SDL_Texture>(IMG_LoadTexture(renderer.get(), fileName), SDL_DestroyTexture));
+    _textures[key] = std::tuple<std::string, SDL_BlendMode, std::shared_ptr<SDL_Texture>>(std::string(file_name), SDL_BLENDMODE_INVALID, std::shared_ptr<SDL_Texture>(IMG_LoadTexture(renderer.get(), file_name), SDL_DestroyTexture));
+    //std::make_pair(std::string(file_name), std::shared_ptr<SDL_Texture>(IMG_LoadTexture(renderer.get(), file_name), SDL_DestroyTexture));
     if (!std::get<2>(_textures[key]).get())
     {
         std::cerr << "Failed to load texture: " << SDL_GetError() << std::endl;

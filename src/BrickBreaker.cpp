@@ -25,8 +25,7 @@ BrickBreaker::BrickBreaker(std::shared_ptr<SDL_Renderer> renderer, const std::st
 
 void BrickBreaker::initSurface()
 {
-    SDL_Color color;
-    color.r = 0; color.g = 0; color.b = 255; color.a = 0;
+    SDL_Color color = {0, 0, 255, 0};
     std::pair<uint32_t, uint32_t> center = {_surface->w / 2, _surface->h * 3/ 4};
     std::pair<_Float32, _Float32> speed = {getInitialBallSpeed() / 3, -getInitialBallSpeed()};
     _balls.push_back(Ball(getBallRadius(), center, color, speed));
@@ -37,57 +36,57 @@ void BrickBreaker::initSurface()
 
     for (auto& brick : _bricks)
     {
-        brick->calculateVerticesWithPosition(_gridDimensions, {static_cast<_Float32>(_surface->w), static_cast<_Float32>(_surface->h * BrickBreaker::_BRICK_HEIGHT_LIMIT)});
+        brick->calculateVerticesWithPosition(_grid_dimensions, {static_cast<_Float32>(_surface->w), static_cast<_Float32>(_surface->h * BrickBreaker::_BRICK_HEIGHT_LIMIT)});
     }
 
-    _textureManager.loadTexture("assets/textures/small_crack.png", "small", _renderer, SDL_BLENDMODE_MUL);
-    _textureManager.loadTexture("assets/textures/medium_crack.png", "medium", _renderer, SDL_BLENDMODE_MUL);
-    _textureManager.loadTexture("assets/textures/big_crack.png", "big", _renderer, SDL_BLENDMODE_MUL);
-    _textureManager.loadTexture("assets/textures/ball.png", typeid(Ball).name(), _renderer);
-    _textureManager.loadTexture("assets/textures/platform.png", typeid(Platform).name(), _renderer);
-    _textureManager.loadTexture("assets/textures/bubble_duplicate.png", typeid(DuplicateBallPowerUp).name(), _renderer);
-    _textureManager.loadTexture("assets/textures/bubble_multi.png", typeid(AddBallPowerUp).name(), _renderer);
-    _textureManager.loadTexture("assets/textures/bubble_extend.png", typeid(ExtendPlatformPowerUp).name(), _renderer);
-    _textureManager.loadTexture("assets/textures/bubble_speed.png", typeid(SpeedUpPowerUp).name(), _renderer);
+    _texture_manager.loadTexture("assets/textures/small_crack.png", "small", _renderer, SDL_BLENDMODE_MUL);
+    _texture_manager.loadTexture("assets/textures/medium_crack.png", "medium", _renderer, SDL_BLENDMODE_MUL);
+    _texture_manager.loadTexture("assets/textures/big_crack.png", "big", _renderer, SDL_BLENDMODE_MUL);
+    _texture_manager.loadTexture("assets/textures/ball.png", typeid(Ball).name(), _renderer);
+    _texture_manager.loadTexture("assets/textures/platform.png", typeid(Platform).name(), _renderer);
+    _texture_manager.loadTexture("assets/textures/bubble_duplicate.png", typeid(DuplicateBallPowerUp).name(), _renderer);
+    _texture_manager.loadTexture("assets/textures/bubble_multi.png", typeid(AddBallPowerUp).name(), _renderer);
+    _texture_manager.loadTexture("assets/textures/bubble_extend.png", typeid(ExtendPlatformPowerUp).name(), _renderer);
+    _texture_manager.loadTexture("assets/textures/bubble_speed.png", typeid(SpeedUpPowerUp).name(), _renderer);
 }
 
-void BrickBreaker::handleResize(std::pair<int, int> previousSize, std::pair<int, int> newSize)
+void BrickBreaker::handleResize(std::pair<int, int> previous_size, std::pair<int, int> new_size)
 {
     for (auto& brick : _bricks)
     {
-        brick->calculateVerticesWithPosition(_gridDimensions, {static_cast<_Float32>(newSize.first), static_cast<_Float32>(newSize.second * BrickBreaker::_BRICK_HEIGHT_LIMIT)});
+        brick->calculateVerticesWithPosition(_grid_dimensions, {static_cast<_Float32>(new_size.first), static_cast<_Float32>(new_size.second * BrickBreaker::_BRICK_HEIGHT_LIMIT)});
     }
     
     for (auto& ball : _balls)
     {
         std::pair<_Float32, _Float32> center = ball.getCenter();
 
-        uint32_t newX = static_cast<uint32_t>(static_cast<float>(center.first) * (static_cast<float>(newSize.first) / static_cast<float>(previousSize.first)));
-        uint32_t newY = static_cast<uint32_t>(static_cast<float>(center.second) * (static_cast<float>(newSize.second) / static_cast<float>(previousSize.second)));
+        uint32_t new_x = static_cast<uint32_t>(static_cast<float>(center.first) * (static_cast<float>(new_size.first) / static_cast<float>(previous_size.first)));
+        uint32_t new_y = static_cast<uint32_t>(static_cast<float>(center.second) * (static_cast<float>(new_size.second) / static_cast<float>(previous_size.second)));
 
-        ball.setCenter({newX, newY});
-        ball.setSpeed({ball.getSpeed().first * (static_cast<float>(newSize.first) / static_cast<float>(previousSize.first)), ball.getSpeed().second * (static_cast<float>(newSize.second) / static_cast<float>(previousSize.second))});
-        ball.setRadius(ball.getRadius() * (static_cast<float>(newSize.first) / static_cast<float>(previousSize.first)));
+        ball.setCenter({new_x, new_y});
+        ball.setSpeed({ball.getSpeed().first * (static_cast<float>(new_size.first) / static_cast<float>(previous_size.first)), ball.getSpeed().second * (static_cast<float>(new_size.second) / static_cast<float>(previous_size.second))});
+        ball.setRadius(ball.getRadius() * (static_cast<float>(new_size.first) / static_cast<float>(previous_size.first)));
     }
 
-    for (auto& powerUp : _powerUps)
+    for (auto& power_up : _power_ups)
     {
-        std::pair<_Float32, _Float32> center = powerUp->getCenter();
+        std::pair<_Float32, _Float32> center = power_up->getCenter();
 
-        uint32_t newX = static_cast<uint32_t>(static_cast<float>(center.first) * (static_cast<float>(newSize.first) / static_cast<float>(previousSize.first)));
-        uint32_t newY = static_cast<uint32_t>(static_cast<float>(center.second) * (static_cast<float>(newSize.second) / static_cast<float>(previousSize.second)));
+        uint32_t new_x = static_cast<uint32_t>(static_cast<float>(center.first) * (static_cast<float>(new_size.first) / static_cast<float>(previous_size.first)));
+        uint32_t new_y = static_cast<uint32_t>(static_cast<float>(center.second) * (static_cast<float>(new_size.second) / static_cast<float>(previous_size.second)));
 
-        powerUp->setCenter({newX, newY});
-        powerUp->setSpeed({powerUp->getSpeed().first * (static_cast<float>(newSize.first) / static_cast<float>(previousSize.first)), powerUp->getSpeed().second * (static_cast<float>(newSize.second) / static_cast<float>(previousSize.second))});
-        powerUp->setRadius(powerUp->getRadius() * (static_cast<float>(newSize.first) / static_cast<float>(previousSize.first)));
+        power_up->setCenter({new_x, new_y});
+        power_up->setSpeed({power_up->getSpeed().first * (static_cast<float>(new_size.first) / static_cast<float>(previous_size.first)), power_up->getSpeed().second * (static_cast<float>(new_size.second) / static_cast<float>(previous_size.second))});
+        power_up->setRadius(power_up->getRadius() * (static_cast<float>(new_size.first) / static_cast<float>(previous_size.first)));
     }
 
     // Resize platform
     SDL_FRect rect = _platform.getRect();
-    rect.x = static_cast<_Float32>(rect.x) * (static_cast<_Float32>(newSize.first) / static_cast<float>(previousSize.first));
-    rect.y = static_cast<_Float32>(rect.y) * (static_cast<_Float32>(newSize.second) / static_cast<float>(previousSize.second));
-    rect.w = static_cast<_Float32>(rect.w) * (static_cast<_Float32>(newSize.first) / static_cast<float>(previousSize.first));
-    rect.h = static_cast<_Float32>(rect.h) * (static_cast<_Float32>(newSize.second) / static_cast<float>(previousSize.second));
+    rect.x = static_cast<_Float32>(rect.x) * (static_cast<_Float32>(new_size.first) / static_cast<float>(previous_size.first));
+    rect.y = static_cast<_Float32>(rect.y) * (static_cast<_Float32>(new_size.second) / static_cast<float>(previous_size.second));
+    rect.w = static_cast<_Float32>(rect.w) * (static_cast<_Float32>(new_size.first) / static_cast<float>(previous_size.first));
+    rect.h = static_cast<_Float32>(rect.h) * (static_cast<_Float32>(new_size.second) / static_cast<float>(previous_size.second));
     _platform.setRect(rect);
 }
 
@@ -99,14 +98,14 @@ void BrickBreaker::createBricksFromLevel(const std::string& filename) {
         return;
     }
 
-    std::string magicSequence;
-    file >> magicSequence;
-    if (magicSequence == "rectangle")
-        _brickShape = BrickShape::RECTANGLE;
-    else if (magicSequence == "triangle")
-        _brickShape = BrickShape::TRIANGLE;
-    else if (magicSequence == "hexagon")
-        _brickShape = BrickShape::HEXAGON;
+    std::string magic_sequence;
+    file >> magic_sequence;
+    if (magic_sequence == "rectangle")
+        _brick_shape = BrickShape::RECTANGLE;
+    else if (magic_sequence == "triangle")
+        _brick_shape = BrickShape::TRIANGLE;
+    else if (magic_sequence == "hexagon")
+        _brick_shape = BrickShape::HEXAGON;
     else
     {
         std::cerr << "Invalid magic sequence in level file: " << filename << std::endl;
@@ -114,8 +113,8 @@ void BrickBreaker::createBricksFromLevel(const std::string& filename) {
         return;
     }
 
-    file >> _gridDimensions.first >> _gridDimensions.second;
-    if (_gridDimensions.first <= 0 || _gridDimensions.second <= 0)
+    file >> _grid_dimensions.first >> _grid_dimensions.second;
+    if (_grid_dimensions.first <= 0 || _grid_dimensions.second <= 0)
     {
         std::cerr << "Invalid grid dimensions in level file: " << filename << std::endl;
         _is_running = false;
@@ -127,32 +126,32 @@ void BrickBreaker::createBricksFromLevel(const std::string& filename) {
     while (std::getline(file, line))
     {
         std::istringstream iss(line);
-        int32_t posX, posY, resistance;
-        std::string colorHex;
+        int32_t pos_x, pos_y, resistance;
+        std::string color_hex;
         std::string power_up;
 
-        if (!(iss >> posX >> posY >> resistance >> colorHex))
+        if (!(iss >> pos_x >> pos_y >> resistance >> color_hex))
         {
             std::cerr << "Invalid line format in level file: " << filename << std::endl;
             continue;
         }
         iss >> power_up;
         
-        if(posX < 0 || posX >= _gridDimensions.first || posY < 0 || posY >= _gridDimensions.second)
+        if(pos_x < 0 || pos_x >= _grid_dimensions.first || pos_y < 0 || pos_y >= _grid_dimensions.second)
         {
             std::cerr << "Invalid brick position in level file: " << filename << std::endl;
             continue;
         }
 
-        uint32_t mappedColor;
-        std::stringstream(colorHex) >> std::hex >> mappedColor >> std::dec;
+        uint32_t mapped_color;
+        std::stringstream(color_hex) >> std::hex >> mapped_color >> std::dec;
 
-        if (_brickShape == BrickShape::RECTANGLE)
-            _bricks.push_back(std::make_unique<BrickRectangular>(std::make_pair(posX, posY), _gridDimensions, std::make_pair(_surface->w, _surface->h * BrickBreaker::_BRICK_HEIGHT_LIMIT), mappedColor, resistance, power_up, _renderer));
-        else if (_brickShape == BrickShape::TRIANGLE)
-            _bricks.push_back(std::make_unique<BrickTriangular>(std::make_pair(posX, posY), _gridDimensions, std::make_pair(_surface->w, _surface->h * BrickBreaker::_BRICK_HEIGHT_LIMIT), mappedColor, resistance, power_up, _renderer));
-        else if (_brickShape == BrickShape::HEXAGON)
-            _bricks.push_back(std::make_unique<BrickHexagonal>(std::make_pair(posX, posY), _gridDimensions, std::make_pair(_surface->w, _surface->h * BrickBreaker::_BRICK_HEIGHT_LIMIT), mappedColor, resistance, power_up, _renderer));
+        if (_brick_shape == BrickShape::RECTANGLE)
+            _bricks.push_back(std::make_unique<BrickRectangular>(std::make_pair(pos_x, pos_y), _grid_dimensions, std::make_pair(_surface->w, _surface->h * BrickBreaker::_BRICK_HEIGHT_LIMIT), mapped_color, resistance, power_up));
+        else if (_brick_shape == BrickShape::TRIANGLE)
+            _bricks.push_back(std::make_unique<BrickTriangular>(std::make_pair(pos_x, pos_y), _grid_dimensions, std::make_pair(_surface->w, _surface->h * BrickBreaker::_BRICK_HEIGHT_LIMIT), mapped_color, resistance, power_up));
+        else if (_brick_shape == BrickShape::HEXAGON)
+            _bricks.push_back(std::make_unique<BrickHexagonal>(std::make_pair(pos_x, pos_y), _grid_dimensions, std::make_pair(_surface->w, _surface->h * BrickBreaker::_BRICK_HEIGHT_LIMIT), mapped_color, resistance, power_up));
     }
 
     file.close();
@@ -208,35 +207,35 @@ void BrickBreaker::update(uint64_t delta_time)
     
     _platform.update(delta_time, _surface->w);
 
-    for (auto& powerUp : _powerUps)
+    for (auto& power_up : _power_ups)
     {
-        if (!powerUp->isActive())
+        if (!power_up->isActive())
         {
-            powerUp->update(delta_time);
-            if(powerUp->resolveCollisionWithRectangle(_platform.getRect()))
+            power_up->update(delta_time);
+            if(power_up->resolveCollisionWithRectangle(_platform.getRect()))
             {
-                powerUp->applyPowerUp(*this);
+                power_up->applyPowerUp(*this);
             }
         }
         else
         {
-            powerUp->decrementDuration(delta_time);
+            power_up->decrementDuration(delta_time);
         }
     }
 
     // remove power-up if it is out of bounds or its duration is over
-    _powerUps.erase(std::remove_if(_powerUps.begin(), _powerUps.end(), [this](const std::unique_ptr<PowerUp>& powerUp) {
-        if (powerUp->getCenter().second + powerUp->getRadius() > _surface->h && !powerUp->isActive())
+    _power_ups.erase(std::remove_if(_power_ups.begin(), _power_ups.end(), [this](const std::unique_ptr<PowerUp>& power_up) {
+        if (power_up->getCenter().second + power_up->getRadius() > _surface->h && !power_up->isActive())
         {
             return true;
         }
-        if(powerUp->isActive() && powerUp->getDuration() <= 0)
+        if(power_up->isActive() && power_up->getDuration() <= 0)
         {
-            powerUp->unApplyPowerUp(*this);
+            power_up->unApplyPowerUp(*this);
             return true;
         }
         return false;
-    }), _powerUps.end());
+    }), _power_ups.end());
 
     
     for (auto& ball : _balls)
@@ -260,13 +259,13 @@ void BrickBreaker::update(uint64_t delta_time)
                 brick->decreaseResistance();
                 if(brick->getResistance() == 0)
                 {
-                    std::unique_ptr<PowerUp> powerUp = brick->getPowerUp();
-                    if(powerUp)
+                    std::unique_ptr<PowerUp> power_up = brick->getPowerUp();
+                    if(power_up)
                     {
-                        _powerUps.push_back(std::move(powerUp));
-                        _powerUps.back()->setRadius(getBallRadius());
-                        _powerUps.back()->setCenter(brick->getCenter());
-                        _powerUps.back()->setSpeed({0, static_cast<_Float32>(_surface->h) / 4000.0f});
+                        _power_ups.push_back(std::move(power_up));
+                        _power_ups.back()->setRadius(getBallRadius());
+                        _power_ups.back()->setCenter(brick->getCenter());
+                        _power_ups.back()->setSpeed({0, static_cast<_Float32>(_surface->h) / 4000.0f});
                     }
                     // we remove the brick from the vector here, because we don't want to check for collision with it anymore
                     _bricks.erase(std::remove_if(_bricks.begin(), _bricks.end(), [&brick](const std::unique_ptr<Brick>& b) {
@@ -309,7 +308,7 @@ void BrickBreaker::update(uint64_t delta_time)
 std::shared_ptr<SDL_Surface> BrickBreaker::render()
 {
     // reset surface
-    SDL_FillRect(_surface.get(), nullptr, SDL_MapRGB(_surface->format, 0, 0, 0));
+    SDL_RenderFillRect(_renderer.get(), nullptr);
     
     // check if all balls are lost or all bricks are destroyed or have resisitance < 0
     if (_balls.empty() || _bricks.empty() || std::all_of(_bricks.begin(), _bricks.end(), [](const std::unique_ptr<Brick>& brick) {
@@ -321,24 +320,24 @@ std::shared_ptr<SDL_Surface> BrickBreaker::render()
             _is_running = false;
 
         SDL_Color color = {255, 255, 255, 0};
-        SDL_Surface* textSurface = TTF_RenderText_Solid(_font.get(), text.c_str(), color);
-        SDL_Rect destRect = {_surface->w / 2 - textSurface->w / 2, _surface->h / 2 - textSurface->h / 2, textSurface->w, textSurface->h};
-        SDL_BlitSurface(textSurface, nullptr, _surface.get(), &destRect);
-        SDL_FreeSurface(textSurface);
+        SDL_Surface* text_surface = TTF_RenderText_Solid(_font.get(), text.c_str(), color);
+        SDL_Rect dest_rect = {_surface->w / 2 - text_surface->w / 2, _surface->h / 2 - text_surface->h / 2, text_surface->w, text_surface->h};
+        SDL_BlitSurface(text_surface, nullptr, _surface.get(), &dest_rect);
+        SDL_FreeSurface(text_surface);
         
         return _surface;
     }
 
     if (_start_duration > 0)
     {
-        SDL_FillRect(_surface.get(), nullptr, SDL_MapRGB(_surface->format, 0, 0, 0));
         SDL_Color color = {255, 255, 255, 0};
         std::stringstream ss;
         ss << "Starting in " << std::fixed << std::setprecision(1) << _start_duration / 1000.0f << " seconds";
-        SDL_Surface* textSurface = TTF_RenderText_Solid(_font.get(), ss.str().c_str(), color);
-        SDL_Rect destRect = {_surface->w / 2 - textSurface->w / 2, _surface->h / 2 - textSurface->h / 2, textSurface->w, textSurface->h};
-        SDL_BlitSurface(textSurface, nullptr, _surface.get(), &destRect);
-        SDL_FreeSurface(textSurface);
+        SDL_Surface* text_surface = TTF_RenderText_Solid(_font.get(), ss.str().c_str(), color);
+        SDL_Rect dest_rect = {_surface->w / 2 - text_surface->w / 2, _surface->h / 2 - text_surface->h / 2, text_surface->w, text_surface->h};
+        
+        SDL_BlitSurface(text_surface, nullptr, _surface.get(), &dest_rect);
+        SDL_FreeSurface(text_surface);
     }
 
     SDL_SetRenderDrawColor(_renderer.get(), 0, 0, 0, 255);
@@ -354,17 +353,17 @@ std::shared_ptr<SDL_Surface> BrickBreaker::render()
         }
         
         // draw resistance texture on brick
-        _Float32 resistancePercentage = brick->getResistancePercentage();
+        _Float32 resistance_percentage = brick->getResistancePercentage();
         // skip brick with infinite resistance or full resistance
-        if (brick->getResistance() > 0 && resistancePercentage >= 0.25f)
+        if (brick->getResistance() > 0 && resistance_percentage >= 0.25f)
         {
             std::shared_ptr<SDL_Texture> texture;
-            if (resistancePercentage >= 0.75f)
-                texture = _textureManager.getTexture("big");
-            else if (resistancePercentage >= 0.50f)
-                texture = _textureManager.getTexture("medium");
+            if (resistance_percentage >= 0.75f)
+                texture = _texture_manager.getTexture("big");
+            else if (resistance_percentage >= 0.50f)
+                texture = _texture_manager.getTexture("medium");
             else
-                texture = _textureManager.getTexture("small");
+                texture = _texture_manager.getTexture("small");
         
             vertices = brick->getVerticesWithoutColor();
             if(SDL_RenderGeometry(_renderer.get(), texture.get(), vertices.data(), vertices.size(), indices.data(), indices.size()) != 0)
@@ -389,44 +388,38 @@ std::shared_ptr<SDL_Surface> BrickBreaker::render()
         const std::pair<uint32_t, uint32_t> position = ball.getCenter();
         float radius = ball.getRadius();
 
-        SDL_Rect destRect = {
+        SDL_Rect dest_rect = {
             static_cast<int>(position.first - radius),
             static_cast<int>(position.second - radius),
             static_cast<int>(2 * radius),
             static_cast<int>(2 * radius)
         };
 
-        SDL_RenderCopy(_renderer.get(), _textureManager.getTexture(typeid(ball).name()).get(), nullptr, &destRect);
+        SDL_RenderCopy(_renderer.get(), _texture_manager.getTexture(typeid(ball).name()).get(), nullptr, &dest_rect);
     }
 
-    for (const auto& powerUp : _powerUps)
+    for (const auto& power_p : _power_ups)
     {
-        if(powerUp->isActive())
+        if(power_p->isActive())
         {
             continue;
         }
-        std::pair<_Float32, _Float32> position = powerUp->getCenter();
-        _Float32 radius = powerUp->getRadius();
+        std::pair<_Float32, _Float32> position = power_p->getCenter();
+        _Float32 radius = power_p->getRadius();
         SDL_Rect rect = {static_cast<int>(position.first - radius), static_cast<int>(position.second - radius), static_cast<int>(2 * radius), static_cast<int>(2 * radius)};
 
-        std::shared_ptr<SDL_Texture> powerUpSurface = _textureManager.getTexture(typeid(*powerUp).name());
-        if (powerUpSurface.get() != nullptr)
-        {
-            SDL_RenderCopy(_renderer.get(), powerUpSurface.get(), nullptr, &rect);
-        }
-        else        
-            SDL_FillRect(_surface.get(), &rect, SDL_MapRGBA(_surface->format, 255, 255, 0, 0));
+        std::shared_ptr<SDL_Texture> power_up_surface = _texture_manager.getTexture(typeid(*power_p).name());
+        if (!power_up_surface.get())
+            throw std::runtime_error("No texture for power_p");
+        SDL_RenderCopy(_renderer.get(), power_up_surface.get(), nullptr, &rect);
     }
 
-    SDL_Color color = _platform.getColor();
     const SDL_FRect& rect = _platform.getRect();
-    SDL_Rect destRect = {static_cast<int>(rect.x), static_cast<int>(rect.y), static_cast<int>(rect.w), static_cast<int>(rect.h)};
-    std::shared_ptr<SDL_Texture> platformSurface = _textureManager.getTexture(typeid(_platform).name());
-
-    if(platformSurface.get() != nullptr)
-        SDL_RenderCopy(_renderer.get(), platformSurface.get(), nullptr, &destRect);
-    else
-        SDL_FillRect(_surface.get(), &destRect, SDL_MapRGBA(_surface->format, color.r, color.g, color.b, color.a));
+    SDL_Rect dest_rect = {static_cast<int>(rect.x), static_cast<int>(rect.y), static_cast<int>(rect.w), static_cast<int>(rect.h)};
+    std::shared_ptr<SDL_Texture> platform_surface = _texture_manager.getTexture(typeid(_platform).name());
+    if (!platform_surface.get())
+        throw std::runtime_error("No texture for platform");
+    SDL_RenderCopy(_renderer.get(), platform_surface.get(), nullptr, &dest_rect);
 
     return _surface;
 }
@@ -449,11 +442,6 @@ Platform& BrickBreaker::getPlatform()
 std::vector<Ball>& BrickBreaker::getBalls()
 {
     return _balls;
-}
-
-BrickBreaker::~BrickBreaker()
-{
-    
 }
 
 const _Float32 BrickBreaker::getInitialPlatformSpeed() const

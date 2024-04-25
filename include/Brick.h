@@ -11,7 +11,7 @@
 class Brick
 {
 public:
-    Brick(std::pair<uint32_t, uint32_t> position, std::pair<_Float32, _Float32> grid_dimensions, std::pair<_Float32, _Float32> surface_size, uint32_t color, int resistance, std::string PowerUp, const std::shared_ptr<SDL_Renderer> renderer=nullptr);
+    Brick(std::pair<uint32_t, uint32_t> position, std::pair<_Float32, _Float32> grid_dimensions, std::pair<_Float32, _Float32> surface_size, uint32_t color, int resistance, std::string power_up_name);
 
     int getResistance() const;
     void decreaseResistance();
@@ -34,13 +34,13 @@ protected:
     int32_t _max_resistance;
     std::unique_ptr<PowerUp> _powerUp;
 
-    std::vector<SDL_Color> GenerateTintAndShadeColors(const SDL_Color& originalColor, int n);
+    std::vector<SDL_Color> GenerateTintAndShadeColors(const SDL_Color& original_color, int vertices_count);
 };
 
 class BrickRectangular : public Brick
 {
     public:
-    BrickRectangular(std::pair<uint32_t, uint32_t> position, std::pair<_Float32, _Float32> grid_dimensions, std::pair<_Float32, _Float32> surface_size, uint32_t color, int resistance, std::string PowerUp, const std::shared_ptr<SDL_Renderer> renderer=nullptr);
+    BrickRectangular(std::pair<uint32_t, uint32_t> position, std::pair<_Float32, _Float32> grid_dimensions, std::pair<_Float32, _Float32> surface_size, uint32_t color, int resistance, std::string power_up_name);
     void calculateVerticesWithPosition(std::pair<_Float32, _Float32> grid_dimensions, std::pair<_Float32, _Float32> surface_size) override;
     std::vector<int32_t> getIndices() const override;
     std::pair<_Float32, _Float32> getCenter() const override;
@@ -49,7 +49,7 @@ class BrickRectangular : public Brick
 class BrickTriangular : public Brick
 {
     public:
-    BrickTriangular(std::pair<uint32_t, uint32_t> position, std::pair<_Float32, _Float32> grid_dimensions, std::pair<_Float32, _Float32> surface_size, uint32_t color, int resistance, std::string PowerUp, const std::shared_ptr<SDL_Renderer> renderer=nullptr);
+    BrickTriangular(std::pair<uint32_t, uint32_t> position, std::pair<_Float32, _Float32> grid_dimensions, std::pair<_Float32, _Float32> surface_size, uint32_t color, int resistance, std::string power_up_name);
     void calculateVerticesWithPosition(std::pair<_Float32, _Float32> grid_dimensions, std::pair<_Float32, _Float32> surface_size) override;
     std::vector<int32_t> getIndices() const override;
     std::pair<_Float32, _Float32> getCenter() const override;
@@ -58,7 +58,7 @@ class BrickTriangular : public Brick
 class BrickHexagonal : public Brick
 {
     public:
-    BrickHexagonal(std::pair<uint32_t, uint32_t> position, std::pair<_Float32, _Float32> grid_dimensions, std::pair<_Float32, _Float32> surface_size, uint32_t color, int resistance, std::string PowerUp, const std::shared_ptr<SDL_Renderer> renderer=nullptr);
+    BrickHexagonal(std::pair<uint32_t, uint32_t> position, std::pair<_Float32, _Float32> grid_dimensions, std::pair<_Float32, _Float32> surface_size, uint32_t color, int resistance, std::string power_up_name);
     void calculateVerticesWithPosition(std::pair<_Float32, _Float32> grid_dimensions, std::pair<_Float32, _Float32> surface_size) override;
     std::vector<int32_t> getIndices() const override;
     std::pair<_Float32, _Float32> getCenter() const override;

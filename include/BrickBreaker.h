@@ -17,7 +17,6 @@ public:
     static constexpr float _BRICK_HEIGHT_LIMIT = 0.4f;
 
     BrickBreaker(std::shared_ptr<SDL_Renderer> renderer, const std::string& filename);
-    ~BrickBreaker();
 
     void handleEvents(SDL_Event& event, std::shared_ptr<void> data1, std::shared_ptr<void> data2) override;
     void update(uint64_t delta_time) override;
@@ -36,15 +35,15 @@ public:
 private:
     std::vector<std::unique_ptr<Brick>> _bricks;
     std::vector<Ball> _balls;
-    std::vector<std::unique_ptr<PowerUp>> _powerUps;
+    std::vector<std::unique_ptr<PowerUp>> _power_ups;
     Platform _platform;
-    std::pair<int32_t, int32_t> _gridDimensions;
-    BrickShape _brickShape;
+    std::pair<int32_t, int32_t> _grid_dimensions;
+    BrickShape _brick_shape;
     int32_t _start_duration;
     std::unique_ptr<TTF_Font, void(*)(TTF_Font*)> _font;
     
     void createBricksFromLevel(const std::string& filename);
-    void handleResize(std::pair<int, int> previousSize, std::pair<int, int> newSize);
+    void handleResize(std::pair<int, int> previous_size, std::pair<int, int> new_size);
 };
 
 #endif

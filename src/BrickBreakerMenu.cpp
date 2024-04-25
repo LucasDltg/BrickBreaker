@@ -6,7 +6,7 @@
 #include "../include/BrickBreakerMenu.h"
 
 BrickBreakerMenu::BrickBreakerMenu(std::shared_ptr<SDL_Renderer> renderer, std::string directory_path)
-: SDLComponent(), _selectedLevel(0), _num_rows(3), _num_columns(3), _brickBreaker(nullptr), _background(nullptr), _current_page(0), _font(nullptr, nullptr)
+: SDLComponent(), _selected_level(0), _num_rows(3), _num_columns(3), _brick_breaker(nullptr), _background(nullptr), _current_page(0), _font(nullptr, nullptr)
 {
     _font = std::unique_ptr<TTF_Font, void(*)(TTF_Font*)>(TTF_OpenFont("./assets/fonts/arial/arial.ttf", getFontSize()), TTF_CloseFont);
     if (!_font.get())
@@ -49,12 +49,12 @@ void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data
         _background->handleEvents(event, data1, data2);
     }
 
-    if (_brickBreaker != nullptr)
+    if (_brick_breaker != nullptr)
     {
         if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
-            _brickBreaker->setSurfaceDimensions(event.window.data1, event.window.data2);
+            _brick_breaker->setSurfaceDimensions(event.window.data1, event.window.data2);
         
-        _brickBreaker->handleEvents(event, data1, data2);
+        _brick_breaker->handleEvents(event, data1, data2);
         return;
     }
     
@@ -64,38 +64,38 @@ void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data
         switch(event.key.keysym.sym)
         {
             case SDLK_RETURN:
-                _brickBreaker = std::make_unique<BrickBreaker>(_renderer, _levels[_selectedLevel + _current_page * _num_rows * _num_columns]._path);
-                _brickBreaker->setSurfaceDimensions(_surface->w, _surface->h);
-                _brickBreaker->initSurface();
+                _brick_breaker = std::make_unique<BrickBreaker>(_renderer, _levels[_selected_level + _current_page * _num_rows * _num_columns]._path);
+                _brick_breaker->setSurfaceDimensions(_surface->w, _surface->h);
+                _brick_breaker->initSurface();
                 break;
             case SDLK_LEFT:
-                if(static_cast<int>(_selectedLevel) % _num_columns == 0)
+                if(static_cast<int>(_selected_level) % _num_columns == 0)
                 {
                     _current_page = (_current_page + _num_pages - 1) % _num_pages;
-                    _selectedLevel = _num_columns * _selectedLevel / _num_columns + _num_columns - 1;
+                    _selected_level = _num_columns * _selected_level / _num_columns + _num_columns - 1;
                 }
                 else
-                    _selectedLevel -= 1;
+                    _selected_level -= 1;
                 break;
             case SDLK_RIGHT:
-                if(_selectedLevel % _num_columns == _num_columns - 1)
+                if(_selected_level % _num_columns == _num_columns - 1)
                 {
                     _current_page = (_current_page + 1) % _num_pages;
-                    _selectedLevel = _num_columns * _selectedLevel / _num_columns - _num_columns + 1;
+                    _selected_level = _num_columns * _selected_level / _num_columns - _num_columns + 1;
                 }
-                else if (_selectedLevel + _current_page * _num_rows * _num_columns < _levels.size() - 1)
-                    _selectedLevel += 1;
+                else if (_selected_level + _current_page * _num_rows * _num_columns < _levels.size() - 1)
+                    _selected_level += 1;
                 
                 break;
             case SDLK_UP:
-                _selectedLevel = (_selectedLevel + _num_columns * (_num_rows - 1)) % (_num_rows * _num_columns);
-                while (_selectedLevel + _current_page * _num_rows * _num_columns >= _levels.size())
-                    _selectedLevel -= _num_columns;
+                _selected_level = (_selected_level + _num_columns * (_num_rows - 1)) % (_num_rows * _num_columns);
+                while (_selected_level + _current_page * _num_rows * _num_columns >= _levels.size())
+                    _selected_level -= _num_columns;
                 break;
             case SDLK_DOWN:                
-                _selectedLevel = (_selectedLevel + _num_columns) % (_num_rows * _num_columns);
-                while (_selectedLevel + _current_page * _num_rows * _num_columns >= _levels.size())
-                    _selectedLevel -= _num_columns;
+                _selected_level = (_selected_level + _num_columns) % (_num_rows * _num_columns);
+                while (_selected_level + _current_page * _num_rows * _num_columns >= _levels.size())
+                    _selected_level -= _num_columns;
             break;
         }
     }
@@ -108,19 +108,19 @@ void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data
         for (size_t i(_current_page * _num_rows * _num_columns); i < _levels.size() && i < _num_rows * _num_columns * (_current_page + 1); ++i)
         {
             const uint32_t padding = getPadding();
-            const _Float32 totalWidth = _surface->w - 2 * padding;
-            const _Float32 totalHeight = _surface->h - 2 * padding;
-            const _Float32 rectWidth = (totalWidth - (_num_columns - 1) * padding / 2) / _num_columns;
-            const _Float32 rectHeight = (totalHeight - (_num_rows - 1) * padding / 2) / _num_rows;
+            const _Float32 total_width = _surface->w - 2 * padding;
+            const _Float32 total_height = _surface->h - 2 * padding;
+            const _Float32 rect_width = (total_width - (_num_columns - 1) * padding / 2) / _num_columns;
+            const _Float32 rect_height = (total_height - (_num_rows - 1) * padding / 2) / _num_rows;
 
             int32_t row = (i % (_num_rows * _num_columns)) / _num_columns;
             int32_t col = (i % (_num_rows * _num_columns)) % _num_columns;
 
-            if (x >= padding + col * (rectWidth + padding / 2) && x <= padding + col * (rectWidth + padding / 2) + rectWidth && y >= padding + row * (rectHeight + padding / 2) && y <= padding + row * (rectHeight + padding / 2) + rectHeight)
+            if (x >= padding + col * (rect_width + padding / 2) && x <= padding + col * (rect_width + padding / 2) + rect_width && y >= padding + row * (rect_height + padding / 2) && y <= padding + row * (rect_height + padding / 2) + rect_height)
             {
-                _brickBreaker = std::make_unique<BrickBreaker>(_renderer, _levels[i]._path);
-                _brickBreaker->setSurfaceDimensions(_surface->w, _surface->h);
-                _brickBreaker->initSurface();
+                _brick_breaker = std::make_unique<BrickBreaker>(_renderer, _levels[i]._path);
+                _brick_breaker->setSurfaceDimensions(_surface->w, _surface->h);
+                _brick_breaker->initSurface();
                 break;
             }
         }
@@ -128,19 +128,19 @@ void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data
         // check if a page was clicked
         if(y >= static_cast<int32_t>(_surface->h - getPadding() / 2))
         {
-            int totalWidth = _num_pages * getPadding() / 4 + (_num_pages - 1) * getPadding() / 2;
-            int startX = _surface->w / 2 - totalWidth / 2;
+            int total_width = _num_pages * getPadding() / 4 + (_num_pages - 1) * getPadding() / 2;
+            int start_x = _surface->w / 2 - total_width / 2;
             for (size_t i(0); i < _num_pages; ++i)
             {
-                SDL_Rect pageRect = {
-                    static_cast<int32_t>(startX + i * getPadding() / 2 + i * getPadding() / 4),
+                SDL_Rect page_rect = {
+                    static_cast<int32_t>(start_x + i * getPadding() / 2 + i * getPadding() / 4),
                     static_cast<int32_t>(_surface->h - getPadding() / 2),                                    
                     static_cast<int32_t>(getPadding() / 4),
                     static_cast<int32_t>(getPadding() / 4)};
-                if (x >= pageRect.x && x <= pageRect.x + pageRect.w)
+                if (x >= page_rect.x && x <= page_rect.x + page_rect.w)
                 {
                     _current_page = i;
-                    _selectedLevel = 0;
+                    _selected_level = 0;
                     break;
                 }
             }
@@ -154,17 +154,17 @@ void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data
         for (size_t i(_current_page * _num_rows * _num_columns); i < _levels.size() && i < _num_rows * _num_columns * (_current_page + 1); ++i)
         {
             const uint32_t padding = getPadding();
-            const _Float32 totalWidth = _surface->w - 2 * padding;
-            const _Float32 totalHeight = _surface->h - 2 * padding;
-            const _Float32 rectWidth = (totalWidth - (_num_columns - 1) * padding / 2) / _num_columns;
-            const _Float32 rectHeight = (totalHeight - (_num_rows - 1) * padding / 2) / _num_rows;
+            const _Float32 total_width = _surface->w - 2 * padding;
+            const _Float32 total_height = _surface->h - 2 * padding;
+            const _Float32 rect_width = (total_width - (_num_columns - 1) * padding / 2) / _num_columns;
+            const _Float32 rect_height = (total_height - (_num_rows - 1) * padding / 2) / _num_rows;
 
             int32_t row = (i % (_num_rows * _num_columns)) / _num_columns;
             int32_t col = (i % (_num_rows * _num_columns)) % _num_columns;
             
-            if (x >= padding + col * (rectWidth + padding / 2) && x <= padding + col * (rectWidth + padding / 2) + rectWidth && y >= padding + row * (rectHeight + padding / 2) && y <= padding + row * (rectHeight + padding / 2) + rectHeight)
+            if (x >= padding + col * (rect_width + padding / 2) && x <= padding + col * (rect_width + padding / 2) + rect_width && y >= padding + row * (rect_height + padding / 2) && y <= padding + row * (rect_height + padding / 2) + rect_height)
             {
-                _selectedLevel = i % (_num_rows * _num_columns);
+                _selected_level = i % (_num_rows * _num_columns);
                 break;
             }
         }
@@ -174,24 +174,24 @@ void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data
         if (event.wheel.y > 0 || event.wheel.x > 0)
         {
             _current_page = (_current_page + _num_pages - 1) % _num_pages;
-            _selectedLevel = (_num_rows * _num_columns * _current_page) + (_selectedLevel % (_num_rows * _num_columns));
+            _selected_level = (_num_rows * _num_columns * _current_page) + (_selected_level % (_num_rows * _num_columns));
         }
         else if (event.wheel.y < 0 || event.wheel.x < 0)
         {
             _current_page = (_current_page + 1) % _num_pages;
-            _selectedLevel = (_num_rows * _num_columns * _current_page) + (_selectedLevel % (_num_rows * _num_columns));
+            _selected_level = (_num_rows * _num_columns * _current_page) + (_selected_level % (_num_rows * _num_columns));
         }
     }
 }
 
 void BrickBreakerMenu::update(uint64_t delta_time)
 {
-    if (_brickBreaker != nullptr)
+    if (_brick_breaker != nullptr)
     {
-        _brickBreaker->update(delta_time);
-        if (!_brickBreaker->isRunning())
+        _brick_breaker->update(delta_time);
+        if (!_brick_breaker->isRunning())
         {
-            _brickBreaker = nullptr;
+            _brick_breaker = nullptr;
             reloadBackground();
         }
     }
@@ -199,14 +199,14 @@ void BrickBreakerMenu::update(uint64_t delta_time)
     {
         _background->update(delta_time);
         
-        const SDL_FRect& platformRect = _background->getPlatform().getRect();
+        const SDL_FRect& platform_rect = _background->getPlatform().getRect();
         const Ball& ball = _background->getBalls().front();
-        _Float32 initialPlatformSpeed = _background->getInitialPlatformSpeed();
+        _Float32 initial_platform_speed = _background->getInitialPlatformSpeed();
         
-        if (ball.getCenter().first < platformRect.x)
-            _background->getPlatform().setSpeedX(-initialPlatformSpeed);
-        else if (ball.getCenter().first > (platformRect.x + platformRect.w))
-            _background->getPlatform().setSpeedX(initialPlatformSpeed);
+        if (ball.getCenter().first < platform_rect.x)
+            _background->getPlatform().setSpeedX(-initial_platform_speed);
+        else if (ball.getCenter().first > (platform_rect.x + platform_rect.w))
+            _background->getPlatform().setSpeedX(initial_platform_speed);
 
 
         if (!_background->isRunning())
@@ -218,9 +218,9 @@ void BrickBreakerMenu::update(uint64_t delta_time)
 
 std::shared_ptr<SDL_Surface> BrickBreakerMenu::render()
 {
-    if (_brickBreaker != nullptr)
+    if (_brick_breaker != nullptr)
     {
-        return _brickBreaker->render();
+        return _brick_breaker->render();
     }
 
     SDL_FillRect(_surface.get(), nullptr, SDL_MapRGB(_surface->format, 0, 0, 0));
@@ -231,55 +231,55 @@ std::shared_ptr<SDL_Surface> BrickBreakerMenu::render()
     }
 
     const uint32_t padding = getPadding();
-    const _Float32 totalWidth = _surface->w - 2 * padding;
-    const _Float32 totalHeight = _surface->h - 2 * padding;
-    const _Float32 rectWidth = (totalWidth - (_num_columns - 1) * padding / 2) / _num_columns;
-    const _Float32 rectHeight = (totalHeight - (_num_rows - 1) * padding / 2) / _num_rows;
+    const _Float32 total_width = _surface->w - 2 * padding;
+    const _Float32 total_height = _surface->h - 2 * padding;
+    const _Float32 rect_width = (total_width - (_num_columns - 1) * padding / 2) / _num_columns;
+    const _Float32 rect_height = (total_height - (_num_rows - 1) * padding / 2) / _num_rows;
 
     for (size_t i(_num_columns * _num_rows * _current_page); i < _levels.size() && i < _num_columns * _num_rows * (_current_page + 1); ++i)
     {
         int32_t row = (i % (_num_rows * _num_columns)) / _num_columns;
         int32_t col = (i % (_num_rows * _num_columns)) % _num_columns;
 
-        _Float32 x = padding + col * (rectWidth + padding / 2);
-        _Float32 y = padding + row * (rectHeight + padding / 2);
+        _Float32 x = padding + col * (rect_width + padding / 2);
+        _Float32 y = padding + row * (rect_height + padding / 2);
 
-        SDL_Rect rect = {static_cast<int32_t>(x), static_cast<int32_t>(y), static_cast<int32_t>(rectWidth), static_cast<int32_t>(rectHeight)};
-        if (_textureManager.getTexture("button").get() != nullptr)
+        SDL_Rect rect = {static_cast<int32_t>(x), static_cast<int32_t>(y), static_cast<int32_t>(rect_width), static_cast<int32_t>(rect_height)};
+        if (_texture_manager.getTexture("button").get() != nullptr)
         {
-            if (i == _selectedLevel + _num_columns * _num_rows * _current_page)
+            if (i == _selected_level + _num_columns * _num_rows * _current_page)
                 {rect.x -= padding / 16; rect.y -= padding / 16; rect.w += padding / 8; rect.h += padding / 8;}
             
-            SDL_RenderCopy(_renderer.get(), _textureManager.getTexture("button").get(), nullptr, &rect);
+            SDL_RenderCopy(_renderer.get(), _texture_manager.getTexture("button").get(), nullptr, &rect);
         }
         else
         {
-            if (i == _selectedLevel + _num_columns * _num_rows * _current_page)
+            if (i == _selected_level + _num_columns * _num_rows * _current_page)
                 {rect.x -= padding / 16; rect.y -= padding / 16; rect.w += padding / 8; rect.h += padding / 8;}
             
             SDL_FillRect(_surface.get(), &rect, SDL_MapRGB(_surface->format, 255, 255, 255));
         }
 
-        SDL_Color textColor = {0, 0, 0};
-        SDL_Surface* textSurface = TTF_RenderText_Solid(_font.get(), _levels[i]._name.c_str(), textColor);
-        SDL_Rect textRect = {static_cast<int32_t>(x + rectWidth / 2 - textSurface->w / 2), static_cast<int32_t>(y + rectHeight / 2 - textSurface->h / 2), textSurface->w, textSurface->h};
-        SDL_BlitSurface(textSurface, nullptr, _surface.get(), &textRect);
-        SDL_FreeSurface(textSurface);
+        SDL_Color text_color = {0, 0, 0};
+        SDL_Surface* text_surface = TTF_RenderText_Solid(_font.get(), _levels[i]._name.c_str(), text_color);
+        SDL_Rect text_rect = {static_cast<int32_t>(x + rect_width / 2 - text_surface->w / 2), static_cast<int32_t>(y + rect_height / 2 - text_surface->h / 2), text_surface->w, text_surface->h};
+        SDL_BlitSurface(text_surface, nullptr, _surface.get(), &text_rect);
+        SDL_FreeSurface(text_surface);
     }
 
     // draw squares for pages numbers
-    const int totalWidthp = _num_pages * padding / 4 + (_num_pages - 1) * padding / 2;
-    int startX = _surface->w / 2 - totalWidthp / 2;
+    const int total_width_p = _num_pages * padding / 4 + (_num_pages - 1) * padding / 2;
+    int start_x = _surface->w / 2 - total_width_p / 2;
     for (size_t i(0); i < _num_pages; ++i)
     {
-        SDL_Rect pageRect = {
-            static_cast<int32_t>(startX + i * padding / 2 + i * padding / 4),
+        SDL_Rect page_rect = {
+            static_cast<int32_t>(start_x + i * padding / 2 + i * padding / 4),
             static_cast<int32_t>(_surface->h - padding / 2),                                    
             static_cast<int32_t>(padding / 4),
             static_cast<int32_t>(padding / 4)};
-        SDL_FillRect(_surface.get(), &pageRect, SDL_MapRGB(_surface->format, 255, 255, 255));
+        SDL_FillRect(_surface.get(), &page_rect, SDL_MapRGB(_surface->format, 255, 255, 255));
         if (i == _current_page)
-            SDL_FillRect(_surface.get(), &pageRect, SDL_MapRGB(_surface->format, 0, 0, 255));
+            SDL_FillRect(_surface.get(), &page_rect, SDL_MapRGB(_surface->format, 0, 0, 255));
     }
 
     return _surface;
@@ -290,7 +290,7 @@ void BrickBreakerMenu::initSurface()
     reloadBackground();
     TTF_SetFontSize(_font.get(), getFontSize());
 
-    _textureManager.loadTexture("./assets/textures/platform.png", "button", _renderer);
+    _texture_manager.loadTexture("./assets/textures/platform.png", "button", _renderer);
 }
 
 uint32_t BrickBreakerMenu::getPadding() const
