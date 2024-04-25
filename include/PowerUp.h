@@ -19,8 +19,8 @@ public:
     int64_t getDuration() const;
 
 protected:
-    int64_t current_duration;
-    bool active;
+    int64_t _current_duration;
+    bool _active;
 };
 
 std::unique_ptr<PowerUp> initPowerUp(std::string name);

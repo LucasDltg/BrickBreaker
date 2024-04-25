@@ -21,9 +21,9 @@ public:
     const int32_t getSpeedX() const;
 
 private:
-    SDL_FRect rect;
-    SDL_Color color;
-    _Float32 speed_x;
+    SDL_FRect _rect;
+    SDL_Color _color;
+    _Float32 _speed_x;
 };
 
 #endif // PLATFORM_H

@@ -17,12 +17,12 @@ public:
     
 
 private:
-    std::shared_ptr<SDL_Window> window;
-    std::shared_ptr<SDL_Renderer> renderer;
-    bool is_running;
-    std::vector<std::shared_ptr<SDLComponent>> components;
-    uint32_t last_time;
-    std::pair<uint32_t, uint32_t> window_dimensions;
+    std::shared_ptr<SDL_Window> _window;
+    std::shared_ptr<SDL_Renderer> _renderer;
+    bool _is_running;
+    std::vector<std::shared_ptr<SDLComponent>> _components;
+    uint32_t _last_time;
+    std::pair<uint32_t, uint32_t> _window_dimensions;
 
     void handleEvents();
     void update(uint64_t delta_time);

@@ -12,11 +12,11 @@ class BrickBreakerMenuLevel
 {
     friend class BrickBreakerMenu;
     public:
-    BrickBreakerMenuLevel(std::string path) : path(path) { std::filesystem::path p(path); name = p.stem().string(); }
+    BrickBreakerMenuLevel(std::string path) : _path(path) { std::filesystem::path p(path); _name = p.stem().string(); }
 
     private:
-    std::string name;
-    std::string path;
+    std::string _name;
+    std::string _path;
 };
 
 class BrickBreakerMenu : public SDLComponent
@@ -33,16 +33,15 @@ private:
     uint32_t getFontSize() const;
     void handleResize(std::pair<int, int> previousSize, std::pair<int, int> newSize);
     void reloadBackground();
-    size_t selectedLevel;
-    uint32_t num_rows;
-    uint32_t num_columns;
-    std::vector<BrickBreakerMenuLevel> levels;
-    std::unique_ptr<BrickBreaker> brickBreaker;
-    std::unique_ptr<BrickBreaker> background;
-    uint32_t current_page;
-    uint32_t num_pages;
-
-    std::unique_ptr<TTF_Font, void(*)(TTF_Font*)> font;
+    size_t _selectedLevel;
+    uint32_t _num_rows;
+    uint32_t _num_columns;
+    std::vector<BrickBreakerMenuLevel> _levels;
+    std::unique_ptr<BrickBreaker> _brickBreaker;
+    std::unique_ptr<BrickBreaker> _background;
+    uint32_t _current_page;
+    uint32_t _num_pages;
+    std::unique_ptr<TTF_Font, void(*)(TTF_Font*)> _font;
 };
 
 #endif // BRICKBREAKERMENU_H

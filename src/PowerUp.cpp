@@ -18,23 +18,23 @@ std::unique_ptr<PowerUp> initPowerUp(std::string name)
 }
 
 PowerUp::PowerUp(int32_t current_duration)
-: Circle(), current_duration(current_duration), active(false)
+: Circle(), _current_duration(current_duration), _active(false)
 {}
 
 bool PowerUp::isActive() const
 {
-    return active;
+    return _active;
 }
 
 void PowerUp::decrementDuration(uint64_t delta_time)
 {
-    if (active)
-        current_duration -= delta_time;
+    if (_active)
+        _current_duration -= delta_time;
 }
 
 int64_t PowerUp::getDuration() const
 {
-    return current_duration;
+    return _current_duration;
 }
 
 AddBallPowerUp::AddBallPowerUp()
@@ -43,7 +43,7 @@ AddBallPowerUp::AddBallPowerUp()
 
 void AddBallPowerUp::applyPowerUp(BrickBreaker &game)
 {
-    active = true;
+    _active = true;
     
     const SDL_FRect& platformRect = game.getPlatform().getRect();
     Ball ball = Ball(game.getBallRadius(), std::pair<_Float32, _Float32>{static_cast<_Float32>(platformRect.x) + static_cast<_Float32>(platformRect.w) / 2.0f, 
@@ -61,7 +61,7 @@ DuplicateBallPowerUp::DuplicateBallPowerUp()
 
 void DuplicateBallPowerUp::applyPowerUp(BrickBreaker &game)
 {
-    active = true;
+    _active = true;
     
     for (auto &ball : game.getBalls()) {
         
@@ -87,7 +87,7 @@ ExtendPlatformPowerUp::ExtendPlatformPowerUp()
 
 void ExtendPlatformPowerUp::applyPowerUp(BrickBreaker &game)
 {
-    active = true;
+    _active = true;
     Platform& p = game.getPlatform();
     p.setRect({p.getRect().x , p.getRect().y, p.getRect().w * 1.5f, p.getRect().h});
     // p.setRect({static_cast<int32_t>(p.getRect().x - (p.getRect().w * 0.25f)), p.getRect().y, static_cast<int32_t>(p.getRect().w * 1.5f), p.getRect().h});
@@ -106,7 +106,7 @@ SpeedUpPowerUp::SpeedUpPowerUp()
 
 void SpeedUpPowerUp::applyPowerUp(BrickBreaker &game)
 {
-    active = true;
+    _active = true;
     for (auto &ball : game.getBalls())
     {
         ball.setSpeed({ball.getSpeed().first * 1.2f, ball.getSpeed().second * 1.2f});

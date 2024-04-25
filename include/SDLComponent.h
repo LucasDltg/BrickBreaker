@@ -16,10 +16,10 @@ public:
     bool isRunning() const;
 
 protected:
-    std::shared_ptr<SDL_Surface> surface;
-    bool is_running;
-    std::shared_ptr<SDL_Renderer> renderer;
-    TextureManager textureManager;
+    std::shared_ptr<SDL_Surface> _surface;
+    bool _is_running;
+    std::shared_ptr<SDL_Renderer> _renderer;
+    TextureManager _textureManager;
 };
 
 #endif

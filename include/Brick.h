@@ -27,12 +27,12 @@ public:
     virtual std::pair<_Float32, _Float32> getCenter() const = 0;
 
 protected:
-    std::pair<uint32_t, uint32_t> position;
-    std::vector<SDL_Vertex> vertices;
-    uint32_t color;
-    int resistance;
+    std::pair<uint32_t, uint32_t> _position;
+    std::vector<SDL_Vertex> _vertices;
+    uint32_t _color;
+    int _resistance;
     int32_t _max_resistance;
-    std::unique_ptr<PowerUp> powerUp;
+    std::unique_ptr<PowerUp> _powerUp;
 
     std::vector<SDL_Color> GenerateTintAndShadeColors(const SDL_Color& originalColor, int n);
 };

@@ -4,43 +4,43 @@
 #include <iostream>
 
 Platform::Platform()
-: rect({ 0, 0, 0, 0 }), color({ 0, 0, 0, 0 }), speed_x(0)
+: _rect({ 0, 0, 0, 0 }), _color({ 0, 0, 0, 0 }), _speed_x(0)
 {}
 
 void Platform::setRect(const SDL_FRect& rect) {
-    this->rect = rect;
+    _rect = rect;
 }
 
 void Platform::setColor(const SDL_Color& color) {
-    this->color = color;
+    _color = color;
 }
 
 const SDL_FRect& Platform::getRect() const {
-    return rect;
+    return _rect;
 }
 
 SDL_FRect& Platform::getRect() {
-    return rect;
+    return _rect;
 }
 
 const SDL_Color Platform::getColor() const {
-    return color;
+    return _color;
 }
 
 void Platform::setSpeedX(_Float32 speed_x)
 {
-    this->speed_x = speed_x;
+    _speed_x = speed_x;
 }
 
 void Platform::update(uint64_t delta_time, int screen_width)
 {
-    rect.x += speed_x * delta_time;
-    if (rect.x + rect.w > screen_width)
-        rect.x = screen_width - rect.w;
-    else if (rect.x + speed_x < 0)
-        rect.x = 0;
+    _rect.x += _speed_x * delta_time;
+    if (_rect.x + _rect.w > screen_width)
+        _rect.x = screen_width - _rect.w;
+    else if (_rect.x + _speed_x < 0)
+        _rect.x = 0;
 }
 
 const int32_t Platform::getSpeedX() const {
-    return speed_x;
+    return _speed_x;
 }

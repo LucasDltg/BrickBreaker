@@ -28,10 +28,10 @@ public:
     bool resolveCollisionWithLine(std::pair<_Float32, _Float32> p1, std::pair<_Float32, _Float32> p2);
 
 private:
-    _Float32 radius;
-    std::pair<_Float32, _Float32> center;
-    SDL_Color color;
-    std::pair<_Float32, _Float32> speed;
+    _Float32 _radius;
+    std::pair<_Float32, _Float32> _center;
+    SDL_Color _color;
+    std::pair<_Float32, _Float32> _speed;
 };
 
 #endif // CIRCLE_H

@@ -16,7 +16,7 @@ public:
     void clearTextures();
 
 private:
-    std::map<std::string, std::tuple<std::string, SDL_BlendMode, std::shared_ptr<SDL_Texture>>> textures; 
+    std::map<std::string, std::tuple<std::string, SDL_BlendMode, std::shared_ptr<SDL_Texture>>> _textures; 
     // on utilise des shared_ptr pour les textures malgré le fait qu'il faut quelles soit détruites avant le renderer, car le renderer est créé avant les textures et dont détruit après
 };
 
