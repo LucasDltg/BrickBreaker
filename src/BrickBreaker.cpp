@@ -18,9 +18,7 @@ BrickBreaker::BrickBreaker(std::shared_ptr<SDL_Renderer> renderer, const std::st
     
     _font = std::unique_ptr<TTF_Font, void(*)(TTF_Font*)>(TTF_OpenFont("./assets/fonts/arial/arial.ttf", 24), TTF_CloseFont);
     if (!_font.get())
-    {
-        std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
-    }
+        throw std::runtime_error("Failed to load font: " + std::string(TTF_GetError()));
 }
 
 void BrickBreaker::initSurface()
@@ -92,7 +90,8 @@ void BrickBreaker::handleResize(std::pair<int, int> previous_size, std::pair<int
 
 void BrickBreaker::createBricksFromLevel(const std::string& filename) {
     std::ifstream file(filename);
-    if (!file.is_open()) {
+    if (!file.is_open())
+    {
         std::cerr << "Failed to open level file: " << filename << std::endl;
         _is_running = false;
         return;
@@ -308,6 +307,7 @@ void BrickBreaker::update(uint64_t delta_time)
 std::shared_ptr<SDL_Surface> BrickBreaker::render()
 {
     // reset surface
+    SDL_SetRenderDrawColor(_renderer.get(), 0, 0, 0, 255);
     SDL_RenderFillRect(_renderer.get(), nullptr);
     
     // check if all balls are lost or all bricks are destroyed or have resisitance < 0
@@ -339,8 +339,6 @@ std::shared_ptr<SDL_Surface> BrickBreaker::render()
         SDL_BlitSurface(text_surface, nullptr, _surface.get(), &dest_rect);
         SDL_FreeSurface(text_surface);
     }
-
-    SDL_SetRenderDrawColor(_renderer.get(), 0, 0, 0, 255);
 
     for (const auto& brick : _bricks)
     {
@@ -398,28 +396,38 @@ std::shared_ptr<SDL_Surface> BrickBreaker::render()
         SDL_RenderCopy(_renderer.get(), _texture_manager.getTexture(typeid(ball).name()).get(), nullptr, &dest_rect);
     }
 
-    for (const auto& power_p : _power_ups)
+    for (const auto& power_up : _power_ups)
     {
-        if(power_p->isActive())
+        if(power_up->isActive())
         {
             continue;
         }
-        std::pair<_Float32, _Float32> position = power_p->getCenter();
-        _Float32 radius = power_p->getRadius();
+        std::pair<_Float32, _Float32> position = power_up->getCenter();
+        _Float32 radius = power_up->getRadius();
         SDL_Rect rect = {static_cast<int>(position.first - radius), static_cast<int>(position.second - radius), static_cast<int>(2 * radius), static_cast<int>(2 * radius)};
 
-        std::shared_ptr<SDL_Texture> power_up_surface = _texture_manager.getTexture(typeid(*power_p).name());
+        std::shared_ptr<SDL_Texture> power_up_surface = _texture_manager.getTexture(typeid(*power_up).name());
         if (!power_up_surface.get())
-            throw std::runtime_error("No texture for power_p");
-        SDL_RenderCopy(_renderer.get(), power_up_surface.get(), nullptr, &rect);
+        {
+            std::cerr << "No texture for power-up" << std::endl;
+            SDL_SetRenderDrawColor(_renderer.get(), 255, 0, 0, 255);
+            SDL_RenderFillRect(_renderer.get(), &rect);
+        }
+        else
+            SDL_RenderCopy(_renderer.get(), power_up_surface.get(), nullptr, &rect);
     }
 
     const SDL_FRect& rect = _platform.getRect();
     SDL_Rect dest_rect = {static_cast<int>(rect.x), static_cast<int>(rect.y), static_cast<int>(rect.w), static_cast<int>(rect.h)};
     std::shared_ptr<SDL_Texture> platform_surface = _texture_manager.getTexture(typeid(_platform).name());
     if (!platform_surface.get())
-        throw std::runtime_error("No texture for platform");
-    SDL_RenderCopy(_renderer.get(), platform_surface.get(), nullptr, &dest_rect);
+    {
+        std::cerr << "No texture for platform" << std::endl;
+        SDL_SetRenderDrawColor(_renderer.get(), 255, 0, 0, 255);
+        SDL_RenderFillRect(_renderer.get(), &dest_rect);
+    }
+    else
+        SDL_RenderCopy(_renderer.get(), platform_surface.get(), nullptr, &dest_rect);
 
     return _surface;
 }

@@ -9,6 +9,7 @@ void TextureManager::loadTexture(const char* file_name, const char* key, const s
     if (!std::get<2>(_textures[key]).get())
     {
         std::cerr << "Failed to load texture: " << SDL_GetError() << std::endl;
+        return;
     }
     
     // parcourt les 4 premiers bits de flags pour savoir si on doit appliquer une couleur à la texture
@@ -31,6 +32,7 @@ void TextureManager::updateTextures(const std::shared_ptr<SDL_Renderer> renderer
         if (!std::get<2>(texture.second).get())
         {
             std::cerr << "Failed to load texture: " << SDL_GetError() << std::endl;
+            continue;
         }
 
         if (std::get<1>(texture.second) != SDL_BLENDMODE_INVALID)

@@ -10,10 +10,7 @@ BrickBreakerMenu::BrickBreakerMenu(std::shared_ptr<SDL_Renderer> renderer, std::
 {
     _font = std::unique_ptr<TTF_Font, void(*)(TTF_Font*)>(TTF_OpenFont("./assets/fonts/arial/arial.ttf", getFontSize()), TTF_CloseFont);
     if (!_font.get())
-    {
-        std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
-        return;
-    }
+        throw std::runtime_error("Failed to load font: " + std::string(TTF_GetError()));
 
     for (const auto& entry : std::filesystem::directory_iterator(directory_path)) {
         if (entry.is_regular_file()) {
@@ -25,10 +22,8 @@ BrickBreakerMenu::BrickBreakerMenu(std::shared_ptr<SDL_Renderer> renderer, std::
     }
 
     if(_levels.empty())
-    {
-        std::cerr << "No levels found in " << directory_path << std::endl;
-        return;
-    }
+        throw std::runtime_error("No levels found in directory: " + directory_path);
+    
     _num_pages = _levels.size() / _num_rows / _num_columns + (_levels.size() % (_num_rows * _num_columns) != 0);
     srand(time(nullptr));
 }

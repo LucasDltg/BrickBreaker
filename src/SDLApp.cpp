@@ -6,40 +6,25 @@
 SDLApp::SDLApp(int screen_width, int screen_height, uint32_t flags)
     : _window(nullptr, SDL_DestroyWindow), _renderer(nullptr, SDL_DestroyRenderer), _is_running(false), _last_time(0)
 {
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
-        std::cerr << "SDL initialization failed: " << SDL_GetError() << std::endl;
-        return;
-    }
-
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
+        throw std::runtime_error("SDL initialization failed: " + std::string(SDL_GetError()));
+    
     int img_flags = IMG_INIT_PNG;
-    if (!(IMG_Init(img_flags) & img_flags)) {
-        std::cerr << "SDL_image initialization failed: " << IMG_GetError() << std::endl;
-        SDL_Quit();
-        return;
-    }
+    if (!(IMG_Init(img_flags) & img_flags))
+        throw std::runtime_error("SDL_image initialization failed: " + std::string(IMG_GetError()));
 
     if(TTF_Init() == -1)
-    {
-        std::cerr << "SDL_ttf initialization failed: " << TTF_GetError() << std::endl;
-        return;
-    }
+        throw std::runtime_error("SDL_ttf initialization failed: " + std::string(TTF_GetError()));
 
     _window.reset(SDL_CreateWindow("SDL Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                   screen_width, screen_height, SDL_WINDOW_SHOWN | flags), SDL_DestroyWindow);
     if (!_window.get())
-    {
-        std::cerr << "Window creation failed: " << SDL_GetError() << std::endl;
-        SDL_Quit();
-        return;
-    }
+        throw std::runtime_error("Window creation failed: " + std::string(SDL_GetError()));
 
     _renderer.reset(SDL_CreateRenderer(_window.get(), -1, SDL_RENDERER_ACCELERATED), SDL_DestroyRenderer);
     if (!_renderer.get())
-    {
-        std::cerr << "Renderer creation failed: " << SDL_GetError() << std::endl;
-        SDL_Quit();
-        return;
-    }
+        throw std::runtime_error("Renderer creation failed: " + std::string(SDL_GetError()));
+        
     SDL_SetRenderDrawBlendMode(_renderer.get(), SDL_BLENDMODE_BLEND);
 
     _is_running = true;
