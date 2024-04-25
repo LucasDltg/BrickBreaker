@@ -4,7 +4,6 @@
 #include "../include/BrickBreaker.h"
 #include "../include/BrickBreakerMenu.h"
 
-// consistence throw et cerr
 // const
 // public et private
 // collision rectangle

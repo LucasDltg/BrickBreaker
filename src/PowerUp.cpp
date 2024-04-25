@@ -89,15 +89,13 @@ void ExtendPlatformPowerUp::applyPowerUp(BrickBreaker &game)
 {
     _active = true;
     Platform& p = game.getPlatform();
-    p.setRect({p.getRect().x , p.getRect().y, p.getRect().w * 1.5f, p.getRect().h});
-    // p.setRect({static_cast<int32_t>(p.getRect().x - (p.getRect().w * 0.25f)), p.getRect().y, static_cast<int32_t>(p.getRect().w * 1.5f), p.getRect().h});
+    p.setRect({p.getRect().x - (p.getRect().w * 0.25f), p.getRect().y, p.getRect().w * 1.5f, p.getRect().h});
 }
 
 void ExtendPlatformPowerUp::unApplyPowerUp(BrickBreaker &game)
 {
     Platform& p = game.getPlatform();
-    p.setRect({p.getRect().x , p.getRect().y, p.getRect().w / 1.5f, p.getRect().h});
-    // p.setRect({static_cast<int32_t>(p.getRect().x + (p.getRect().w * 0.25f)), p.getRect().y, static_cast<int32_t>(p.getRect().w / 1.5f), p.getRect().h});
+    p.setRect({p.getRect().x + (p.getRect().w * 0.25f), p.getRect().y, p.getRect().w / 1.5f, p.getRect().h});
 }
 
 SpeedUpPowerUp::SpeedUpPowerUp()

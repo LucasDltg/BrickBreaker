@@ -81,10 +81,10 @@ void BrickBreaker::handleResize(std::pair<int, int> previous_size, std::pair<int
 
     // Resize platform
     SDL_FRect rect = _platform.getRect();
-    rect.x = static_cast<_Float32>(rect.x) * (static_cast<_Float32>(new_size.first) / static_cast<float>(previous_size.first));
-    rect.y = static_cast<_Float32>(rect.y) * (static_cast<_Float32>(new_size.second) / static_cast<float>(previous_size.second));
-    rect.w = static_cast<_Float32>(rect.w) * (static_cast<_Float32>(new_size.first) / static_cast<float>(previous_size.first));
-    rect.h = static_cast<_Float32>(rect.h) * (static_cast<_Float32>(new_size.second) / static_cast<float>(previous_size.second));
+    rect.x = rect.x * (static_cast<_Float32>(new_size.first) / static_cast<float>(previous_size.first));
+    rect.y = rect.y * (static_cast<_Float32>(new_size.second) / static_cast<float>(previous_size.second));
+    rect.w = rect.w * (static_cast<_Float32>(new_size.first) / static_cast<float>(previous_size.first));
+    rect.h = rect.h * (static_cast<_Float32>(new_size.second) / static_cast<float>(previous_size.second));
     _platform.setRect(rect);
 }
 
