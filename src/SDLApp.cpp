@@ -2,6 +2,7 @@
 #include <iostream>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include <algorithm>
 
 SDLApp::SDLApp(int screen_width, int screen_height, uint32_t flags)
     : _window(nullptr, SDL_DestroyWindow), _renderer(nullptr, SDL_DestroyRenderer), _is_running(false), _last_time(0)
@@ -24,7 +25,7 @@ SDLApp::SDLApp(int screen_width, int screen_height, uint32_t flags)
     _renderer.reset(SDL_CreateRenderer(_window.get(), -1, SDL_RENDERER_ACCELERATED), SDL_DestroyRenderer);
     if (!_renderer.get())
         throw std::runtime_error("Renderer creation failed: " + std::string(SDL_GetError()));
-        
+
     SDL_SetRenderDrawBlendMode(_renderer.get(), SDL_BLENDMODE_BLEND);
 
     _is_running = true;
@@ -81,6 +82,12 @@ void SDLApp::handleEvents()
         }
         else if(event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) // a changer pour pouvoir afficher plusieurs objets
         {            
+            if (event.window.data1 < _MIN_SCREEN_WIDTH || event.window.data2 < _MIN_SCREEN_HEIGHT)
+            {
+                SDL_SetWindowSize(_window.get(), _window_dimensions.first, _window_dimensions.second);
+                continue;
+            }
+            
             // on change la taille ici, pour communiquer la nouvelle taille aux objets (ils sont libres de la garder ou non)
             for (auto& obj : _components)
             {

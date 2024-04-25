@@ -10,15 +10,12 @@
 // collsion bordure
 // portee
 // fix ball leaving the screen at low fps
-// change platform rect to have float values
-// nom de variable
 // bug mineur avec menu, deplacement
-// empecher resize ne conserve pas les dimensions
 
 int main()
 {
-    const int SCREEN_WIDTH = 1092;
-    const int SCREEN_HEIGHT = 600;
+    const int SCREEN_WIDTH = SDLApp::_MIN_SCREEN_WIDTH;
+    const int SCREEN_HEIGHT = SDLApp::_MIN_SCREEN_HEIGHT;
 
     SDLApp app(SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE);
     app.addComponent(std::make_shared<BrickBreakerMenu>(app.getRenderer()));
