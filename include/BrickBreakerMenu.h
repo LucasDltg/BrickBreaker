@@ -31,7 +31,7 @@ public:
 private:
     uint32_t getPadding() const;
     uint32_t getFontSize() const;
-    void handleResize(std::pair<int, int> previous_size, std::pair<int, int> new_size);
+    void handleResize(std::pair<int32_t, int32_t> previous_size, std::pair<int32_t, int32_t> new_size);
     void reloadBackground();
     size_t _selected_level;
     uint32_t _num_rows;

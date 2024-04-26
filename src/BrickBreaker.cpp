@@ -48,7 +48,7 @@ void BrickBreaker::initSurface()
     _texture_manager.loadTexture("assets/textures/bubble_speed.png", typeid(SpeedUpPowerUp).name(), _renderer);
 }
 
-void BrickBreaker::handleResize(std::pair<int, int> previous_size, std::pair<int, int> new_size)
+void BrickBreaker::handleResize(std::pair<int32_t, int32_t> previous_size, std::pair<int32_t, int32_t> new_size)
 {
     for (auto& brick : _bricks)
     {
@@ -59,32 +59,32 @@ void BrickBreaker::handleResize(std::pair<int, int> previous_size, std::pair<int
     {
         std::pair<_Float32, _Float32> center = ball.getCenter();
 
-        uint32_t new_x = static_cast<uint32_t>(static_cast<float>(center.first) * (static_cast<float>(new_size.first) / static_cast<float>(previous_size.first)));
-        uint32_t new_y = static_cast<uint32_t>(static_cast<float>(center.second) * (static_cast<float>(new_size.second) / static_cast<float>(previous_size.second)));
+        uint32_t new_x = static_cast<uint32_t>(static_cast<_Float32>(center.first) * (static_cast<_Float32>(new_size.first) / static_cast<_Float32>(previous_size.first)));
+        uint32_t new_y = static_cast<uint32_t>(static_cast<_Float32>(center.second) * (static_cast<_Float32>(new_size.second) / static_cast<_Float32>(previous_size.second)));
 
         ball.setCenter({new_x, new_y});
-        ball.setSpeed({ball.getSpeed().first * (static_cast<float>(new_size.first) / static_cast<float>(previous_size.first)), ball.getSpeed().second * (static_cast<float>(new_size.second) / static_cast<float>(previous_size.second))});
-        ball.setRadius(ball.getRadius() * (static_cast<float>(new_size.first) / static_cast<float>(previous_size.first)));
+        ball.setSpeed({ball.getSpeed().first * (static_cast<_Float32>(new_size.first) / static_cast<_Float32>(previous_size.first)), ball.getSpeed().second * (static_cast<_Float32>(new_size.second) / static_cast<_Float32>(previous_size.second))});
+        ball.setRadius(ball.getRadius() * (static_cast<_Float32>(new_size.first) / static_cast<_Float32>(previous_size.first)));
     }
 
     for (auto& power_up : _power_ups)
     {
         std::pair<_Float32, _Float32> center = power_up->getCenter();
 
-        uint32_t new_x = static_cast<uint32_t>(static_cast<float>(center.first) * (static_cast<float>(new_size.first) / static_cast<float>(previous_size.first)));
-        uint32_t new_y = static_cast<uint32_t>(static_cast<float>(center.second) * (static_cast<float>(new_size.second) / static_cast<float>(previous_size.second)));
+        uint32_t new_x = static_cast<uint32_t>(static_cast<_Float32>(center.first) * (static_cast<_Float32>(new_size.first) / static_cast<_Float32>(previous_size.first)));
+        uint32_t new_y = static_cast<uint32_t>(static_cast<_Float32>(center.second) * (static_cast<_Float32>(new_size.second) / static_cast<_Float32>(previous_size.second)));
 
         power_up->setCenter({new_x, new_y});
-        power_up->setSpeed({power_up->getSpeed().first * (static_cast<float>(new_size.first) / static_cast<float>(previous_size.first)), power_up->getSpeed().second * (static_cast<float>(new_size.second) / static_cast<float>(previous_size.second))});
-        power_up->setRadius(power_up->getRadius() * (static_cast<float>(new_size.first) / static_cast<float>(previous_size.first)));
+        power_up->setSpeed({power_up->getSpeed().first * (static_cast<_Float32>(new_size.first) / static_cast<_Float32>(previous_size.first)), power_up->getSpeed().second * (static_cast<_Float32>(new_size.second) / static_cast<_Float32>(previous_size.second))});
+        power_up->setRadius(power_up->getRadius() * (static_cast<_Float32>(new_size.first) / static_cast<_Float32>(previous_size.first)));
     }
 
     // Resize platform
     SDL_FRect rect = _platform.getRect();
-    rect.x = rect.x * (static_cast<_Float32>(new_size.first) / static_cast<float>(previous_size.first));
-    rect.y = rect.y * (static_cast<_Float32>(new_size.second) / static_cast<float>(previous_size.second));
-    rect.w = rect.w * (static_cast<_Float32>(new_size.first) / static_cast<float>(previous_size.first));
-    rect.h = rect.h * (static_cast<_Float32>(new_size.second) / static_cast<float>(previous_size.second));
+    rect.x = rect.x * (static_cast<_Float32>(new_size.first) / static_cast<_Float32>(previous_size.first));
+    rect.y = rect.y * (static_cast<_Float32>(new_size.second) / static_cast<_Float32>(previous_size.second));
+    rect.w = rect.w * (static_cast<_Float32>(new_size.first) / static_cast<_Float32>(previous_size.first));
+    rect.h = rect.h * (static_cast<_Float32>(new_size.second) / static_cast<_Float32>(previous_size.second));
     _platform.setRect(rect);
 }
 
@@ -170,7 +170,7 @@ void BrickBreaker::handleEvents(SDL_Event& event, std::shared_ptr<void> data1, s
 {
     if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
     {
-        handleResize({*(int*)data1.get(), *(int*)data2.get()}, {event.window.data1, event.window.data2});
+        handleResize({*(int32_t*)data1.get(), *(int32_t*)data2.get()}, {event.window.data1, event.window.data2});
     }
     else if (event.type == SDL_MOUSEMOTION)
     {
@@ -384,13 +384,13 @@ std::shared_ptr<SDL_Surface> BrickBreaker::render()
     for (const auto& ball : _balls)
     {
         const std::pair<uint32_t, uint32_t> position = ball.getCenter();
-        float radius = ball.getRadius();
+        _Float32 radius = ball.getRadius();
 
         SDL_Rect dest_rect = {
-            static_cast<int>(position.first - radius),
-            static_cast<int>(position.second - radius),
-            static_cast<int>(2 * radius),
-            static_cast<int>(2 * radius)
+            static_cast<int32_t>(position.first - radius),
+            static_cast<int32_t>(position.second - radius),
+            static_cast<int32_t>(2 * radius),
+            static_cast<int32_t>(2 * radius)
         };
 
         SDL_RenderCopy(_renderer.get(), _texture_manager.getTexture(typeid(ball).name()).get(), nullptr, &dest_rect);
@@ -404,7 +404,7 @@ std::shared_ptr<SDL_Surface> BrickBreaker::render()
         }
         std::pair<_Float32, _Float32> position = power_up->getCenter();
         _Float32 radius = power_up->getRadius();
-        SDL_Rect rect = {static_cast<int>(position.first - radius), static_cast<int>(position.second - radius), static_cast<int>(2 * radius), static_cast<int>(2 * radius)};
+        SDL_Rect rect = {static_cast<int32_t>(position.first - radius), static_cast<int32_t>(position.second - radius), static_cast<int32_t>(2 * radius), static_cast<int32_t>(2 * radius)};
 
         std::shared_ptr<SDL_Texture> power_up_surface = _texture_manager.getTexture(typeid(*power_up).name());
         if (!power_up_surface.get())
@@ -418,7 +418,7 @@ std::shared_ptr<SDL_Surface> BrickBreaker::render()
     }
 
     const SDL_FRect& rect = _platform.getRect();
-    SDL_Rect dest_rect = {static_cast<int>(rect.x), static_cast<int>(rect.y), static_cast<int>(rect.w), static_cast<int>(rect.h)};
+    SDL_Rect dest_rect = {static_cast<int32_t>(rect.x), static_cast<int32_t>(rect.y), static_cast<int32_t>(rect.w), static_cast<int32_t>(rect.h)};
     std::shared_ptr<SDL_Texture> platform_surface = _texture_manager.getTexture(typeid(_platform).name());
     if (!platform_surface.get())
     {

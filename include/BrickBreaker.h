@@ -14,7 +14,7 @@ enum class BrickShape {RECTANGLE, HEXAGON, TRIANGLE};
 
 class BrickBreaker : public SDLComponent {
 public:
-    static constexpr float _BRICK_HEIGHT_LIMIT = 0.4f;
+    static constexpr _Float32 _BRICK_HEIGHT_LIMIT = 0.4f;
 
     BrickBreaker(std::shared_ptr<SDL_Renderer> renderer, const std::string& filename);
 
@@ -43,7 +43,7 @@ private:
     std::unique_ptr<TTF_Font, void(*)(TTF_Font*)> _font;
     
     void createBricksFromLevel(const std::string& filename);
-    void handleResize(std::pair<int, int> previous_size, std::pair<int, int> new_size);
+    void handleResize(std::pair<int32_t, int32_t> previous_size, std::pair<int32_t, int32_t> new_size);
 };
 
 #endif

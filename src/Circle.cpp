@@ -50,8 +50,8 @@ void Circle::update(uint64_t delta_time) {
 }
 
 bool Circle::resolveCollisionWithRectangle(const SDL_FRect& rect) {
-    float closest_x = _center.first;
-    float closest_y = _center.second;
+    _Float32 closest_x = _center.first;
+    _Float32 closest_y = _center.second;
 
     if (_center.first < rect.x)
         closest_x = rect.x;
@@ -63,14 +63,14 @@ bool Circle::resolveCollisionWithRectangle(const SDL_FRect& rect) {
     else if (_center.second > rect.y + rect.h)
         closest_y = rect.y + rect.h;
 
-    float distance = sqrt((_center.first - closest_x) * (_center.first - closest_x) + 
+    _Float32 distance = sqrt((_center.first - closest_x) * (_center.first - closest_x) + 
                           (_center.second - closest_y) * (_center.second - closest_y));
 
     if (distance < _radius)
     {
-        float overlap = _radius - distance;
-        float dx = _center.first - closest_x;
-        float dy = _center.second - closest_y;
+        _Float32 overlap = _radius - distance;
+        _Float32 dx = _center.first - closest_x;
+        _Float32 dy = _center.second - closest_y;
 
         if (dx > 0)
             dx = overlap;
@@ -85,9 +85,9 @@ bool Circle::resolveCollisionWithRectangle(const SDL_FRect& rect) {
         _center.first += dx;
         _center.second += dy;
 
-        float collision_angle = atan2(_center.second - (rect.y + rect.h / 2), _center.first - (rect.x + rect.w / 2));
+        _Float32 collision_angle = atan2(_center.second - (rect.y + rect.h / 2), _center.first - (rect.x + rect.w / 2));
 
-        float current_speed = sqrt(_speed.first * _speed.first + _speed.second * _speed.second);
+        _Float32 current_speed = sqrt(_speed.first * _speed.first + _speed.second * _speed.second);
         _speed.first = current_speed * cos(collision_angle);
         _speed.second = current_speed * sin(collision_angle);
 
@@ -98,16 +98,16 @@ bool Circle::resolveCollisionWithRectangle(const SDL_FRect& rect) {
 
 bool Circle::resolveCollisionWithLine(std::pair<_Float32, _Float32> p1, std::pair<_Float32, _Float32> p2)
 {
-    float a = _center.first - p1.first;
-    float b = _center.second - p1.second;
-    float c = p2.first - p1.first;
-    float d = p2.second - p1.second;
+    _Float32 a = _center.first - p1.first;
+    _Float32 b = _center.second - p1.second;
+    _Float32 c = p2.first - p1.first;
+    _Float32 d = p2.second - p1.second;
 
-    float dot = a * c + b * d;
-    float len_sq = c * c + d * d;
-    float param = dot / len_sq;
+    _Float32 dot = a * c + b * d;
+    _Float32 len_sq = c * c + d * d;
+    _Float32 param = dot / len_sq;
 
-    float xx, yy;
+    _Float32 xx, yy;
 
     if (param < 0) {
         xx = p1.first;
@@ -120,21 +120,21 @@ bool Circle::resolveCollisionWithLine(std::pair<_Float32, _Float32> p1, std::pai
         yy = p1.second + param * d;
     }
 
-    float dx = _center.first - xx;
-    float dy = _center.second - yy;
-    float distance = std::sqrt(dx * dx + dy * dy);
+    _Float32 dx = _center.first - xx;
+    _Float32 dy = _center.second - yy;
+    _Float32 distance = std::sqrt(dx * dx + dy * dy);
 
     if (distance < _radius && distance) {
-        float overlap = _radius - distance;
+        _Float32 overlap = _radius - distance;
 
         if (distance > 0) {
-            float direction_x = dx / distance;
-            float direction_y = dy / distance;
+            _Float32 direction_x = dx / distance;
+            _Float32 direction_y = dy / distance;
 
             _center.first += overlap * direction_x;
             _center.second += overlap * direction_y;
 
-            float dot_product = (_speed.first * direction_x + _speed.second * direction_y) * 2.0f;
+            _Float32 dot_product = (_speed.first * direction_x + _speed.second * direction_y) * 2.0f;
             _speed.first -= dot_product * direction_x;
             _speed.second -= dot_product * direction_y;
 

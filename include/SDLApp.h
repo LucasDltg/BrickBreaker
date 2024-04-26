@@ -11,7 +11,7 @@ public:
     static constexpr _Float32 _MIN_SCREEN_WIDTH = 1092;
     static constexpr _Float32 _MIN_SCREEN_HEIGHT = 600;
     
-    SDLApp(int screen_width, int screen_height, uint32_t window_flags = 0);
+    SDLApp(int32_t screen_width, int32_t screen_height, uint32_t window_flags = 0);
 
     void addComponent(std::shared_ptr<SDLComponent> component);
     void run();

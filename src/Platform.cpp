@@ -32,7 +32,7 @@ void Platform::setSpeedX(_Float32 speed_x)
     _speed_x = speed_x;
 }
 
-void Platform::update(uint64_t delta_time, int screen_width)
+void Platform::update(uint64_t delta_time, int32_t screen_width)
 {
     _rect.x += _speed_x * delta_time;
     if (_rect.x + _rect.w > screen_width)

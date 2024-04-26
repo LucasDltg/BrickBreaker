@@ -28,7 +28,7 @@ BrickBreakerMenu::BrickBreakerMenu(std::shared_ptr<SDL_Renderer> renderer, std::
     srand(time(nullptr));
 }
 
-void BrickBreakerMenu::handleResize(std::pair<int, int> previousSize, std::pair<int, int> newSize)
+void BrickBreakerMenu::handleResize(std::pair<int32_t, int32_t> previousSize, std::pair<int32_t, int32_t> newSize)
 {
     TTF_SetFontSize(_font.get(), getFontSize());
 }
@@ -38,7 +38,7 @@ void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data
     // il faut gérer le cas où la fenêtre est redimensionnée et que le jeu est en cours
     if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
     {
-        handleResize({*(int*)data1.get(), *(int*)data2.get()}, {event.window.data1, event.window.data2});
+        handleResize({*(int32_t*)data1.get(), *(int32_t*)data2.get()}, {event.window.data1, event.window.data2});
         
         _background->setSurfaceDimensions(event.window.data1, event.window.data2);
         _background->handleEvents(event, data1, data2);
@@ -64,7 +64,7 @@ void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data
                 _brick_breaker->initSurface();
                 break;
             case SDLK_LEFT:
-                if(static_cast<int>(_selected_level) % _num_columns == 0)
+                if(static_cast<int32_t>(_selected_level) % _num_columns == 0)
                 {
                     _current_page = (_current_page + _num_pages - 1) % _num_pages;
                     _selected_level = _num_columns * _selected_level / _num_columns + _num_columns - 1;
@@ -96,8 +96,8 @@ void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data
     }
     else if (event.type == SDL_MOUSEBUTTONDOWN)
     {
-        int x = event.button.x;
-        int y = event.button.y;
+        int32_t x = event.button.x;
+        int32_t y = event.button.y;
 
         // check if a level was clicked
         for (size_t i(_current_page * _num_rows * _num_columns); i < _levels.size() && i < _num_rows * _num_columns * (_current_page + 1); ++i)
@@ -123,8 +123,8 @@ void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data
         // check if a page was clicked
         if(y >= static_cast<int32_t>(_surface->h - getPadding() / 2))
         {
-            int total_width = _num_pages * getPadding() / 4 + (_num_pages - 1) * getPadding() / 2;
-            int start_x = _surface->w / 2 - total_width / 2;
+            int32_t total_width = _num_pages * getPadding() / 4 + (_num_pages - 1) * getPadding() / 2;
+            int32_t start_x = _surface->w / 2 - total_width / 2;
             for (size_t i(0); i < _num_pages; ++i)
             {
                 SDL_Rect page_rect = {
@@ -143,8 +143,8 @@ void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data
     }
     else if (event.type == SDL_MOUSEMOTION)
     {
-        int x = event.motion.x;
-        int y = event.motion.y;
+        int32_t x = event.motion.x;
+        int32_t y = event.motion.y;
 
         for (size_t i(_current_page * _num_rows * _num_columns); i < _levels.size() && i < _num_rows * _num_columns * (_current_page + 1); ++i)
         {
@@ -263,8 +263,8 @@ std::shared_ptr<SDL_Surface> BrickBreakerMenu::render()
     }
 
     // draw squares for pages numbers
-    const int total_width_p = _num_pages * padding / 4 + (_num_pages - 1) * padding / 2;
-    int start_x = _surface->w / 2 - total_width_p / 2;
+    const int32_t total_width_p = _num_pages * padding / 4 + (_num_pages - 1) * padding / 2;
+    int32_t start_x = _surface->w / 2 - total_width_p / 2;
     for (size_t i(0); i < _num_pages; ++i)
     {
         SDL_Rect page_rect = {

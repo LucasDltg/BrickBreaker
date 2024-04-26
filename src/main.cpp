@@ -12,12 +12,12 @@
 // fix ball leaving the screen at low fps
 // bug mineur avec menu, deplacement
 
-int main()
+int32_t main()
 {
-    const int SCREEN_WIDTH = SDLApp::_MIN_SCREEN_WIDTH;
-    const int SCREEN_HEIGHT = SDLApp::_MIN_SCREEN_HEIGHT;
+    const int32_t screen_width = SDLApp::_MIN_SCREEN_WIDTH;
+    const int32_t screen_height = SDLApp::_MIN_SCREEN_HEIGHT;
 
-    SDLApp app(SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE);
+    SDLApp app(screen_width, screen_height, SDL_WINDOW_RESIZABLE);
     app.addComponent(std::make_shared<BrickBreakerMenu>(app.getRenderer()));
     
     app.run();
