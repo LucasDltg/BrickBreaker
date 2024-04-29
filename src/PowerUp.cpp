@@ -3,7 +3,7 @@
 #include <memory>
 #include <iostream>
 
-std::unique_ptr<PowerUp> initPowerUp(std::string name)
+std::unique_ptr<PowerUp> initPowerUp(const std::string& name)
 {
     if (name == "SpeedUp")
         return std::make_unique<SpeedUpPowerUp>();
@@ -17,11 +17,11 @@ std::unique_ptr<PowerUp> initPowerUp(std::string name)
         return nullptr;
 }
 
-PowerUp::PowerUp(int32_t current_duration)
+PowerUp::PowerUp(const int32_t current_duration)
 : Circle(), _current_duration(current_duration), _active(false)
 {}
 
-bool PowerUp::isActive() const
+const bool PowerUp::isActive() const
 {
     return _active;
 }
@@ -32,7 +32,7 @@ void PowerUp::decrementDuration(uint64_t delta_time)
         _current_duration -= delta_time;
 }
 
-int64_t PowerUp::getDuration() const
+const int64_t PowerUp::getDuration() const
 {
     return _current_duration;
 }

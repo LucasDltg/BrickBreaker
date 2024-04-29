@@ -15,9 +15,9 @@ public:
     void setColor(const SDL_Color& color);
     const SDL_FRect& getRect() const;
     SDL_FRect& getRect();
-    const SDL_Color getColor() const;
-    void setSpeedX(_Float32 speed_x);
-    void update(uint64_t delta_time, int32_t screen_width);
+    const SDL_Color& getColor() const;
+    void setSpeedX(const _Float32 speed_x);
+    void update(const uint64_t delta_time, const int32_t screen_width);
     const int32_t getSpeedX() const;
 
 private:

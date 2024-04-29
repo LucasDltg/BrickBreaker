@@ -28,7 +28,7 @@ void SDLComponent::setSurfaceDimensions(uint32_t width, uint32_t height)
     _texture_manager.updateTextures(_renderer);
 }
 
-bool SDLComponent::isRunning() const
+const bool SDLComponent::isRunning() const
 {
     return _is_running;
 }

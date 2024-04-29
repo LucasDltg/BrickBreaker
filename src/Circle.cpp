@@ -7,11 +7,11 @@ Circle::Circle()
     : _radius(0), _center({0, 0}), _color({0, 0, 0, 0}), _speed({0, 0})
     {}
 
-Circle::Circle(_Float32 radius, std::pair<_Float32, _Float32> center, SDL_Color color, std::pair<_Float32, _Float32> speed)
+Circle::Circle(const _Float32 radius, const std::pair<_Float32, _Float32>& center, const SDL_Color& color, const std::pair<_Float32, _Float32>& speed)
     : _radius(radius), _center(center), _color(color), _speed(speed)
     {}
 
-_Float32 Circle::getRadius() const {
+const _Float32 Circle::getRadius() const {
     return _radius;
 }
 
@@ -19,11 +19,11 @@ const std::pair<_Float32, _Float32>& Circle::getCenter() const {
     return _center;
 }
 
-SDL_Color Circle::getColor() const {
+const SDL_Color& Circle::getColor() const {
     return _color;
 }
 
-std::pair<_Float32, _Float32> Circle::getSpeed() const {
+const std::pair<_Float32, _Float32>& Circle::getSpeed() const {
     return _speed;
 }
 
@@ -31,15 +31,15 @@ void Circle::setRadius(_Float32 new_radius) {
     _radius = new_radius;
 }
 
-void Circle::setCenter(std::pair<_Float32, _Float32> new_center) {
+void Circle::setCenter(const std::pair<_Float32, _Float32>& new_center) {
     _center = new_center;
 }
 
-void Circle::setColor(SDL_Color new_color) {
+void Circle::setColor(const SDL_Color& new_color) {
     _color = new_color;
 }
 
-void Circle::setSpeed(std::pair<_Float32, _Float32> new_speed) {
+void Circle::setSpeed(const std::pair<_Float32, _Float32>& new_speed) {
     _speed = new_speed;
 }
 
@@ -49,7 +49,7 @@ void Circle::update(uint64_t delta_time) {
     _center.second += _speed.second * delta_time;
 }
 
-bool Circle::resolveCollisionWithRectangle(const SDL_FRect& rect) {
+const bool Circle::resolveCollisionWithRectangle(const SDL_FRect& rect) {
     _Float32 closest_x = _center.first;
     _Float32 closest_y = _center.second;
 
@@ -96,7 +96,7 @@ bool Circle::resolveCollisionWithRectangle(const SDL_FRect& rect) {
     return false;
 }
 
-bool Circle::resolveCollisionWithLine(std::pair<_Float32, _Float32> p1, std::pair<_Float32, _Float32> p2)
+const bool Circle::resolveCollisionWithLine(const std::pair<_Float32, _Float32>& p1, const std::pair<_Float32, _Float32>& p2)
 {
     _Float32 a = _center.first - p1.first;
     _Float32 b = _center.second - p1.second;

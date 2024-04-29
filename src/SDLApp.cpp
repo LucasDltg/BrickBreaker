@@ -4,13 +4,13 @@
 #include <SDL2/SDL_ttf.h>
 #include <algorithm>
 
-SDLApp::SDLApp(int screen_width, int screen_height, uint32_t flags)
+SDLApp::SDLApp(const int32_t screen_width, const int32_t screen_height, const uint32_t flags)
     : _window(nullptr, SDL_DestroyWindow), _renderer(nullptr, SDL_DestroyRenderer), _is_running(false), _last_time(0)
 {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
         throw std::runtime_error("SDL initialization failed: " + std::string(SDL_GetError()));
     
-    int img_flags = IMG_INIT_PNG;
+    uint32_t img_flags = IMG_INIT_PNG;
     if (!(IMG_Init(img_flags) & img_flags))
         throw std::runtime_error("SDL_image initialization failed: " + std::string(IMG_GetError()));
 
@@ -33,12 +33,12 @@ SDLApp::SDLApp(int screen_width, int screen_height, uint32_t flags)
 }
 
 
-void SDLApp::addComponent(std::shared_ptr<SDLComponent> obj)
+void SDLApp::addComponent(const std::shared_ptr<SDLComponent>& obj)
 {
     // a changer pour pouvoir afficher plusieurs objets
     _components.push_back(obj);
     
-    int windowWidth, windowHeight;
+    int32_t windowWidth, windowHeight;
     SDL_GetWindowSize(_window.get(), &windowWidth, &windowHeight);
     _components.back()->setSurfaceDimensions(windowWidth, windowHeight);
     _components.back()->initSurface();
@@ -46,7 +46,7 @@ void SDLApp::addComponent(std::shared_ptr<SDLComponent> obj)
 
 void SDLApp::run()
 {
-    const int desired_fps = 120;
+    const int32_t desired_fps = 120;
     const __uint64_t frame_time = 1000 / desired_fps;
 
     __uint64_t last_time = SDL_GetTicks64();
@@ -93,9 +93,9 @@ void SDLApp::handleEvents()
             {
                 obj->setSurfaceDimensions(event.window.data1, event.window.data2);
                 // on envoie la taille précédente et la nouvelle taille
-                obj->handleEvents(event, std::make_shared<int>(_window_dimensions.first), std::make_shared<int>(_window_dimensions.second)); 
+                obj->handleEvents(event, std::make_shared<int32_t>(_window_dimensions.first), std::make_shared<int32_t>(_window_dimensions.second)); 
             }
-            int window_width, window_height;
+            int32_t window_width, window_height;
             SDL_GetWindowSize(_window.get(), &window_width, &window_height);
             _window_dimensions = {window_width, window_height};
         }
@@ -138,12 +138,12 @@ void SDLApp::render()
     SDL_RenderPresent(_renderer.get());
 }
 
-std::shared_ptr<SDL_Window> SDLApp::getWindow() const
+const std::shared_ptr<SDL_Window> SDLApp::getWindow() const
 {
     return _window;
 }
 
-std::shared_ptr<SDL_Renderer> SDLApp::getRenderer() const
+const std::shared_ptr<SDL_Renderer> SDLApp::getRenderer() const
 {
     return _renderer;
 }

@@ -11,21 +11,21 @@
 class Circle {
 public:
     Circle();
-    Circle(_Float32 radius, std::pair<_Float32, _Float32> center, SDL_Color color, std::pair<_Float32, _Float32> speed);
+    Circle(const _Float32 radius, const std::pair<_Float32, _Float32>& center, const SDL_Color& color, const std::pair<_Float32, _Float32>& speed);
 
-    _Float32 getRadius() const;
+    const _Float32 getRadius() const;
     const std::pair<_Float32, _Float32>& getCenter() const;
-    SDL_Color getColor() const;
-    std::pair<_Float32, _Float32> getSpeed() const;
+    const SDL_Color& getColor() const;
+    const std::pair<_Float32, _Float32>& getSpeed() const;
 
-    void setRadius(_Float32 new_radius);
-    void setCenter(std::pair<_Float32, _Float32> new_center);
-    void setColor(SDL_Color new_color);
-    void setSpeed(std::pair<_Float32, _Float32> new_speed);
+    void setRadius(const _Float32 new_radius);
+    void setCenter(const std::pair<_Float32, _Float32>& new_center);
+    void setColor(const SDL_Color& new_color);
+    void setSpeed(const std::pair<_Float32, _Float32>& new_speed);
 
-    void update(uint64_t delta_time);
-    bool resolveCollisionWithRectangle(const SDL_FRect& rect);
-    bool resolveCollisionWithLine(std::pair<_Float32, _Float32> p1, std::pair<_Float32, _Float32> p2);
+    void update(const uint64_t delta_time);
+    const bool resolveCollisionWithRectangle(const SDL_FRect& rect);
+    const bool resolveCollisionWithLine(const std::pair<_Float32, _Float32>& p1, const std::pair<_Float32, _Float32>& p2);
 
 private:
     _Float32 _radius;

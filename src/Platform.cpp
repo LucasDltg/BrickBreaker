@@ -23,16 +23,16 @@ SDL_FRect& Platform::getRect() {
     return _rect;
 }
 
-const SDL_Color Platform::getColor() const {
+const SDL_Color& Platform::getColor() const {
     return _color;
 }
 
-void Platform::setSpeedX(_Float32 speed_x)
+void Platform::setSpeedX(const _Float32 speed_x)
 {
     _speed_x = speed_x;
 }
 
-void Platform::update(uint64_t delta_time, int32_t screen_width)
+void Platform::update(const uint64_t delta_time, const int32_t screen_width)
 {
     _rect.x += _speed_x * delta_time;
     if (_rect.x + _rect.w > screen_width)

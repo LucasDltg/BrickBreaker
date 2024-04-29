@@ -11,12 +11,12 @@ public:
     static constexpr _Float32 _MIN_SCREEN_WIDTH = 1092;
     static constexpr _Float32 _MIN_SCREEN_HEIGHT = 600;
     
-    SDLApp(int32_t screen_width, int32_t screen_height, uint32_t window_flags = 0);
+    SDLApp(const int32_t screen_width, const int32_t screen_height, const uint32_t window_flags = 0);
 
-    void addComponent(std::shared_ptr<SDLComponent> component);
+    void addComponent(const std::shared_ptr<SDLComponent>& component);
     void run();
-    std::shared_ptr<SDL_Window> getWindow() const;
-    std::shared_ptr<SDL_Renderer> getRenderer() const;
+    const std::shared_ptr<SDL_Window> getWindow() const;
+    const std::shared_ptr<SDL_Renderer> getRenderer() const;
     
 
 private:
@@ -28,7 +28,7 @@ private:
     std::pair<uint32_t, uint32_t> _window_dimensions;
 
     void handleEvents();
-    void update(uint64_t delta_time);
+    void update(const uint64_t delta_time);
     void render();
 };
 

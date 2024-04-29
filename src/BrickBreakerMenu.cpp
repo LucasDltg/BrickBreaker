@@ -5,7 +5,7 @@
 #include <vector>
 #include "../include/BrickBreakerMenu.h"
 
-BrickBreakerMenu::BrickBreakerMenu(std::shared_ptr<SDL_Renderer> renderer, std::string directory_path)
+BrickBreakerMenu::BrickBreakerMenu(const std::shared_ptr<SDL_Renderer>& renderer, const std::string& directory_path)
 : SDLComponent(), _selected_level(0), _num_rows(3), _num_columns(3), _brick_breaker(nullptr), _background(nullptr), _current_page(0), _font(nullptr, nullptr)
 {
     _font = std::unique_ptr<TTF_Font, void(*)(TTF_Font*)>(TTF_OpenFont("./assets/fonts/arial/arial.ttf", getFontSize()), TTF_CloseFont);
@@ -28,12 +28,12 @@ BrickBreakerMenu::BrickBreakerMenu(std::shared_ptr<SDL_Renderer> renderer, std::
     srand(time(nullptr));
 }
 
-void BrickBreakerMenu::handleResize(std::pair<int32_t, int32_t> previousSize, std::pair<int32_t, int32_t> newSize)
+void BrickBreakerMenu::handleResize(const std::pair<int32_t, int32_t>& previousSize, const std::pair<int32_t, int32_t>& newSize)
 {
     TTF_SetFontSize(_font.get(), getFontSize());
 }
 
-void BrickBreakerMenu::handleEvents(SDL_Event& event, std::shared_ptr<void> data1, std::shared_ptr<void> data2)
+void BrickBreakerMenu::handleEvents(const SDL_Event& event, const std::shared_ptr<void>& data1, const std::shared_ptr<void>& data2)
 {
     // il faut gérer le cas où la fenêtre est redimensionnée et que le jeu est en cours
     if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
@@ -211,7 +211,7 @@ void BrickBreakerMenu::update(uint64_t delta_time)
     }
 }
 
-std::shared_ptr<SDL_Surface> BrickBreakerMenu::render()
+const std::shared_ptr<SDL_Surface> BrickBreakerMenu::render()
 {
     if (_brick_breaker != nullptr)
     {
@@ -288,7 +288,7 @@ void BrickBreakerMenu::initSurface()
     _texture_manager.loadTexture("./assets/textures/platform.png", "button", _renderer);
 }
 
-uint32_t BrickBreakerMenu::getPadding() const
+const uint32_t BrickBreakerMenu::getPadding() const
 {
     return _surface->w / 10;
 }
@@ -301,7 +301,7 @@ void BrickBreakerMenu::reloadBackground()
     _background->initSurface();
 }
 
-uint32_t BrickBreakerMenu::getFontSize() const
+const uint32_t BrickBreakerMenu::getFontSize() const
 {
     return _surface->w / 45;
 }

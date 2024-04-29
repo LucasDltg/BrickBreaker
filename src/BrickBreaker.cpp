@@ -11,7 +11,7 @@
 #include "../include/Ball.h"
 #include "../include/Platform.h"
 
-BrickBreaker::BrickBreaker(std::shared_ptr<SDL_Renderer> renderer, const std::string& filename)
+BrickBreaker::BrickBreaker(const std::shared_ptr<SDL_Renderer>& renderer, const std::string& filename)
 : SDLComponent(), _platform(), _start_duration(1000), _font(nullptr, TTF_CloseFont)
 {
     createBricksFromLevel(filename);
@@ -48,7 +48,7 @@ void BrickBreaker::initSurface()
     _texture_manager.loadTexture("assets/textures/bubble_speed.png", typeid(SpeedUpPowerUp).name(), _renderer);
 }
 
-void BrickBreaker::handleResize(std::pair<int32_t, int32_t> previous_size, std::pair<int32_t, int32_t> new_size)
+void BrickBreaker::handleResize(const std::pair<int32_t, int32_t>& previous_size, const std::pair<int32_t, int32_t>& new_size)
 {
     for (auto& brick : _bricks)
     {
@@ -156,7 +156,7 @@ void BrickBreaker::createBricksFromLevel(const std::string& filename) {
     file.close();
 }
 
-void BrickBreaker::addBall(Ball& ball)
+void BrickBreaker::addBall(const Ball& ball)
 {
     _balls.push_back(ball);
 }
@@ -166,7 +166,7 @@ const Platform& BrickBreaker::getPlatform() const
     return _platform;
 }
 
-void BrickBreaker::handleEvents(SDL_Event& event, std::shared_ptr<void> data1, std::shared_ptr<void> data2)
+void BrickBreaker::handleEvents(const SDL_Event& event, const std::shared_ptr<void>& data1, const std::shared_ptr<void>& data2)
 {
     if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
     {
@@ -304,7 +304,7 @@ void BrickBreaker::update(uint64_t delta_time)
         _start_duration = 2000;
 }
 
-std::shared_ptr<SDL_Surface> BrickBreaker::render()
+const std::shared_ptr<SDL_Surface> BrickBreaker::render()
 {
     // reset surface
     SDL_SetRenderDrawColor(_renderer.get(), 0, 0, 0, 255);

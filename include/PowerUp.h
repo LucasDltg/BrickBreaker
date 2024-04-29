@@ -11,19 +11,19 @@ class BrickBreaker;
 class PowerUp : public Circle
 {
 public:
-    PowerUp(int32_t current_duration = 0);
+    PowerUp(const int32_t current_duration = 0);
     virtual void applyPowerUp(BrickBreaker &game) = 0;
     virtual void unApplyPowerUp(BrickBreaker &game) = 0;
-    bool isActive() const;
-    void decrementDuration(uint64_t delta_time);
-    int64_t getDuration() const;
+    const bool isActive() const;
+    void decrementDuration(const uint64_t delta_time);
+    const int64_t getDuration() const;
 
 protected:
     int64_t _current_duration;
     bool _active;
 };
 
-std::unique_ptr<PowerUp> initPowerUp(std::string name);
+std::unique_ptr<PowerUp> initPowerUp(const std::string& name);
 
 class SpeedUpPowerUp : public PowerUp
 {

@@ -12,7 +12,7 @@ class BrickBreakerMenuLevel
 {
     friend class BrickBreakerMenu;
     public:
-    BrickBreakerMenuLevel(std::string path) : _path(path) { std::filesystem::path p(path); _name = p.stem().string(); }
+    BrickBreakerMenuLevel(const std::string& path) : _path(path) { std::filesystem::path p(path); _name = p.stem().string(); }
 
     private:
     std::string _name;
@@ -22,16 +22,16 @@ class BrickBreakerMenuLevel
 class BrickBreakerMenu : public SDLComponent
 {
 public:
-    BrickBreakerMenu(std::shared_ptr<SDL_Renderer> renderer, std::string directory_path = "./assets/levels");
-    void handleEvents(SDL_Event& event, std::shared_ptr<void> data1, std::shared_ptr<void> data2) override;
-    void update(uint64_t delta_time) override;
-    std::shared_ptr<SDL_Surface> render() override;
+    BrickBreakerMenu(const std::shared_ptr<SDL_Renderer>& renderer, const std::string& directory_path = "./assets/levels");
+    void handleEvents(const SDL_Event& event, const std::shared_ptr<void>& data1, const std::shared_ptr<void>& data2) override;
+    void update(const uint64_t delta_time) override;
+    const std::shared_ptr<SDL_Surface> render() override;
     void initSurface() override;
 
 private:
-    uint32_t getPadding() const;
-    uint32_t getFontSize() const;
-    void handleResize(std::pair<int32_t, int32_t> previous_size, std::pair<int32_t, int32_t> new_size);
+    const uint32_t getPadding() const;
+    const uint32_t getFontSize() const;
+    void handleResize(const std::pair<int32_t, int32_t>& previous_size, const std::pair<int32_t, int32_t>& new_size);
     void reloadBackground();
     size_t _selected_level;
     uint32_t _num_rows;
