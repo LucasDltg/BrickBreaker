@@ -1,5 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classSDLComponent.html" title="The SDLComponent class represents a base class for SDL components." alt="" coords="5,31,128,56"/>
-<area shape="rect" id="node2" href="$classBrickBreaker.html" title="The BrickBreaker class represents the main game logic for the Brick Breaker game." alt="" coords="194,5,299,31"/>
-<area shape="rect" id="node3" href="$classBrickBreakerMenu.html" title="Represents the main menu of the BrickBreaker game." alt="" coords="176,55,317,80"/>
-</map>

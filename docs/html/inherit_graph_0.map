@@ -1,6 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classBrick.html" title="Represents a brick in the game." alt="" coords="5,55,60,80"/>
-<area shape="rect" id="node2" href="$classBrickHexagonal.html" title="Represents a hexagonal brick." alt="" coords="112,5,237,31"/>
-<area shape="rect" id="node3" href="$classBrickRectangular.html" title="Represents a rectangular brick." alt="" coords="108,55,241,80"/>
-<area shape="rect" id="node4" href="$classBrickTriangular.html" title="Represents a triangular brick." alt="" coords="115,104,234,129"/>
-</map>

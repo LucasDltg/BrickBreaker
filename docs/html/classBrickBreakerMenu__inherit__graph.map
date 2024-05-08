@@ -1,4 +1,0 @@
-<map id="BrickBreakerMenu" name="BrickBreakerMenu">
-<area shape="rect" id="node1" title="Represents the main menu of the BrickBreaker game." alt="" coords="19,299,177,684"/>
-<area shape="rect" id="node2" href="$classSDLComponent.html" title="The SDLComponent class represents a base class for SDL components." alt="" coords="5,5,191,251"/>
-</map>

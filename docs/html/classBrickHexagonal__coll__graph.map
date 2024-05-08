@@ -1,4 +1,0 @@
-<map id="BrickHexagonal" name="BrickHexagonal">
-<area shape="rect" id="node1" title="Represents a hexagonal brick." alt="" coords="5,439,237,564"/>
-<area shape="rect" id="node2" href="$classBrick.html" title="Represents a brick in the game." alt="" coords="5,5,237,391"/>
-</map>

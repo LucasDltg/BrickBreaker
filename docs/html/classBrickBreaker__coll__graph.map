@@ -1,6 +1,0 @@
-<map id="BrickBreaker" name="BrickBreaker">
-<area shape="rect" id="node1" title="The BrickBreaker class represents the main game logic for the Brick Breaker game." alt="" coords="87,521,280,1007"/>
-<area shape="rect" id="node2" href="$classSDLComponent.html" title="The SDLComponent class represents a base class for SDL components." alt="" coords="5,233,191,459"/>
-<area shape="rect" id="node3" href="$classTextureManager.html" title="The TextureManager class manages SDL textures." alt="" coords="10,5,186,171"/>
-<area shape="rect" id="node4" href="$classPlatform.html" title="The Platform class represents the platform in the game." alt="" coords="215,243,325,449"/>
-</map>
