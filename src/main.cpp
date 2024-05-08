@@ -4,16 +4,11 @@
 #include "../include/Breakout.h"
 #include "../include/BreakoutMenu.h"
 
-// public et private
-// portee
-
 // collision rectangle
 // collsion bordure
-// fix ball leaving the screen at low fps
 
 // bug mineur avec menu, deplacement
 
-// final sdl_components
 int32_t main()
 {
     const int32_t screen_width = SDLApp::_MIN_SCREEN_WIDTH;

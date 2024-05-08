@@ -88,7 +88,6 @@ void SDLApp::handleEvents()
                 continue;
             }
             
-            // on change la taille ici, pour communiquer la nouvelle taille aux objets (ils sont libres de la garder ou non)
             for (auto& obj : _components)
             {
                 obj->setSurfaceDimensions(event.window.data1, event.window.data2);

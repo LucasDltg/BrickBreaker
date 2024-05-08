@@ -21,7 +21,7 @@ public:
      * @param width The width of the surface.
      * @param height The height of the surface.
      */
-    void setSurfaceDimensions(const uint32_t width, const uint32_t height);
+    virtual void setSurfaceDimensions(const uint32_t width, const uint32_t height) final;
 
     /**
      * @brief Handles SDL events.
@@ -57,7 +57,6 @@ public:
      * 
      * This method should be overridden by subclasses to initialize the surface after the initial size is known.
      * This method is called by the SDLApp after the component is added (so the size is known and can be accessed via _surface)
-     * 
      */
     virtual void initSurface() = 0;
 
