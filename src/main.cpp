@@ -4,12 +4,13 @@
 #include "../include/BrickBreaker.h"
 #include "../include/BrickBreakerMenu.h"
 
-// const
 // public et private
+// portee
+
 // collision rectangle
 // collsion bordure
-// portee
 // fix ball leaving the screen at low fps
+
 // bug mineur avec menu, deplacement
 
 int32_t main()

@@ -37,15 +37,16 @@ void BrickBreaker::initSurface()
         brick->calculateVerticesWithPosition(_grid_dimensions, {static_cast<_Float32>(_surface->w), static_cast<_Float32>(_surface->h * BrickBreaker::_BRICK_HEIGHT_LIMIT)});
     }
 
+    _texture_manager.loadDefaultTextures(_renderer);
     _texture_manager.loadTexture("assets/textures/small_crack.png", "small", _renderer, SDL_BLENDMODE_MUL);
     _texture_manager.loadTexture("assets/textures/medium_crack.png", "medium", _renderer, SDL_BLENDMODE_MUL);
     _texture_manager.loadTexture("assets/textures/big_crack.png", "big", _renderer, SDL_BLENDMODE_MUL);
     _texture_manager.loadTexture("assets/textures/ball.png", typeid(Ball).name(), _renderer);
-    _texture_manager.loadTexture("assets/textures/platform.png", typeid(Platform).name(), _renderer);
-    _texture_manager.loadTexture("assets/textures/bubble_duplicate.png", typeid(DuplicateBallPowerUp).name(), _renderer);
-    _texture_manager.loadTexture("assets/textures/bubble_multi.png", typeid(AddBallPowerUp).name(), _renderer);
-    _texture_manager.loadTexture("assets/textures/bubble_extend.png", typeid(ExtendPlatformPowerUp).name(), _renderer);
-    _texture_manager.loadTexture("assets/textures/bubble_speed.png", typeid(SpeedUpPowerUp).name(), _renderer);
+    _texture_manager.loadTexture("assets/textures/platfojrm.png", typeid(Platform).name(), _renderer);
+    _texture_manager.loadTexture("assets/textures/bubbler_duplicate.png", typeid(DuplicateBallPowerUp).name(), _renderer);
+    _texture_manager.loadTexture("assets/textures/bubblre_multi.png", typeid(AddBallPowerUp).name(), _renderer);
+    _texture_manager.loadTexture("assets/textures/bubble_rextend.png", typeid(ExtendPlatformPowerUp).name(), _renderer);
+    _texture_manager.loadTexture("assets/textures/bubble_rspeed.png", typeid(SpeedUpPowerUp).name(), _renderer);
 }
 
 void BrickBreaker::handleResize(const std::pair<int32_t, int32_t>& previous_size, const std::pair<int32_t, int32_t>& new_size)
@@ -407,27 +408,13 @@ const std::shared_ptr<SDL_Surface> BrickBreaker::render()
         SDL_Rect rect = {static_cast<int32_t>(position.first - radius), static_cast<int32_t>(position.second - radius), static_cast<int32_t>(2 * radius), static_cast<int32_t>(2 * radius)};
 
         std::shared_ptr<SDL_Texture> power_up_surface = _texture_manager.getTexture(typeid(*power_up).name());
-        if (!power_up_surface.get())
-        {
-            std::cerr << "No texture for power-up" << std::endl;
-            SDL_SetRenderDrawColor(_renderer.get(), 255, 0, 0, 255);
-            SDL_RenderFillRect(_renderer.get(), &rect);
-        }
-        else
-            SDL_RenderCopy(_renderer.get(), power_up_surface.get(), nullptr, &rect);
+        SDL_RenderCopy(_renderer.get(), power_up_surface.get(), nullptr, &rect);
     }
 
     const SDL_FRect& rect = _platform.getRect();
     SDL_Rect dest_rect = {static_cast<int32_t>(rect.x), static_cast<int32_t>(rect.y), static_cast<int32_t>(rect.w), static_cast<int32_t>(rect.h)};
     std::shared_ptr<SDL_Texture> platform_surface = _texture_manager.getTexture(typeid(_platform).name());
-    if (!platform_surface.get())
-    {
-        std::cerr << "No texture for platform" << std::endl;
-        SDL_SetRenderDrawColor(_renderer.get(), 255, 0, 0, 255);
-        SDL_RenderFillRect(_renderer.get(), &dest_rect);
-    }
-    else
-        SDL_RenderCopy(_renderer.get(), platform_surface.get(), nullptr, &dest_rect);
+    SDL_RenderCopy(_renderer.get(), platform_surface.get(), nullptr, &dest_rect);
 
     return _surface;
 }
