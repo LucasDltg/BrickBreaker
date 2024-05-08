@@ -1,26 +1,26 @@
-#ifndef BRICKBREAKERMENU_H
-#define BRICKBREAKERMENU_H
+#ifndef BreakoutMENU_H
+#define BreakoutMENU_H
 
 #include "../include/SDLComponent.h"
-#include "../include/BrickBreaker.h"
+#include "../include/Breakout.h"
 #include <vector>
 #include <string>
 #include <filesystem>
 #include <SDL2/SDL_ttf.h>
 
 /**
- * @brief Represents a level in the BrickBreakerMenu.
+ * @brief Represents a level in the BreakoutMenu.
  */
-class BrickBreakerMenuLevel
+class BreakoutMenuLevel
 {
-    friend class BrickBreakerMenu;
+    friend class BreakoutMenu;
 public:
     /**
-     * @brief Constructor for BrickBreakerMenuLevel.
+     * @brief Constructor for BreakoutMenuLevel.
      * 
      * @param path The path to the level file.
      */
-    BrickBreakerMenuLevel(const std::string& path) : _path(path) { std::filesystem::path p(path); _name = p.stem().string(); }
+    BreakoutMenuLevel(const std::string& path) : _path(path) { std::filesystem::path p(path); _name = p.stem().string(); }
 
 private:
     std::string _name; ///< The name of the level.
@@ -28,18 +28,18 @@ private:
 };
 
 /**
- * @brief Represents the main menu of the BrickBreaker game.
+ * @brief Represents the main menu of the Breakout game.
  */
-class BrickBreakerMenu : public SDLComponent
+class BreakoutMenu : public SDLComponent
 {
 public:
     /**
-     * @brief Constructor for BrickBreakerMenu.
+     * @brief Constructor for BreakoutMenu.
      * 
      * @param renderer A shared pointer to the SDL renderer.
      * @param directory_path The directory path containing level files. Default is "./assets/levels".
      */
-    BrickBreakerMenu(const std::shared_ptr<SDL_Renderer>& renderer, const std::string& directory_path = "./assets/levels");
+    BreakoutMenu(const std::shared_ptr<SDL_Renderer>& renderer, const std::string& directory_path = "./assets/levels");
 
     /**
      * @brief Handles SDL events.
@@ -100,12 +100,12 @@ private:
     size_t _selected_level; ///< Index of the currently selected level.
     uint32_t _num_rows; ///< Number of rows in the menu grid.
     uint32_t _num_columns; ///< Number of columns in the menu grid.
-    std::vector<BrickBreakerMenuLevel> _levels; ///< List of menu levels.
-    std::unique_ptr<BrickBreaker> _brick_breaker; ///< Instance of BrickBreaker for playing levels.
-    std::unique_ptr<BrickBreaker> _background; ///< Background image for the menu.
+    std::vector<BreakoutMenuLevel> _levels; ///< List of menu levels.
+    std::unique_ptr<Breakout> _brick_breaker; ///< Instance of Breakout for playing levels.
+    std::unique_ptr<Breakout> _background; ///< Background image for the menu.
     uint32_t _current_page; ///< Current page of the menu.
     uint32_t _num_pages; ///< Total number of pages in the menu.
     std::unique_ptr<TTF_Font, void(*)(TTF_Font*)> _font; ///< Font used for menu text.
 };
 
-#endif // BRICKBREAKERMENU_H
+#endif // BreakoutMENU_H

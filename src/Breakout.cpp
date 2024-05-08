@@ -1,4 +1,4 @@
-#include "../include/BrickBreaker.h"
+#include "../include/Breakout.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -11,7 +11,7 @@
 #include "../include/Ball.h"
 #include "../include/Platform.h"
 
-BrickBreaker::BrickBreaker(const std::shared_ptr<SDL_Renderer>& renderer, const std::string& filename)
+Breakout::Breakout(const std::shared_ptr<SDL_Renderer>& renderer, const std::string& filename)
 : SDLComponent(), _platform(), _start_duration(1000), _font(nullptr, TTF_CloseFont)
 {
     createBricksFromLevel(filename);
@@ -21,7 +21,7 @@ BrickBreaker::BrickBreaker(const std::shared_ptr<SDL_Renderer>& renderer, const 
         throw std::runtime_error("Failed to load font: " + std::string(TTF_GetError()));
 }
 
-void BrickBreaker::initSurface()
+void Breakout::initSurface()
 {
     std::pair<uint32_t, uint32_t> center = {_surface->w / 2, _surface->h * 3/ 4};
     std::pair<_Float32, _Float32> speed = {getInitialBallSpeed() / 3, -getInitialBallSpeed()};
@@ -31,7 +31,7 @@ void BrickBreaker::initSurface()
 
     for (auto& brick : _bricks)
     {
-        brick->calculateVerticesWithPosition(_grid_dimensions, {static_cast<_Float32>(_surface->w), static_cast<_Float32>(_surface->h * BrickBreaker::_BRICK_HEIGHT_LIMIT)});
+        brick->calculateVerticesWithPosition(_grid_dimensions, {static_cast<_Float32>(_surface->w), static_cast<_Float32>(_surface->h * Breakout::_BRICK_HEIGHT_LIMIT)});
     }
 
     _texture_manager.loadDefaultTextures(_renderer);
@@ -46,11 +46,11 @@ void BrickBreaker::initSurface()
     _texture_manager.loadTexture("assets/textures/bubble_speed.png", typeid(SpeedUpPowerUp).name(), _renderer);
 }
 
-void BrickBreaker::handleResize(const std::pair<int32_t, int32_t>& previous_size, const std::pair<int32_t, int32_t>& new_size)
+void Breakout::handleResize(const std::pair<int32_t, int32_t>& previous_size, const std::pair<int32_t, int32_t>& new_size)
 {
     for (auto& brick : _bricks)
     {
-        brick->calculateVerticesWithPosition(_grid_dimensions, {static_cast<_Float32>(new_size.first), static_cast<_Float32>(new_size.second * BrickBreaker::_BRICK_HEIGHT_LIMIT)});
+        brick->calculateVerticesWithPosition(_grid_dimensions, {static_cast<_Float32>(new_size.first), static_cast<_Float32>(new_size.second * Breakout::_BRICK_HEIGHT_LIMIT)});
     }
     
     for (auto& ball : _balls)
@@ -86,7 +86,7 @@ void BrickBreaker::handleResize(const std::pair<int32_t, int32_t>& previous_size
     _platform.setRect(rect);
 }
 
-void BrickBreaker::createBricksFromLevel(const std::string& filename) {
+void Breakout::createBricksFromLevel(const std::string& filename) {
     std::ifstream file(filename);
     if (!file.is_open())
     {
@@ -144,27 +144,27 @@ void BrickBreaker::createBricksFromLevel(const std::string& filename) {
         std::stringstream(color_hex) >> std::hex >> mapped_color >> std::dec;
 
         if (_brick_shape == BrickShape::RECTANGLE)
-            _bricks.push_back(std::make_unique<BrickRectangular>(std::make_pair(pos_x, pos_y), _grid_dimensions, std::make_pair(_surface->w, _surface->h * BrickBreaker::_BRICK_HEIGHT_LIMIT), mapped_color, resistance, power_up));
+            _bricks.push_back(std::make_unique<BrickRectangular>(std::make_pair(pos_x, pos_y), _grid_dimensions, std::make_pair(_surface->w, _surface->h * Breakout::_BRICK_HEIGHT_LIMIT), mapped_color, resistance, power_up));
         else if (_brick_shape == BrickShape::TRIANGLE)
-            _bricks.push_back(std::make_unique<BrickTriangular>(std::make_pair(pos_x, pos_y), _grid_dimensions, std::make_pair(_surface->w, _surface->h * BrickBreaker::_BRICK_HEIGHT_LIMIT), mapped_color, resistance, power_up));
+            _bricks.push_back(std::make_unique<BrickTriangular>(std::make_pair(pos_x, pos_y), _grid_dimensions, std::make_pair(_surface->w, _surface->h * Breakout::_BRICK_HEIGHT_LIMIT), mapped_color, resistance, power_up));
         else if (_brick_shape == BrickShape::HEXAGON)
-            _bricks.push_back(std::make_unique<BrickHexagonal>(std::make_pair(pos_x, pos_y), _grid_dimensions, std::make_pair(_surface->w, _surface->h * BrickBreaker::_BRICK_HEIGHT_LIMIT), mapped_color, resistance, power_up));
+            _bricks.push_back(std::make_unique<BrickHexagonal>(std::make_pair(pos_x, pos_y), _grid_dimensions, std::make_pair(_surface->w, _surface->h * Breakout::_BRICK_HEIGHT_LIMIT), mapped_color, resistance, power_up));
     }
 
     file.close();
 }
 
-void BrickBreaker::addBall(const Ball& ball)
+void Breakout::addBall(const Ball& ball)
 {
     _balls.push_back(ball);
 }
 
-const Platform& BrickBreaker::getPlatform() const
+const Platform& Breakout::getPlatform() const
 {
     return _platform;
 }
 
-void BrickBreaker::handleEvents(const SDL_Event& event, const std::shared_ptr<void>& data1, const std::shared_ptr<void>& data2)
+void Breakout::handleEvents(const SDL_Event& event, const std::shared_ptr<void>& data1, const std::shared_ptr<void>& data2)
 {
     if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
     {
@@ -194,7 +194,7 @@ void BrickBreaker::handleEvents(const SDL_Event& event, const std::shared_ptr<vo
     }
 }
 
-void BrickBreaker::update(uint64_t delta_time)
+void Breakout::update(uint64_t delta_time)
 {
     // check if the game is starting
     if(_start_duration > 0)
@@ -219,7 +219,7 @@ void BrickBreaker::update(uint64_t delta_time)
         _start_duration = 2000;
 }
 
-const std::shared_ptr<SDL_Surface> BrickBreaker::render()
+const std::shared_ptr<SDL_Surface> Breakout::render()
 {
     // reset surface
     SDL_SetRenderDrawColor(_renderer.get(), 0, 0, 0, 255);
@@ -333,32 +333,32 @@ const std::shared_ptr<SDL_Surface> BrickBreaker::render()
     return _surface;
 }
 
-const _Float32 BrickBreaker::getBallRadius() const
+const _Float32 Breakout::getBallRadius() const
 {
     return static_cast<_Float32>(_surface->w) / 80.0f;
 }
 
-const _Float32 BrickBreaker::getInitialBallSpeed() const
+const _Float32 Breakout::getInitialBallSpeed() const
 {
     return static_cast<_Float32>(_surface->w) / 1600.0f;
 }
 
-Platform& BrickBreaker::getPlatform()
+Platform& Breakout::getPlatform()
 {
     return _platform;
 }
 
-std::vector<Ball>& BrickBreaker::getBalls()
+std::vector<Ball>& Breakout::getBalls()
 {
     return _balls;
 }
 
-const _Float32 BrickBreaker::getInitialPlatformSpeed() const
+const _Float32 Breakout::getInitialPlatformSpeed() const
 {
     return static_cast<_Float32>(_surface->w) / 700.0f;
 }
 
-void BrickBreaker::updateLoop(int64_t delta_time)
+void Breakout::updateLoop(int64_t delta_time)
 {
     _platform.update(delta_time, _surface->w);
 

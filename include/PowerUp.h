@@ -6,7 +6,7 @@
 #include <memory>
 #include "../include/Circle.h"
 
-class BrickBreaker;
+class Breakout;
 
 /**
  * @brief The PowerUp class represents a base class for power-up objects.
@@ -26,18 +26,18 @@ public:
      * 
      * This method should be overridden by subclasses to apply the specific power-up effect.
      * 
-     * @param game The BrickBreaker game instance.
+     * @param game The Breakout game instance.
      */
-    virtual void applyPowerUp(BrickBreaker &game) = 0;
+    virtual void applyPowerUp(Breakout &game) = 0;
 
     /**
      * @brief Removes the power-up effect.
      * 
      * This method should be overridden by subclasses to remove the specific power-up effect.
      * 
-     * @param game The BrickBreaker game instance.
+     * @param game The Breakout game instance.
      */
-    virtual void unApplyPowerUp(BrickBreaker &game) = 0;
+    virtual void unApplyPowerUp(Breakout &game) = 0;
 
     /**
      * @brief Checks if the power-up is active.
@@ -89,22 +89,22 @@ public:
      * 
      * Speeds up the ball.
      * 
-     * @param game The BrickBreaker game instance.
+     * @param game The Breakout game instance.
      */
-    void applyPowerUp(BrickBreaker &game) override;
+    void applyPowerUp(Breakout &game) override;
 
     /**
      * @brief Removes the power-up effect.
      * 
      * Slows down the ball.
      * 
-     * @param game The BrickBreaker game instance.
+     * @param game The Breakout game instance.
      */
-    void unApplyPowerUp(BrickBreaker &game) override;
+    void unApplyPowerUp(Breakout &game) override;
 };
 
 /**
- * @brief The AddBallPowerUp class represents a power-up that adds a ball to the game.
+ * @brief The AddBallPowerUp class represents a power-up that adds a ball.
  */
 class AddBallPowerUp : public PowerUp
 {
@@ -119,18 +119,18 @@ public:
      * 
      * Adds a ball to the game.
      * 
-     * @param game The BrickBreaker game instance.
+     * @param game The Breakout game instance.
      */
-    void applyPowerUp(BrickBreaker &game) override;
+    void applyPowerUp(Breakout &game) override;
 
     /**
      * @brief Removes the power-up effect.
      * 
      * Does nothing.
      * 
-     * @param game The BrickBreaker game instance.
+     * @param game The Breakout game instance.
      */
-    void unApplyPowerUp(BrickBreaker &game) override;
+    void unApplyPowerUp(Breakout &game) override;
 };
 
 /**
@@ -149,18 +149,18 @@ public:
      * 
      * Duplicates the current ball.
      * 
-     * @param game The BrickBreaker game instance.
+     * @param game The Breakout game instance.
      */
-    void applyPowerUp(BrickBreaker &game) override;
+    void applyPowerUp(Breakout &game) override;
 
     /**
      * @brief Removes the power-up effect.
      * 
      * Does nothing.
      * 
-     * @param game The BrickBreaker game instance.
+     * @param game The Breakout game instance.
      */
-    void unApplyPowerUp(BrickBreaker &game) override;
+    void unApplyPowerUp(Breakout &game) override;
 };
 
 /**
@@ -179,18 +179,18 @@ public:
      * 
      * Extends the platform size.
      * 
-     * @param game The BrickBreaker game instance.
+     * @param game The Breakout game instance.
      */
-    void applyPowerUp(BrickBreaker &game) override;
+    void applyPowerUp(Breakout &game) override;
 
     /**
      * @brief Removes the power-up effect.
      * 
      * Shrinks the platform size.
      * 
-     * @param game The BrickBreaker game instance.
+     * @param game The Breakout game instance.
      */
-    void unApplyPowerUp(BrickBreaker &game) override;
+    void unApplyPowerUp(Breakout &game) override;
 };
 
 #endif // POWERUP_H

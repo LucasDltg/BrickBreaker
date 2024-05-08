@@ -14,7 +14,7 @@
 enum class BrickShape {RECTANGLE, HEXAGON, TRIANGLE};
 
 /**
- * @brief Represents a brick in the game.
+ * @brief Represents a brick in Breakout.
  */
 class Brick
 {

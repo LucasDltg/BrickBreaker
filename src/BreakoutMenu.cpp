@@ -3,9 +3,9 @@
 #include <iostream>
 #include <filesystem>
 #include <vector>
-#include "../include/BrickBreakerMenu.h"
+#include "../include/BreakoutMenu.h"
 
-BrickBreakerMenu::BrickBreakerMenu(const std::shared_ptr<SDL_Renderer>& renderer, const std::string& directory_path)
+BreakoutMenu::BreakoutMenu(const std::shared_ptr<SDL_Renderer>& renderer, const std::string& directory_path)
 : SDLComponent(), _selected_level(0), _num_rows(3), _num_columns(3), _brick_breaker(nullptr), _background(nullptr), _current_page(0), _font(nullptr, nullptr)
 {
     _font = std::unique_ptr<TTF_Font, void(*)(TTF_Font*)>(TTF_OpenFont("./assets/fonts/arial/arial.ttf", getFontSize()), TTF_CloseFont);
@@ -28,12 +28,12 @@ BrickBreakerMenu::BrickBreakerMenu(const std::shared_ptr<SDL_Renderer>& renderer
     srand(time(nullptr));
 }
 
-void BrickBreakerMenu::handleResize(const std::pair<int32_t, int32_t>& previousSize, const std::pair<int32_t, int32_t>& newSize)
+void BreakoutMenu::handleResize(const std::pair<int32_t, int32_t>& previousSize, const std::pair<int32_t, int32_t>& newSize)
 {
     TTF_SetFontSize(_font.get(), getFontSize());
 }
 
-void BrickBreakerMenu::handleEvents(const SDL_Event& event, const std::shared_ptr<void>& data1, const std::shared_ptr<void>& data2)
+void BreakoutMenu::handleEvents(const SDL_Event& event, const std::shared_ptr<void>& data1, const std::shared_ptr<void>& data2)
 {
     // il faut gérer le cas où la fenêtre est redimensionnée et que le jeu est en cours
     if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
@@ -59,7 +59,7 @@ void BrickBreakerMenu::handleEvents(const SDL_Event& event, const std::shared_pt
         switch(event.key.keysym.sym)
         {
             case SDLK_RETURN:
-                _brick_breaker = std::make_unique<BrickBreaker>(_renderer, _levels[_selected_level + _current_page * _num_rows * _num_columns]._path);
+                _brick_breaker = std::make_unique<Breakout>(_renderer, _levels[_selected_level + _current_page * _num_rows * _num_columns]._path);
                 _brick_breaker->setSurfaceDimensions(_surface->w, _surface->h);
                 _brick_breaker->initSurface();
                 break;
@@ -113,7 +113,7 @@ void BrickBreakerMenu::handleEvents(const SDL_Event& event, const std::shared_pt
 
             if (x >= padding + col * (rect_width + padding / 2) && x <= padding + col * (rect_width + padding / 2) + rect_width && y >= padding + row * (rect_height + padding / 2) && y <= padding + row * (rect_height + padding / 2) + rect_height)
             {
-                _brick_breaker = std::make_unique<BrickBreaker>(_renderer, _levels[i]._path);
+                _brick_breaker = std::make_unique<Breakout>(_renderer, _levels[i]._path);
                 _brick_breaker->setSurfaceDimensions(_surface->w, _surface->h);
                 _brick_breaker->initSurface();
                 break;
@@ -179,7 +179,7 @@ void BrickBreakerMenu::handleEvents(const SDL_Event& event, const std::shared_pt
     }
 }
 
-void BrickBreakerMenu::update(uint64_t delta_time)
+void BreakoutMenu::update(uint64_t delta_time)
 {
     if (_brick_breaker != nullptr)
     {
@@ -211,7 +211,7 @@ void BrickBreakerMenu::update(uint64_t delta_time)
     }
 }
 
-const std::shared_ptr<SDL_Surface> BrickBreakerMenu::render()
+const std::shared_ptr<SDL_Surface> BreakoutMenu::render()
 {
     if (_brick_breaker != nullptr)
     {
@@ -280,7 +280,7 @@ const std::shared_ptr<SDL_Surface> BrickBreakerMenu::render()
     return _surface;
 }
 
-void BrickBreakerMenu::initSurface()
+void BreakoutMenu::initSurface()
 {
     reloadBackground();
     TTF_SetFontSize(_font.get(), getFontSize());
@@ -291,20 +291,20 @@ void BrickBreakerMenu::initSurface()
     _texture_manager.loadTexture("./assets/textures/ball.png", "page_button_not_selected", _renderer);
 }
 
-const uint32_t BrickBreakerMenu::getPadding() const
+const uint32_t BreakoutMenu::getPadding() const
 {
     return _surface->w / 10;
 }
 
-void BrickBreakerMenu::reloadBackground()
+void BreakoutMenu::reloadBackground()
 {
     uint32_t level = rand() % _levels.size();
-    _background = std::make_unique<BrickBreaker>(_renderer, _levels[level]._path);
+    _background = std::make_unique<Breakout>(_renderer, _levels[level]._path);
     _background->setSurfaceDimensions(_surface->w, _surface->h);
     _background->initSurface();
 }
 
-const uint32_t BrickBreakerMenu::getFontSize() const
+const uint32_t BreakoutMenu::getFontSize() const
 {
     return _surface->w / 45;
 }

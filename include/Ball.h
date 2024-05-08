@@ -6,7 +6,7 @@
 #include "../include/Circle.h"
 
 /**
- * @brief Represents a ball in the game.
+ * @brief Represents a ball in Breakout.
  */
 class Ball : public Circle {
 public:

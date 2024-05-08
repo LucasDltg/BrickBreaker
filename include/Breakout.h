@@ -1,5 +1,5 @@
-#ifndef BRICKBREAKER_H
-#define BRICKBREAKER_H
+#ifndef Breakout_H
+#define Breakout_H
 
 #include "../include/SDLComponent.h"
 #include "../include/Brick.h"
@@ -11,9 +11,9 @@
 #include <SDL2/SDL_ttf.h>
 
 /**
- * @brief The BrickBreaker class represents the main game logic for the Brick Breaker game.
+ * @brief The Breakout class represents the main game logic for the Brick Breaker game.
  */
-class BrickBreaker : public SDLComponent {
+class Breakout : public SDLComponent {
 public:
     /**
      * @brief Represents the maximum surface occupied by bricks.
@@ -21,12 +21,12 @@ public:
     static constexpr _Float32 _BRICK_HEIGHT_LIMIT = 0.4f;
 
     /**
-     * @brief Constructor for BrickBreaker.
+     * @brief Constructor for Breakout.
      * 
      * @param renderer A shared pointer to the SDL_Renderer used for rendering.
      * @param filename The filename of the level configuration file.
      */
-    BrickBreaker(const std::shared_ptr<SDL_Renderer>& renderer, const std::string& filename);
+    Breakout(const std::shared_ptr<SDL_Renderer>& renderer, const std::string& filename);
 
     /**
      * @brief Handles SDL events.
@@ -138,4 +138,4 @@ private:
     void updateLoop(int64_t delta_time);
 };
 
-#endif // BRICKBREAKER_H
+#endif // Breakout_H

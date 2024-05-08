@@ -1,5 +1,5 @@
 #include "../include/PowerUp.h"
-#include "../include/BrickBreaker.h"
+#include "../include/Breakout.h"
 #include <memory>
 #include <iostream>
 
@@ -41,7 +41,7 @@ AddBallPowerUp::AddBallPowerUp()
 : PowerUp(0)
 {}
 
-void AddBallPowerUp::applyPowerUp(BrickBreaker &game)
+void AddBallPowerUp::applyPowerUp(Breakout &game)
 {
     _active = true;
     
@@ -52,14 +52,14 @@ void AddBallPowerUp::applyPowerUp(BrickBreaker &game)
     game.addBall(ball);
 }
 
-void AddBallPowerUp::unApplyPowerUp(BrickBreaker &game)
+void AddBallPowerUp::unApplyPowerUp(Breakout &game)
 {}
 
 DuplicateBallPowerUp::DuplicateBallPowerUp()
 : PowerUp(0)
 {}
 
-void DuplicateBallPowerUp::applyPowerUp(BrickBreaker &game)
+void DuplicateBallPowerUp::applyPowerUp(Breakout &game)
 {
     _active = true;
     
@@ -78,21 +78,21 @@ void DuplicateBallPowerUp::applyPowerUp(BrickBreaker &game)
     }
 }
 
-void DuplicateBallPowerUp::unApplyPowerUp(BrickBreaker &game)
+void DuplicateBallPowerUp::unApplyPowerUp(Breakout &game)
 {}
 
 ExtendPlatformPowerUp::ExtendPlatformPowerUp()
 : PowerUp(5000)
 {}
 
-void ExtendPlatformPowerUp::applyPowerUp(BrickBreaker &game)
+void ExtendPlatformPowerUp::applyPowerUp(Breakout &game)
 {
     _active = true;
     Platform& p = game.getPlatform();
     p.setRect({p.getRect().x - (p.getRect().w * 0.25f), p.getRect().y, p.getRect().w * 1.5f, p.getRect().h});
 }
 
-void ExtendPlatformPowerUp::unApplyPowerUp(BrickBreaker &game)
+void ExtendPlatformPowerUp::unApplyPowerUp(Breakout &game)
 {
     Platform& p = game.getPlatform();
     p.setRect({p.getRect().x + (p.getRect().w * 0.25f), p.getRect().y, p.getRect().w / 1.5f, p.getRect().h});
@@ -102,7 +102,7 @@ SpeedUpPowerUp::SpeedUpPowerUp()
 : PowerUp(5000)
 {}
 
-void SpeedUpPowerUp::applyPowerUp(BrickBreaker &game)
+void SpeedUpPowerUp::applyPowerUp(Breakout &game)
 {
     _active = true;
     for (auto &ball : game.getBalls())
@@ -111,7 +111,7 @@ void SpeedUpPowerUp::applyPowerUp(BrickBreaker &game)
     }
 }
 
-void SpeedUpPowerUp::unApplyPowerUp(BrickBreaker &game)
+void SpeedUpPowerUp::unApplyPowerUp(Breakout &game)
 {
     for (auto &ball : game.getBalls())
     {

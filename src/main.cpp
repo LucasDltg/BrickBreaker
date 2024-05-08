@@ -1,8 +1,8 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include "../include/SDLApp.h"
-#include "../include/BrickBreaker.h"
-#include "../include/BrickBreakerMenu.h"
+#include "../include/Breakout.h"
+#include "../include/BreakoutMenu.h"
 
 // public et private
 // portee
@@ -20,7 +20,7 @@ int32_t main()
     const int32_t screen_height = SDLApp::_MIN_SCREEN_HEIGHT;
 
     SDLApp app(screen_width, screen_height, SDL_WINDOW_RESIZABLE);
-    app.addComponent(std::make_shared<BrickBreakerMenu>(app.getRenderer()));
+    app.addComponent(std::make_shared<BreakoutMenu>(app.getRenderer()));
     
     app.run();
 
