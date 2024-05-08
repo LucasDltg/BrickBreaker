@@ -1,13 +1,4 @@
 #include "../include/Breakout.h"
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <iomanip>
-#include <algorithm>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_image.h>
-#include "../include/Brick.h"
 #include "../include/Ball.h"
 #include "../include/Paddle.h"
 

@@ -1,12 +1,10 @@
 #ifndef BRICK_H
 #define BRICK_H
 
-#include <SDL2/SDL.h>
-#include <memory>
-#include <vector>
-#include <map>
-#include <cstdint>
 #include "../include/PowerUp.h"
+#include <vector>
+#include <string>
+#include <memory>
 
 /**
  * @brief Enumeration representing different shapes of bricks.

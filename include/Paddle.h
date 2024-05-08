@@ -2,8 +2,6 @@
 #define PADDLE_H
 
 #include <SDL2/SDL.h>
-#include <memory>
-#include <string>
 
 /**
  * @brief The Paddle class represents the Paddle in the game.

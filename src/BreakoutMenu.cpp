@@ -1,8 +1,3 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <iostream>
-#include <filesystem>
-#include <vector>
 #include "../include/BreakoutMenu.h"
 
 BreakoutMenu::BreakoutMenu(const std::shared_ptr<SDL_Renderer>& renderer, const std::string& directory_path)

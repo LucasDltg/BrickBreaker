@@ -3,10 +3,7 @@
 
 #include "../include/SDLComponent.h"
 #include "../include/Breakout.h"
-#include <vector>
-#include <string>
 #include <filesystem>
-#include <SDL2/SDL_ttf.h>
 
 /**
  * @brief Represents a level in the BreakoutMenu.

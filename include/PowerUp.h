@@ -1,10 +1,8 @@
 #ifndef POWERUP_H
 #define POWERUP_H
 
-#include <cstdint>
-#include <string>
-#include <memory>
 #include "../include/Circle.h"
+#include <memory>
 
 class Breakout;
 

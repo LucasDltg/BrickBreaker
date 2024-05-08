@@ -1,11 +1,3 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <iostream>
-#include <memory>
-#include <vector>
-#include <cstdint>
-#include <string>
-#include <cstdlib>
 #include "../include/Brick.h"
 #include "../include/PowerUp.h"
 

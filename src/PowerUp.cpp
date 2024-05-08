@@ -1,7 +1,5 @@
 #include "../include/PowerUp.h"
 #include "../include/Breakout.h"
-#include <memory>
-#include <iostream>
 
 std::unique_ptr<PowerUp> initPowerUp(const std::string& name)
 {

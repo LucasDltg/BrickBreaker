@@ -1,8 +1,6 @@
 #ifndef BALL_H
 #define BALL_H
 
-#include <cstdint>
-#include <SDL2/SDL.h>
 #include "../include/Circle.h"
 
 /**

@@ -1,12 +1,7 @@
 #ifndef CIRCLE_H
 #define CIRCLE_H
 
-#include <utility>
-#include <cstdint>
-#include <string>
-#include <memory>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 
 /**
  * @brief The Circle class represents a circle in 2D space.

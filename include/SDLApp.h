@@ -1,10 +1,9 @@
 #ifndef SDLAPP_H
 #define SDLAPP_H
 
-#include <SDL2/SDL.h>
-#include <vector>
-#include <memory>
 #include "../include/SDLComponent.h"
+#include <SDL2/SDL_ttf.h>
+#include <vector>
 
 /**
  * @brief The SDLApp class represents the main application that manages the SDL window and components.

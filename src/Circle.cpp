@@ -1,6 +1,3 @@
-#include <algorithm>
-#include <cmath>
-#include <iostream>
 #include "../include/Circle.h"
 
 Circle::Circle()

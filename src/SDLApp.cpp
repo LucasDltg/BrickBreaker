@@ -1,8 +1,4 @@
 #include "../include/SDLApp.h"
-#include <iostream>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <algorithm>
 
 SDLApp::SDLApp(const int32_t screen_width, const int32_t screen_height, const uint32_t flags)
     : _window(nullptr, SDL_DestroyWindow), _renderer(nullptr, SDL_DestroyRenderer), _is_running(false), _last_time(0)

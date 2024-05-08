@@ -5,10 +5,10 @@
 #include "../include/Brick.h"
 #include "../include/Ball.h"
 #include "../include/Paddle.h"
-#include <memory>
-#include <vector>
 #include <fstream>
 #include <SDL2/SDL_ttf.h>
+#include <iomanip>
+#include <algorithm>
 
 /**
  * @brief The Breakout class represents the main game logic for the Brick Breaker game.

@@ -1,7 +1,4 @@
 #include "../include/SDLComponent.h"
-#include <SDL2/SDL.h>
-#include <memory>
-#include <stdexcept>
 
 SDLComponent::SDLComponent() 
     : _surface(SDL_CreateRGBSurface(0, 0, 0, 32, 0, 0, 0, 0), SDL_FreeSurface), _is_running(true), _renderer(), _texture_manager()

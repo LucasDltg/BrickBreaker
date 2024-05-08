@@ -1,7 +1,4 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 #include "../include/Paddle.h"
-#include <iostream>
 
 Paddle::Paddle()
 : _rect({ 0, 0, 0, 0 }), _speed_x(0)

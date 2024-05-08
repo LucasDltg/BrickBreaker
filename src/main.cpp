@@ -1,7 +1,5 @@
 #include <SDL2/SDL.h>
-#include <iostream>
 #include "../include/SDLApp.h"
-#include "../include/Breakout.h"
 #include "../include/BreakoutMenu.h"
 
 // collision rectangle

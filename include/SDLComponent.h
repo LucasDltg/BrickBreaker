@@ -1,8 +1,6 @@
 #ifndef SDLCOMPONENT_H
 #define SDLCOMPONENT_H
 
-#include <SDL2/SDL.h>
-#include <memory>
 #include "../include/TextureManager.h"
 
 /**

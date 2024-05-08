@@ -1,6 +1,4 @@
 #include "../include/TextureManager.h"
-#include <iostream>
-#include <algorithm>
 
 void TextureManager::loadDefaultTextures(const std::shared_ptr<SDL_Renderer>& renderer)
 {
