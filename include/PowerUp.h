@@ -84,7 +84,22 @@ public:
      */
     SpeedUpPowerUp();
 
+    /**
+     * @brief Applies the power-up effect.
+     * 
+     * Speeds up the ball.
+     * 
+     * @param game The BrickBreaker game instance.
+     */
     void applyPowerUp(BrickBreaker &game) override;
+
+    /**
+     * @brief Removes the power-up effect.
+     * 
+     * Slows down the ball.
+     * 
+     * @param game The BrickBreaker game instance.
+     */
     void unApplyPowerUp(BrickBreaker &game) override;
 };
 
@@ -99,7 +114,22 @@ public:
      */
     AddBallPowerUp();
 
+    /**
+     * @brief Applies the power-up effect.
+     * 
+     * Adds a ball to the game.
+     * 
+     * @param game The BrickBreaker game instance.
+     */
     void applyPowerUp(BrickBreaker &game) override;
+
+    /**
+     * @brief Removes the power-up effect.
+     * 
+     * Does nothing.
+     * 
+     * @param game The BrickBreaker game instance.
+     */
     void unApplyPowerUp(BrickBreaker &game) override;
 };
 
@@ -114,7 +144,22 @@ public:
      */
     DuplicateBallPowerUp();
 
+    /**
+     * @brief Applies the power-up effect.
+     * 
+     * Duplicates the current ball.
+     * 
+     * @param game The BrickBreaker game instance.
+     */
     void applyPowerUp(BrickBreaker &game) override;
+
+    /**
+     * @brief Removes the power-up effect.
+     * 
+     * Does nothing.
+     * 
+     * @param game The BrickBreaker game instance.
+     */
     void unApplyPowerUp(BrickBreaker &game) override;
 };
 
@@ -129,7 +174,22 @@ public:
      */
     ExtendPlatformPowerUp();
 
+    /**
+     * @brief Applies the power-up effect.
+     * 
+     * Extends the platform size.
+     * 
+     * @param game The BrickBreaker game instance.
+     */
     void applyPowerUp(BrickBreaker &game) override;
+
+    /**
+     * @brief Removes the power-up effect.
+     * 
+     * Shrinks the platform size.
+     * 
+     * @param game The BrickBreaker game instance.
+     */
     void unApplyPowerUp(BrickBreaker &game) override;
 };
 
