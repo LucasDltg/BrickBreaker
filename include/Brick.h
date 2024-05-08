@@ -35,7 +35,7 @@ public:
      * 
      * @return The resistance of the brick.
      */
-    const int32_t getResistance() const;
+    int32_t getResistance() const;
 
     /**
      * @brief Decrease the resistance of the brick.
@@ -47,14 +47,14 @@ public:
      * 
      * @return The resistance percentage of the brick.
      */
-    const _Float32 getResistancePercentage() const;
+    _Float32 getResistancePercentage() const;
 
     /**
      * @brief Get the color of the brick.
      * 
      * @return The color of the brick.
      */
-    const uint32_t& getColor() const;
+    uint32_t getColor() const;
 
     /**
      * @brief Get the power-up associated with the brick.

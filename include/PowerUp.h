@@ -42,7 +42,7 @@ public:
      * 
      * @return True if the power-up is active, false otherwise.
      */
-    const bool isActive() const;
+    bool isActive() const;
 
     /**
      * @brief Decrements the duration of the power-up.
@@ -56,7 +56,7 @@ public:
      * 
      * @return The remaining duration of the power-up.
      */
-    const int64_t getDuration() const;
+    int64_t getDuration() const;
 
 protected:
     int64_t _current_duration; ///< The current duration of the power-up.

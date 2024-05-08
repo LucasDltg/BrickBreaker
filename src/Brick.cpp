@@ -3,9 +3,12 @@
 
 Brick::Brick(const std::pair<uint32_t, uint32_t>& position, const std::pair<_Float32, _Float32>& grid_dimensions, const std::pair<_Float32, _Float32>& surface_size, const uint32_t color, const int32_t resistance, const std::string& power_up_name)
 : _position(position), _color(color), _resistance(resistance), _max_resistance(resistance), _powerUp(initPowerUp(power_up_name)) 
-{}
+{
+    (void)grid_dimensions;
+    (void)surface_size;
+}
 
-const int32_t Brick::getResistance() const
+int32_t Brick::getResistance() const
 {
     return _resistance;
 }
@@ -16,12 +19,12 @@ void Brick::decreaseResistance()
         _resistance--;
 }
 
-const _Float32 Brick::getResistancePercentage() const
+_Float32 Brick::getResistancePercentage() const
 {
     return 1 - static_cast<_Float32>(_resistance) / static_cast<_Float32>(_max_resistance);
 }
 
-const uint32_t& Brick::getColor() const
+uint32_t Brick::getColor() const
 {
     return _color;
 }
@@ -30,7 +33,6 @@ const std::unique_ptr<PowerUp> Brick::getPowerUp()
 {
     return std::move(_powerUp);
 }
-
 
 BrickRectangular::BrickRectangular(const std::pair<uint32_t, uint32_t>& position, const std::pair<_Float32, _Float32>& grid_dimensions, const std::pair<_Float32, _Float32>& surface_size, const uint32_t color, const int32_t resistance, const std::string& power_up_name)
 : Brick(position, grid_dimensions, surface_size, color, resistance, power_up_name)
@@ -163,12 +165,12 @@ void BrickHexagonal::calculateVerticesWithPosition(const std::pair<_Float32, _Fl
         y = ((_position.second - 1) / 2) * brick_height + brick_height / 2;
     }
 
-    _vertices.push_back(SDL_Vertex{SDL_FPoint{x, y + brick_height / 2}, colors[5], SDL_FPoint{0}});
-    _vertices.push_back(SDL_Vertex{SDL_FPoint{x + brick_width / 4, y}, colors[0], SDL_FPoint{0}});
-    _vertices.push_back(SDL_Vertex{SDL_FPoint{x + 3 * brick_width / 4, y}, colors[1], SDL_FPoint{0}});
-    _vertices.push_back(SDL_Vertex{SDL_FPoint{x + brick_width, y + brick_height / 2}, colors[2], SDL_FPoint{0}});
-    _vertices.push_back(SDL_Vertex{SDL_FPoint{x + 3 * brick_width / 4, y + brick_height}, colors[3], SDL_FPoint{0}});
-    _vertices.push_back(SDL_Vertex{SDL_FPoint{x + brick_width / 4, y + brick_height}, colors[4], SDL_FPoint{0}});
+    _vertices.push_back(SDL_Vertex{SDL_FPoint{x, y + brick_height / 2}, colors[5], SDL_FPoint{0.0f, 0.0f}});
+    _vertices.push_back(SDL_Vertex{SDL_FPoint{x + brick_width / 4, y}, colors[0], SDL_FPoint{0.0f, 0.0f}});
+    _vertices.push_back(SDL_Vertex{SDL_FPoint{x + 3 * brick_width / 4, y}, colors[1], SDL_FPoint{0.0f, 0.0f}});
+    _vertices.push_back(SDL_Vertex{SDL_FPoint{x + brick_width, y + brick_height / 2}, colors[2], SDL_FPoint{0.0f, 0.0f}});
+    _vertices.push_back(SDL_Vertex{SDL_FPoint{x + 3 * brick_width / 4, y + brick_height}, colors[3], SDL_FPoint{0.0f, 0.0f}});
+    _vertices.push_back(SDL_Vertex{SDL_FPoint{x + brick_width / 4, y + brick_height}, colors[4], SDL_FPoint{0.0f, 0.0f}});
 }
 
 const std::vector<int32_t> BrickHexagonal::getIndices() const

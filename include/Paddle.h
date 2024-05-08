@@ -55,7 +55,7 @@ public:
      * 
      * @return The horizontal speed of the Paddle.
      */
-    const int32_t getSpeedX() const;
+    int32_t getSpeedX() const;
 
 private:
     SDL_FRect _rect; ///< The rectangle representing the Paddle's position and size.

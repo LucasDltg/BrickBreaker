@@ -1,6 +1,6 @@
 #include "../include/BreakoutMenu.h"
 
-BreakoutMenu::BreakoutMenu(const std::shared_ptr<SDL_Renderer>& renderer, const std::string& directory_path)
+BreakoutMenu::BreakoutMenu(const std::string& directory_path)
 : SDLComponent(), _selected_level(0), _num_rows(3), _num_columns(3), _breakout(nullptr), _background(nullptr), _current_page(0), _font(nullptr, nullptr)
 {
     _font = std::unique_ptr<TTF_Font, void(*)(TTF_Font*)>(TTF_OpenFont("./assets/fonts/arial/arial.ttf", getFontSize()), TTF_CloseFont);
@@ -25,6 +25,8 @@ BreakoutMenu::BreakoutMenu(const std::shared_ptr<SDL_Renderer>& renderer, const 
 
 void BreakoutMenu::handleResize(const std::pair<int32_t, int32_t>& previousSize, const std::pair<int32_t, int32_t>& newSize)
 {
+    (void)previousSize;
+    (void)newSize;
     TTF_SetFontSize(_font.get(), getFontSize());
 }
 
@@ -54,7 +56,7 @@ void BreakoutMenu::handleEvents(const SDL_Event& event, const std::shared_ptr<vo
         switch(event.key.keysym.sym)
         {
             case SDLK_RETURN:
-                _breakout = std::make_unique<Breakout>(_renderer, _levels[_selected_level + _current_page * _num_rows * _num_columns]._path);
+                _breakout = std::make_unique<Breakout>(_levels[_selected_level + _current_page * _num_rows * _num_columns]._path);
                 _breakout->setSurfaceDimensions(_surface->w, _surface->h);
                 _breakout->initSurface();
                 break;
@@ -108,7 +110,7 @@ void BreakoutMenu::handleEvents(const SDL_Event& event, const std::shared_ptr<vo
 
             if (x >= padding + col * (rect_width + padding / 2) && x <= padding + col * (rect_width + padding / 2) + rect_width && y >= padding + row * (rect_height + padding / 2) && y <= padding + row * (rect_height + padding / 2) + rect_height)
             {
-                _breakout = std::make_unique<Breakout>(_renderer, _levels[i]._path);
+                _breakout = std::make_unique<Breakout>(_levels[i]._path);
                 _breakout->setSurfaceDimensions(_surface->w, _surface->h);
                 _breakout->initSurface();
                 break;
@@ -250,7 +252,7 @@ const std::shared_ptr<SDL_Surface> BreakoutMenu::render()
             SDL_FillRect(_surface.get(), &rect, SDL_MapRGB(_surface->format, 255, 255, 255));
         }
 
-        SDL_Color text_color = {0, 0, 0};
+        SDL_Color text_color = {0, 0, 0, 255};
         SDL_Surface* text_surface = TTF_RenderText_Solid(_font.get(), _levels[i]._name.c_str(), text_color);
         SDL_Rect text_rect = {static_cast<int32_t>(x + rect_width / 2 - text_surface->w / 2), static_cast<int32_t>(y + rect_height / 2 - text_surface->h / 2), text_surface->w, text_surface->h};
         SDL_BlitSurface(text_surface, nullptr, _surface.get(), &text_rect);
@@ -286,7 +288,7 @@ void BreakoutMenu::initSurface()
     _texture_manager.loadTexture("./assets/textures/ball.png", "page_button_not_selected", _renderer);
 }
 
-const uint32_t BreakoutMenu::getPadding() const
+uint32_t BreakoutMenu::getPadding() const
 {
     return _surface->w / 10;
 }
@@ -294,12 +296,12 @@ const uint32_t BreakoutMenu::getPadding() const
 void BreakoutMenu::reloadBackground()
 {
     uint32_t level = rand() % _levels.size();
-    _background = std::make_unique<Breakout>(_renderer, _levels[level]._path);
+    _background = std::make_unique<Breakout>(_levels[level]._path);
     _background->setSurfaceDimensions(_surface->w, _surface->h);
     _background->initSurface();
 }
 
-const uint32_t BreakoutMenu::getFontSize() const
+uint32_t BreakoutMenu::getFontSize() const
 {
     return _surface->w / 45;
 }

@@ -33,10 +33,9 @@ public:
     /**
      * @brief Constructor for BreakoutMenu.
      * 
-     * @param renderer A shared pointer to the SDL renderer.
      * @param directory_path The directory path containing level files. Default is "./assets/levels".
      */
-    BreakoutMenu(const std::shared_ptr<SDL_Renderer>& renderer, const std::string& directory_path = "./assets/levels");
+    BreakoutMenu(const std::string& directory_path = "./assets/levels");
 
     /**
      * @brief Handles SDL events.
@@ -72,14 +71,14 @@ private:
      * 
      * @return The padding for menu elements.
      */
-    const uint32_t getPadding() const;
+    uint32_t getPadding() const;
 
     /**
      * @brief Get the font size for menu elements.
      * 
      * @return The font size for menu elements.
      */
-    const uint32_t getFontSize() const;
+    uint32_t getFontSize() const;
 
     /**
      * @brief Handles resizing of the menu interface.

@@ -27,7 +27,7 @@ public:
      * 
      * @return The radius of the circle.
      */
-    const _Float32 getRadius() const;
+    _Float32 getRadius() const;
 
     /**
      * @brief Retrieves the center coordinates of the circle.
@@ -77,7 +77,7 @@ public:
      * @param rect The rectangle with which the collision is to be resolved.
      * @return True if collision occurred, false otherwise.
      */
-    const bool resolveCollisionWithRectangle(const SDL_FRect& rect);
+    bool resolveCollisionWithRectangle(const SDL_FRect& rect);
 
     /**
      * @brief Resolves collision between the circle and a line segment.
@@ -87,7 +87,7 @@ public:
      * @param delta_time The time elapsed since the last update.
      * @return True if collision occurred, false otherwise.
      */
-    const bool resolveCollisionWithLine(const std::pair<_Float32, _Float32>& p1, const std::pair<_Float32, _Float32>& p2, uint64_t delta_time);
+    bool resolveCollisionWithLine(const std::pair<_Float32, _Float32>& p1, const std::pair<_Float32, _Float32>& p2, uint64_t delta_time);
 
 private:
     _Float32 _radius; ///< The radius of the circle.

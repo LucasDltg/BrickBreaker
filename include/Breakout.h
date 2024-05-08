@@ -23,10 +23,9 @@ public:
     /**
      * @brief Constructor for Breakout.
      * 
-     * @param renderer A shared pointer to the SDL_Renderer used for rendering.
      * @param filename The filename of the level configuration file.
      */
-    Breakout(const std::shared_ptr<SDL_Renderer>& renderer, const std::string& filename);
+    Breakout(const std::string& filename);
 
     /**
      * @brief Handles SDL events.
@@ -82,21 +81,21 @@ public:
      * 
      * @return The radius of the ball.
      */
-    const _Float32 getBallRadius() const;
+    _Float32 getBallRadius() const;
 
     /**
      * @brief Get the initial speed of the ball.
      * 
      * @return The initial speed of the ball.
      */
-    const _Float32 getInitialBallSpeed() const;
+    _Float32 getInitialBallSpeed() const;
 
     /**
      * @brief Get the initial speed of the Paddle.
      * 
      * @return The initial speed of the Paddle.
      */
-    const _Float32 getInitialPaddleSpeed() const;
+    _Float32 getInitialPaddleSpeed() const;
 
     /**
      * @brief Get the vector of balls.

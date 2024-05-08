@@ -19,7 +19,7 @@ PowerUp::PowerUp(const int32_t current_duration)
 : Circle(), _current_duration(current_duration), _active(false)
 {}
 
-const bool PowerUp::isActive() const
+bool PowerUp::isActive() const
 {
     return _active;
 }
@@ -30,7 +30,7 @@ void PowerUp::decrementDuration(uint64_t delta_time)
         _current_duration -= delta_time;
 }
 
-const int64_t PowerUp::getDuration() const
+int64_t PowerUp::getDuration() const
 {
     return _current_duration;
 }
@@ -51,7 +51,9 @@ void AddBallPowerUp::applyPowerUp(Breakout &game)
 }
 
 void AddBallPowerUp::unApplyPowerUp(Breakout &game)
-{}
+{
+    (void)game;
+}
 
 DuplicateBallPowerUp::DuplicateBallPowerUp()
 : PowerUp(0)
@@ -77,7 +79,9 @@ void DuplicateBallPowerUp::applyPowerUp(Breakout &game)
 }
 
 void DuplicateBallPowerUp::unApplyPowerUp(Breakout &game)
-{}
+{
+    (void)game;
+}
 
 ExtendPaddlePowerUp::ExtendPaddlePowerUp()
 : PowerUp(5000)

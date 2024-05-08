@@ -8,7 +8,7 @@ Circle::Circle(const _Float32 radius, const std::pair<_Float32, _Float32>& cente
     : _radius(radius), _center(center), _speed(speed)
     {}
 
-const _Float32 Circle::getRadius() const {
+_Float32 Circle::getRadius() const {
     return _radius;
 }
 
@@ -38,7 +38,7 @@ void Circle::update(uint64_t delta_time) {
     _center.second += _speed.second * delta_time;
 }
 
-const bool Circle::resolveCollisionWithRectangle(const SDL_FRect& rect) {
+bool Circle::resolveCollisionWithRectangle(const SDL_FRect& rect) {
     _Float32 closest_x = _center.first;
     _Float32 closest_y = _center.second;
 
@@ -85,7 +85,7 @@ const bool Circle::resolveCollisionWithRectangle(const SDL_FRect& rect) {
     return false;
 }
 
-const bool Circle::resolveCollisionWithLine(const std::pair<_Float32, _Float32>& p1, const std::pair<_Float32, _Float32>& p2, uint64_t deltaTime)
+bool Circle::resolveCollisionWithLine(const std::pair<_Float32, _Float32>& p1, const std::pair<_Float32, _Float32>& p2, uint64_t deltaTime)
 {
     // Calculate the ball's position at the next time step
     _Float32 nextX = _center.first + _speed.first * deltaTime;

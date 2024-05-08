@@ -63,7 +63,7 @@ public:
      * 
      * @return True if the component is running, false otherwise.
      */
-    const bool isRunning() const;
+    bool isRunning() const;
 
 protected:
     std::shared_ptr<SDL_Surface> _surface; ///< The SDL surface.

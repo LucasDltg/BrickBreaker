@@ -2,7 +2,7 @@
 #include "../include/Ball.h"
 #include "../include/Paddle.h"
 
-Breakout::Breakout(const std::shared_ptr<SDL_Renderer>& renderer, const std::string& filename)
+Breakout::Breakout(const std::string& filename)
 : SDLComponent(), _paddle(), _start_duration(1000), _font(nullptr, TTF_CloseFont)
 {
     createBricksFromLevel(filename);
@@ -324,12 +324,12 @@ const std::shared_ptr<SDL_Surface> Breakout::render()
     return _surface;
 }
 
-const _Float32 Breakout::getBallRadius() const
+_Float32 Breakout::getBallRadius() const
 {
     return static_cast<_Float32>(_surface->w) / 80.0f;
 }
 
-const _Float32 Breakout::getInitialBallSpeed() const
+_Float32 Breakout::getInitialBallSpeed() const
 {
     return static_cast<_Float32>(_surface->w) / 1600.0f;
 }
@@ -344,7 +344,7 @@ std::vector<Ball>& Breakout::getBalls()
     return _balls;
 }
 
-const _Float32 Breakout::getInitialPaddleSpeed() const
+_Float32 Breakout::getInitialPaddleSpeed() const
 {
     return static_cast<_Float32>(_surface->w) / 700.0f;
 }

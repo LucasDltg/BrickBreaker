@@ -30,6 +30,6 @@ void Paddle::update(const uint64_t delta_time, const int32_t screen_width)
         _rect.x = 0;
 }
 
-const int32_t Paddle::getSpeedX() const {
+int32_t Paddle::getSpeedX() const {
     return _speed_x;
 }

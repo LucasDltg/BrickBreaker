@@ -13,7 +13,7 @@ int32_t main()
     const int32_t screen_height = SDLApp::_MIN_SCREEN_HEIGHT;
 
     SDLApp app(screen_width, screen_height, SDL_WINDOW_RESIZABLE);
-    app.addComponent(std::make_shared<BreakoutMenu>(app.getRenderer()));
+    app.addComponent(std::make_shared<BreakoutMenu>());
     
     app.run();
 
