@@ -1,5 +1,5 @@
-#ifndef BreakoutMENU_H
-#define BreakoutMENU_H
+#ifndef BREAKOUTMENU_H
+#define BREAKOUTMENU_H
 
 #include "../include/SDLComponent.h"
 #include "../include/Breakout.h"
@@ -101,11 +101,11 @@ private:
     uint32_t _num_rows; ///< Number of rows in the menu grid.
     uint32_t _num_columns; ///< Number of columns in the menu grid.
     std::vector<BreakoutMenuLevel> _levels; ///< List of menu levels.
-    std::unique_ptr<Breakout> _brick_breaker; ///< Instance of Breakout for playing levels.
-    std::unique_ptr<Breakout> _background; ///< Background image for the menu.
+    std::unique_ptr<Breakout> _breakout; ///< Instance of Breakout for playing levels.
+    std::unique_ptr<Breakout> _background; ///< Background instance of Breakout for the menu.
     uint32_t _current_page; ///< Current page of the menu.
     uint32_t _num_pages; ///< Total number of pages in the menu.
     std::unique_ptr<TTF_Font, void(*)(TTF_Font*)> _font; ///< Font used for menu text.
 };
 
-#endif // BreakoutMENU_H
+#endif // BREAKOUTMENU_H

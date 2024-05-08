@@ -164,20 +164,20 @@ public:
 };
 
 /**
- * @brief The ExtendPlatformPowerUp class represents a power-up that extends the platform size.
+ * @brief The ExtendPaddlePowerUp class represents a power-up that extends the Paddle size.
  */
-class ExtendPlatformPowerUp : public PowerUp
+class ExtendPaddlePowerUp : public PowerUp
 {
 public:
     /**
-     * @brief Constructor for ExtendPlatformPowerUp.
+     * @brief Constructor for ExtendPaddlePowerUp.
      */
-    ExtendPlatformPowerUp();
+    ExtendPaddlePowerUp();
 
     /**
      * @brief Applies the power-up effect.
      * 
-     * Extends the platform size.
+     * Extends the Paddle size.
      * 
      * @param game The Breakout game instance.
      */
@@ -186,7 +186,7 @@ public:
     /**
      * @brief Removes the power-up effect.
      * 
-     * Shrinks the platform size.
+     * Shrinks the Paddle size.
      * 
      * @param game The Breakout game instance.
      */

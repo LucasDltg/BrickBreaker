@@ -1,10 +1,10 @@
-#ifndef Breakout_H
-#define Breakout_H
+#ifndef BREAKOUT_H
+#define BREAKOUT_H
 
 #include "../include/SDLComponent.h"
 #include "../include/Brick.h"
 #include "../include/Ball.h"
-#include "../include/Platform.h"
+#include "../include/Paddle.h"
 #include <memory>
 #include <vector>
 #include <fstream>
@@ -64,18 +64,18 @@ public:
     void addBall(const Ball& ball);
     
     /**
-     * @brief Get the platform object.
+     * @brief Get the Paddle object.
      * 
-     * @return A const reference to the platform object.
+     * @return A const reference to the Paddle object.
      */
-    const Platform& getPlatform() const;
+    const Paddle& getPaddle() const;
 
     /**
-     * @brief Get the platform object.
+     * @brief Get the Paddle object.
      * 
-     * @return A reference to the platform object.
+     * @return A reference to the Paddle object.
      */
-    Platform& getPlatform();
+    Paddle& getPaddle();
 
     /**
      * @brief Get the radius of the ball.
@@ -92,11 +92,11 @@ public:
     const _Float32 getInitialBallSpeed() const;
 
     /**
-     * @brief Get the initial speed of the platform.
+     * @brief Get the initial speed of the Paddle.
      * 
-     * @return The initial speed of the platform.
+     * @return The initial speed of the Paddle.
      */
-    const _Float32 getInitialPlatformSpeed() const;
+    const _Float32 getInitialPaddleSpeed() const;
 
     /**
      * @brief Get the vector of balls.
@@ -109,7 +109,7 @@ private:
     std::vector<std::unique_ptr<Brick>> _bricks; /**< Vector of bricks in the game. */
     std::vector<Ball> _balls; /**< Vector of balls in the game. */
     std::vector<std::unique_ptr<PowerUp>> _power_ups; /**< Vector of power-ups in the game. */
-    Platform _platform; /**< The platform in the game. */
+    Paddle _paddle; /**< The Paddle in the game. */
     std::pair<int32_t, int32_t> _grid_dimensions; /**< The dimensions of the game grid. */
     BrickShape _brick_shape; /**< The shape of the bricks in the game. */
     int32_t _start_duration; /**< The duration of the game start sequence. */
@@ -138,4 +138,4 @@ private:
     void updateLoop(int64_t delta_time);
 };
 
-#endif // Breakout_H
+#endif // BREAKOUT_H

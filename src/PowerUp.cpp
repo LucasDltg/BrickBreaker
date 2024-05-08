@@ -11,8 +11,8 @@ std::unique_ptr<PowerUp> initPowerUp(const std::string& name)
         return std::make_unique<AddBallPowerUp>();
     else if (name == "DuplicateBall")
         return std::make_unique<DuplicateBallPowerUp>();
-    else if (name == "ExtendPlatform")
-        return std::make_unique<ExtendPlatformPowerUp>();
+    else if (name == "ExtendPaddle")
+        return std::make_unique<ExtendPaddlePowerUp>();
     else
         return nullptr;
 }
@@ -45,9 +45,9 @@ void AddBallPowerUp::applyPowerUp(Breakout &game)
 {
     _active = true;
     
-    const SDL_FRect& platform_rect = game.getPlatform().getRect();
-    Ball ball = Ball(game.getBallRadius(), std::pair<_Float32, _Float32>{static_cast<_Float32>(platform_rect.x) + static_cast<_Float32>(platform_rect.w) / 2.0f, 
-                    static_cast<_Float32>(platform_rect.y) - game.getBallRadius()}, std::pair<_Float32, _Float32>{0, game.getInitialBallSpeed()});
+    const SDL_FRect& paddle_rect = game.getPaddle().getRect();
+    Ball ball = Ball(game.getBallRadius(), std::pair<_Float32, _Float32>{static_cast<_Float32>(paddle_rect.x) + static_cast<_Float32>(paddle_rect.w) / 2.0f, 
+                    static_cast<_Float32>(paddle_rect.y) - game.getBallRadius()}, std::pair<_Float32, _Float32>{0, game.getInitialBallSpeed()});
 
     game.addBall(ball);
 }
@@ -81,20 +81,20 @@ void DuplicateBallPowerUp::applyPowerUp(Breakout &game)
 void DuplicateBallPowerUp::unApplyPowerUp(Breakout &game)
 {}
 
-ExtendPlatformPowerUp::ExtendPlatformPowerUp()
+ExtendPaddlePowerUp::ExtendPaddlePowerUp()
 : PowerUp(5000)
 {}
 
-void ExtendPlatformPowerUp::applyPowerUp(Breakout &game)
+void ExtendPaddlePowerUp::applyPowerUp(Breakout &game)
 {
     _active = true;
-    Platform& p = game.getPlatform();
+    Paddle& p = game.getPaddle();
     p.setRect({p.getRect().x - (p.getRect().w * 0.25f), p.getRect().y, p.getRect().w * 1.5f, p.getRect().h});
 }
 
-void ExtendPlatformPowerUp::unApplyPowerUp(Breakout &game)
+void ExtendPaddlePowerUp::unApplyPowerUp(Breakout &game)
 {
-    Platform& p = game.getPlatform();
+    Paddle& p = game.getPaddle();
     p.setRect({p.getRect().x + (p.getRect().w * 0.25f), p.getRect().y, p.getRect().w / 1.5f, p.getRect().h});
 }
 

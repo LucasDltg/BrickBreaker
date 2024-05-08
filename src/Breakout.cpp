@@ -9,10 +9,10 @@
 #include <SDL2/SDL_image.h>
 #include "../include/Brick.h"
 #include "../include/Ball.h"
-#include "../include/Platform.h"
+#include "../include/Paddle.h"
 
 Breakout::Breakout(const std::shared_ptr<SDL_Renderer>& renderer, const std::string& filename)
-: SDLComponent(), _platform(), _start_duration(1000), _font(nullptr, TTF_CloseFont)
+: SDLComponent(), _paddle(), _start_duration(1000), _font(nullptr, TTF_CloseFont)
 {
     createBricksFromLevel(filename);
     
@@ -27,7 +27,7 @@ void Breakout::initSurface()
     std::pair<_Float32, _Float32> speed = {getInitialBallSpeed() / 3, -getInitialBallSpeed()};
     _balls.push_back(Ball(getBallRadius(), center, speed));
 
-    _platform.setRect({static_cast<_Float32>(_surface->w) / 2.0f - static_cast<_Float32>(_surface->w) / 14.0f, static_cast<_Float32>(_surface->h) * 0.9f, static_cast<_Float32>(_surface->w) / 7.0f, static_cast<_Float32>(_surface->h) / 30.0f});
+    _paddle.setRect({static_cast<_Float32>(_surface->w) / 2.0f - static_cast<_Float32>(_surface->w) / 14.0f, static_cast<_Float32>(_surface->h) * 0.9f, static_cast<_Float32>(_surface->w) / 7.0f, static_cast<_Float32>(_surface->h) / 30.0f});
 
     for (auto& brick : _bricks)
     {
@@ -39,10 +39,10 @@ void Breakout::initSurface()
     _texture_manager.loadTexture("assets/textures/medium_crack.png", "medium", _renderer, SDL_BLENDMODE_MUL);
     _texture_manager.loadTexture("assets/textures/big_crack.png", "big", _renderer, SDL_BLENDMODE_MUL);
     _texture_manager.loadTexture("assets/textures/ball.png", typeid(Ball).name(), _renderer);
-    _texture_manager.loadTexture("assets/textures/platform.png", typeid(Platform).name(), _renderer);
+    _texture_manager.loadTexture("assets/textures/paddle.png", typeid(Paddle).name(), _renderer);
     _texture_manager.loadTexture("assets/textures/bubble_duplicate.png", typeid(DuplicateBallPowerUp).name(), _renderer);
     _texture_manager.loadTexture("assets/textures/bubble_multi.png", typeid(AddBallPowerUp).name(), _renderer);
-    _texture_manager.loadTexture("assets/textures/bubble_extend.png", typeid(ExtendPlatformPowerUp).name(), _renderer);
+    _texture_manager.loadTexture("assets/textures/bubble_extend.png", typeid(ExtendPaddlePowerUp).name(), _renderer);
     _texture_manager.loadTexture("assets/textures/bubble_speed.png", typeid(SpeedUpPowerUp).name(), _renderer);
 }
 
@@ -77,13 +77,13 @@ void Breakout::handleResize(const std::pair<int32_t, int32_t>& previous_size, co
         power_up->setRadius(power_up->getRadius() * (static_cast<_Float32>(new_size.first) / static_cast<_Float32>(previous_size.first)));
     }
 
-    // Resize platform
-    SDL_FRect rect = _platform.getRect();
+    // Resize Paddle
+    SDL_FRect rect = _paddle.getRect();
     rect.x = rect.x * (static_cast<_Float32>(new_size.first) / static_cast<_Float32>(previous_size.first));
     rect.y = rect.y * (static_cast<_Float32>(new_size.second) / static_cast<_Float32>(previous_size.second));
     rect.w = rect.w * (static_cast<_Float32>(new_size.first) / static_cast<_Float32>(previous_size.first));
     rect.h = rect.h * (static_cast<_Float32>(new_size.second) / static_cast<_Float32>(previous_size.second));
-    _platform.setRect(rect);
+    _paddle.setRect(rect);
 }
 
 void Breakout::createBricksFromLevel(const std::string& filename) {
@@ -159,9 +159,9 @@ void Breakout::addBall(const Ball& ball)
     _balls.push_back(ball);
 }
 
-const Platform& Breakout::getPlatform() const
+const Paddle& Breakout::getPaddle() const
 {
-    return _platform;
+    return _paddle;
 }
 
 void Breakout::handleEvents(const SDL_Event& event, const std::shared_ptr<void>& data1, const std::shared_ptr<void>& data2)
@@ -172,7 +172,7 @@ void Breakout::handleEvents(const SDL_Event& event, const std::shared_ptr<void>&
     }
     else if (event.type == SDL_MOUSEMOTION)
     {
-        _platform.setRect({event.motion.x - _platform.getRect().w / 2, _platform.getRect().y, _platform.getRect().w, _platform.getRect().h});
+        _paddle.setRect({event.motion.x - _paddle.getRect().w / 2, _paddle.getRect().y, _paddle.getRect().w, _paddle.getRect().h});
     }
 
     const uint8_t* state = SDL_GetKeyboardState(nullptr);
@@ -182,15 +182,15 @@ void Breakout::handleEvents(const SDL_Event& event, const std::shared_ptr<void>&
     }
     else if (state[SDL_SCANCODE_LEFT])
     {
-        _platform.setSpeedX(-getInitialPlatformSpeed());
+        _paddle.setSpeedX(-getInitialPaddleSpeed());
     }
     else if (state[SDL_SCANCODE_RIGHT])
     {
-        _platform.setSpeedX(getInitialPlatformSpeed());
+        _paddle.setSpeedX(getInitialPaddleSpeed());
     }
     else
     {
-        _platform.setSpeedX(0);
+        _paddle.setSpeedX(0);
     }
 }
 
@@ -325,10 +325,10 @@ const std::shared_ptr<SDL_Surface> Breakout::render()
         SDL_RenderCopy(_renderer.get(), power_up_surface.get(), nullptr, &rect);
     }
 
-    const SDL_FRect& rect = _platform.getRect();
+    const SDL_FRect& rect = _paddle.getRect();
     SDL_Rect dest_rect = {static_cast<int32_t>(rect.x), static_cast<int32_t>(rect.y), static_cast<int32_t>(rect.w), static_cast<int32_t>(rect.h)};
-    std::shared_ptr<SDL_Texture> platform_surface = _texture_manager.getTexture(typeid(_platform).name());
-    SDL_RenderCopy(_renderer.get(), platform_surface.get(), nullptr, &dest_rect);
+    std::shared_ptr<SDL_Texture> Paddle_surface = _texture_manager.getTexture(typeid(_paddle).name());
+    SDL_RenderCopy(_renderer.get(), Paddle_surface.get(), nullptr, &dest_rect);
 
     return _surface;
 }
@@ -343,9 +343,9 @@ const _Float32 Breakout::getInitialBallSpeed() const
     return static_cast<_Float32>(_surface->w) / 1600.0f;
 }
 
-Platform& Breakout::getPlatform()
+Paddle& Breakout::getPaddle()
 {
-    return _platform;
+    return _paddle;
 }
 
 std::vector<Ball>& Breakout::getBalls()
@@ -353,21 +353,21 @@ std::vector<Ball>& Breakout::getBalls()
     return _balls;
 }
 
-const _Float32 Breakout::getInitialPlatformSpeed() const
+const _Float32 Breakout::getInitialPaddleSpeed() const
 {
     return static_cast<_Float32>(_surface->w) / 700.0f;
 }
 
 void Breakout::updateLoop(int64_t delta_time)
 {
-    _platform.update(delta_time, _surface->w);
+    _paddle.update(delta_time, _surface->w);
 
     for (auto& power_up : _power_ups)
     {
         if (!power_up->isActive())
         {
             power_up->update(delta_time);
-            if(power_up->resolveCollisionWithRectangle(_platform.getRect()))
+            if(power_up->resolveCollisionWithRectangle(_paddle.getRect()))
             {
                 power_up->applyPowerUp(*this);
             }
@@ -431,8 +431,8 @@ void Breakout::updateLoop(int64_t delta_time)
             }
         }
 
-        // Check for collision with platform
-        ball.resolveCollisionWithRectangle(_platform.getRect());
+        // Check for collision with Paddle
+        ball.resolveCollisionWithRectangle(_paddle.getRect());
 
         // Check for collision with borders
         std::vector<std::pair<_Float32, _Float32>> borders = {

@@ -1,30 +1,30 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include "../include/Platform.h"
+#include "../include/Paddle.h"
 #include <iostream>
 
-Platform::Platform()
+Paddle::Paddle()
 : _rect({ 0, 0, 0, 0 }), _speed_x(0)
 {}
 
-void Platform::setRect(const SDL_FRect& rect) {
+void Paddle::setRect(const SDL_FRect& rect) {
     _rect = rect;
 }
 
-const SDL_FRect& Platform::getRect() const {
+const SDL_FRect& Paddle::getRect() const {
     return _rect;
 }
 
-SDL_FRect& Platform::getRect() {
+SDL_FRect& Paddle::getRect() {
     return _rect;
 }
 
-void Platform::setSpeedX(const _Float32 speed_x)
+void Paddle::setSpeedX(const _Float32 speed_x)
 {
     _speed_x = speed_x;
 }
 
-void Platform::update(const uint64_t delta_time, const int32_t screen_width)
+void Paddle::update(const uint64_t delta_time, const int32_t screen_width)
 {
     _rect.x += _speed_x * delta_time;
     if (_rect.x + _rect.w > screen_width)
@@ -33,6 +33,6 @@ void Platform::update(const uint64_t delta_time, const int32_t screen_width)
         _rect.x = 0;
 }
 
-const int32_t Platform::getSpeedX() const {
+const int32_t Paddle::getSpeedX() const {
     return _speed_x;
 }

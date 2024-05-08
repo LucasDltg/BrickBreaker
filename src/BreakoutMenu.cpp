@@ -6,7 +6,7 @@
 #include "../include/BreakoutMenu.h"
 
 BreakoutMenu::BreakoutMenu(const std::shared_ptr<SDL_Renderer>& renderer, const std::string& directory_path)
-: SDLComponent(), _selected_level(0), _num_rows(3), _num_columns(3), _brick_breaker(nullptr), _background(nullptr), _current_page(0), _font(nullptr, nullptr)
+: SDLComponent(), _selected_level(0), _num_rows(3), _num_columns(3), _breakout(nullptr), _background(nullptr), _current_page(0), _font(nullptr, nullptr)
 {
     _font = std::unique_ptr<TTF_Font, void(*)(TTF_Font*)>(TTF_OpenFont("./assets/fonts/arial/arial.ttf", getFontSize()), TTF_CloseFont);
     if (!_font.get())
@@ -44,12 +44,12 @@ void BreakoutMenu::handleEvents(const SDL_Event& event, const std::shared_ptr<vo
         _background->handleEvents(event, data1, data2);
     }
 
-    if (_brick_breaker != nullptr)
+    if (_breakout != nullptr)
     {
         if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
-            _brick_breaker->setSurfaceDimensions(event.window.data1, event.window.data2);
+            _breakout->setSurfaceDimensions(event.window.data1, event.window.data2);
         
-        _brick_breaker->handleEvents(event, data1, data2);
+        _breakout->handleEvents(event, data1, data2);
         return;
     }
     
@@ -59,9 +59,9 @@ void BreakoutMenu::handleEvents(const SDL_Event& event, const std::shared_ptr<vo
         switch(event.key.keysym.sym)
         {
             case SDLK_RETURN:
-                _brick_breaker = std::make_unique<Breakout>(_renderer, _levels[_selected_level + _current_page * _num_rows * _num_columns]._path);
-                _brick_breaker->setSurfaceDimensions(_surface->w, _surface->h);
-                _brick_breaker->initSurface();
+                _breakout = std::make_unique<Breakout>(_renderer, _levels[_selected_level + _current_page * _num_rows * _num_columns]._path);
+                _breakout->setSurfaceDimensions(_surface->w, _surface->h);
+                _breakout->initSurface();
                 break;
             case SDLK_LEFT:
                 if(static_cast<int32_t>(_selected_level) % _num_columns == 0)
@@ -113,9 +113,9 @@ void BreakoutMenu::handleEvents(const SDL_Event& event, const std::shared_ptr<vo
 
             if (x >= padding + col * (rect_width + padding / 2) && x <= padding + col * (rect_width + padding / 2) + rect_width && y >= padding + row * (rect_height + padding / 2) && y <= padding + row * (rect_height + padding / 2) + rect_height)
             {
-                _brick_breaker = std::make_unique<Breakout>(_renderer, _levels[i]._path);
-                _brick_breaker->setSurfaceDimensions(_surface->w, _surface->h);
-                _brick_breaker->initSurface();
+                _breakout = std::make_unique<Breakout>(_renderer, _levels[i]._path);
+                _breakout->setSurfaceDimensions(_surface->w, _surface->h);
+                _breakout->initSurface();
                 break;
             }
         }
@@ -181,27 +181,27 @@ void BreakoutMenu::handleEvents(const SDL_Event& event, const std::shared_ptr<vo
 
 void BreakoutMenu::update(uint64_t delta_time)
 {
-    if (_brick_breaker != nullptr)
+    if (_breakout != nullptr)
     {
-        _brick_breaker->update(delta_time);
-        if (!_brick_breaker->isRunning())
+        _breakout->update(delta_time);
+        if (!_breakout->isRunning())
         {
-            _brick_breaker = nullptr;
+            _breakout = nullptr;
             reloadBackground();
         }
     }
-    else // update background with an automated platform
+    else // update background with an automated Paddle
     {
         _background->update(delta_time);
         
-        const SDL_FRect& platform_rect = _background->getPlatform().getRect();
+        const SDL_FRect& paddle_rect = _background->getPaddle().getRect();
         const Ball& ball = _background->getBalls().front();
-        _Float32 initial_platform_speed = _background->getInitialPlatformSpeed();
+        _Float32 initial_paddle_speed = _background->getInitialPaddleSpeed();
         
-        if (ball.getCenter().first < platform_rect.x)
-            _background->getPlatform().setSpeedX(-initial_platform_speed);
-        else if (ball.getCenter().first > (platform_rect.x + platform_rect.w))
-            _background->getPlatform().setSpeedX(initial_platform_speed);
+        if (ball.getCenter().first < paddle_rect.x)
+            _background->getPaddle().setSpeedX(-initial_paddle_speed);
+        else if (ball.getCenter().first > (paddle_rect.x + paddle_rect.w))
+            _background->getPaddle().setSpeedX(initial_paddle_speed);
 
 
         if (!_background->isRunning())
@@ -213,9 +213,9 @@ void BreakoutMenu::update(uint64_t delta_time)
 
 const std::shared_ptr<SDL_Surface> BreakoutMenu::render()
 {
-    if (_brick_breaker != nullptr)
+    if (_breakout != nullptr)
     {
-        return _brick_breaker->render();
+        return _breakout->render();
     }
 
     SDL_FillRect(_surface.get(), nullptr, SDL_MapRGB(_surface->format, 0, 0, 0));
@@ -286,8 +286,8 @@ void BreakoutMenu::initSurface()
     TTF_SetFontSize(_font.get(), getFontSize());
 
     _texture_manager.loadDefaultTextures(_renderer);
-    _texture_manager.loadTexture("./assets/textures/platform.png", "button", _renderer);
-    _texture_manager.loadTexture("./assets/textures/platform.png", "page_button_selected", _renderer);
+    _texture_manager.loadTexture("./assets/textures/paddle.png", "button", _renderer);
+    _texture_manager.loadTexture("./assets/textures/paddle.png", "page_button_selected", _renderer);
     _texture_manager.loadTexture("./assets/textures/ball.png", "page_button_not_selected", _renderer);
 }
 
