@@ -44,6 +44,7 @@ private:
     
     void createBricksFromLevel(const std::string& filename);
     void handleResize(const std::pair<int32_t, int32_t>& previous_size, const std::pair<int32_t, int32_t>& new_size);
+    void updateLoop(int64_t delta_time);
 };
 
 #endif

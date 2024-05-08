@@ -25,7 +25,7 @@ void TextureManager::loadTexture(const std::string& filename, const std::string&
 const std::shared_ptr<SDL_Texture> TextureManager::getTexture(const std::string& key)
 {
     auto it = _textures.find(key);
-    if (std::get<2>(it->second) == nullptr)
+    if (it == _textures.end() || std::get<2>(it->second) == nullptr)
     {
         auto it_default = _textures.find("default");
         if (it_default == _textures.end())

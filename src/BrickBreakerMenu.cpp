@@ -272,9 +272,9 @@ const std::shared_ptr<SDL_Surface> BrickBreakerMenu::render()
             static_cast<int32_t>(_surface->h - padding / 2),                                    
             static_cast<int32_t>(padding / 4),
             static_cast<int32_t>(padding / 4)};
-        SDL_FillRect(_surface.get(), &page_rect, SDL_MapRGB(_surface->format, 255, 255, 255));
+        SDL_RenderCopy(_renderer.get(), _texture_manager.getTexture("page_button_not_selected").get(), nullptr, &page_rect);
         if (i == _current_page)
-            SDL_FillRect(_surface.get(), &page_rect, SDL_MapRGB(_surface->format, 0, 0, 255));
+            SDL_RenderCopy(_renderer.get(), _texture_manager.getTexture("page_button_selected").get(), nullptr, &page_rect);
     }
 
     return _surface;
@@ -285,7 +285,10 @@ void BrickBreakerMenu::initSurface()
     reloadBackground();
     TTF_SetFontSize(_font.get(), getFontSize());
 
+    _texture_manager.loadDefaultTextures(_renderer);
     _texture_manager.loadTexture("./assets/textures/platform.png", "button", _renderer);
+    _texture_manager.loadTexture("./assets/textures/platform.png", "page_button_selected", _renderer);
+    _texture_manager.loadTexture("./assets/textures/ball.png", "page_button_not_selected", _renderer);
 }
 
 const uint32_t BrickBreakerMenu::getPadding() const

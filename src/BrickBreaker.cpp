@@ -42,11 +42,11 @@ void BrickBreaker::initSurface()
     _texture_manager.loadTexture("assets/textures/medium_crack.png", "medium", _renderer, SDL_BLENDMODE_MUL);
     _texture_manager.loadTexture("assets/textures/big_crack.png", "big", _renderer, SDL_BLENDMODE_MUL);
     _texture_manager.loadTexture("assets/textures/ball.png", typeid(Ball).name(), _renderer);
-    _texture_manager.loadTexture("assets/textures/platfojrm.png", typeid(Platform).name(), _renderer);
-    _texture_manager.loadTexture("assets/textures/bubbler_duplicate.png", typeid(DuplicateBallPowerUp).name(), _renderer);
-    _texture_manager.loadTexture("assets/textures/bubblre_multi.png", typeid(AddBallPowerUp).name(), _renderer);
-    _texture_manager.loadTexture("assets/textures/bubble_rextend.png", typeid(ExtendPlatformPowerUp).name(), _renderer);
-    _texture_manager.loadTexture("assets/textures/bubble_rspeed.png", typeid(SpeedUpPowerUp).name(), _renderer);
+    _texture_manager.loadTexture("assets/textures/platform.png", typeid(Platform).name(), _renderer);
+    _texture_manager.loadTexture("assets/textures/bubble_duplicate.png", typeid(DuplicateBallPowerUp).name(), _renderer);
+    _texture_manager.loadTexture("assets/textures/bubble_multi.png", typeid(AddBallPowerUp).name(), _renderer);
+    _texture_manager.loadTexture("assets/textures/bubble_extend.png", typeid(ExtendPlatformPowerUp).name(), _renderer);
+    _texture_manager.loadTexture("assets/textures/bubble_speed.png", typeid(SpeedUpPowerUp).name(), _renderer);
 }
 
 void BrickBreaker::handleResize(const std::pair<int32_t, int32_t>& previous_size, const std::pair<int32_t, int32_t>& new_size)
@@ -199,106 +199,23 @@ void BrickBreaker::handleEvents(const SDL_Event& event, const std::shared_ptr<vo
 
 void BrickBreaker::update(uint64_t delta_time)
 {
+    // check if the game is starting
     if(_start_duration > 0)
     {
         _start_duration -= delta_time;
         return;
     }
     
-    _platform.update(delta_time, _surface->w);
-
-    for (auto& power_up : _power_ups)
-    {
-        if (!power_up->isActive())
-        {
-            power_up->update(delta_time);
-            if(power_up->resolveCollisionWithRectangle(_platform.getRect()))
-            {
-                power_up->applyPowerUp(*this);
-            }
-        }
-        else
-        {
-            power_up->decrementDuration(delta_time);
-        }
-    }
-
-    // remove power-up if it is out of bounds or its duration is over
-    _power_ups.erase(std::remove_if(_power_ups.begin(), _power_ups.end(), [this](const std::unique_ptr<PowerUp>& power_up) {
-        if (power_up->getCenter().second + power_up->getRadius() > _surface->h && !power_up->isActive())
-        {
-            return true;
-        }
-        if(power_up->isActive() && power_up->getDuration() <= 0)
-        {
-            power_up->unApplyPowerUp(*this);
-            return true;
-        }
-        return false;
-    }), _power_ups.end());
-
+    // use CCD technic to avoid tunneling
+    const uint32_t max_delta_time = 1000 / 60;
+    uint32_t n_loop = std::floor(delta_time / max_delta_time);
     
-    for (auto& ball : _balls)
+    for(uint32_t i(0); i < n_loop; i++)
     {
-        for(auto& brick : _bricks)
-        {
-            std::vector<SDL_Vertex> v = brick->getVertices();
-            bool collision = false;
-            
-            for (size_t i = 0; i < v.size(); i++)
-            {
-                if (ball.resolveCollisionWithLine({v[i].position.x, v[i].position.y}, {v[(i + 1) % v.size()].position.x, v[(i + 1) % v.size()].position.y}))
-                {
-                    collision = true;
-                    break;
-                }
-            }
-
-            if(collision)
-            {
-                brick->decreaseResistance();
-                if(brick->getResistance() == 0)
-                {
-                    std::unique_ptr<PowerUp> power_up = brick->getPowerUp();
-                    if(power_up)
-                    {
-                        _power_ups.push_back(std::move(power_up));
-                        _power_ups.back()->setRadius(getBallRadius());
-                        _power_ups.back()->setCenter(brick->getCenter());
-                        _power_ups.back()->setSpeed({0, static_cast<_Float32>(_surface->h) / 4000.0f});
-                    }
-                    // we remove the brick from the vector here, because we don't want to check for collision with it anymore
-                    _bricks.erase(std::remove_if(_bricks.begin(), _bricks.end(), [&brick](const std::unique_ptr<Brick>& b) {
-                        return b.get() == brick.get();
-                    }), _bricks.end());
-                }
-                break;
-            }
-        }
-
-        // Check for collision with platform
-        ball.resolveCollisionWithRectangle(_platform.getRect());
-
-        // Check for collision with borders
-        std::vector<std::pair<_Float32, _Float32>> borders = {
-            {0, 0},
-            {static_cast<_Float32>(_surface->w), 0},
-            {static_cast<_Float32>(_surface->w), static_cast<_Float32>(_surface->h)},
-            {0, static_cast<_Float32>(_surface->h)},
-        };
-        
-        ball.resolveCollisionWithLine(borders[0], borders[1]);
-        ball.resolveCollisionWithLine(borders[1], borders[2]);
-        ball.resolveCollisionWithLine(borders[2], borders[3]);
-        ball.resolveCollisionWithLine(borders[3], borders[0]);
-        
-        ball.update(delta_time);
+        updateLoop(max_delta_time);
     }
+    updateLoop(delta_time - n_loop * max_delta_time);
 
-    // remove balls that are out of bounds
-    /*balls.erase(std::remove_if(balls.begin(), balls.end(), [this](const Ball& ball) {
-        return ball.getCenter().second - ball.getRadius() > surface->h;
-    }), balls.end());*/
 
     if (_bricks.empty() || _balls.empty() || std::all_of(_bricks.begin(), _bricks.end(), [](const std::unique_ptr<Brick>& brick) {
             return brick->getResistance() <= 0;}))
@@ -442,4 +359,102 @@ std::vector<Ball>& BrickBreaker::getBalls()
 const _Float32 BrickBreaker::getInitialPlatformSpeed() const
 {
     return static_cast<_Float32>(_surface->w) / 700.0f;
+}
+
+void BrickBreaker::updateLoop(int64_t delta_time)
+{
+    _platform.update(delta_time, _surface->w);
+
+    for (auto& power_up : _power_ups)
+    {
+        if (!power_up->isActive())
+        {
+            power_up->update(delta_time);
+            if(power_up->resolveCollisionWithRectangle(_platform.getRect()))
+            {
+                power_up->applyPowerUp(*this);
+            }
+        }
+        else
+        {
+            power_up->decrementDuration(delta_time);
+        }
+    }
+
+    // remove power-up if it is out of bounds or its duration is over
+    _power_ups.erase(std::remove_if(_power_ups.begin(), _power_ups.end(), [this](const std::unique_ptr<PowerUp>& power_up) {
+        if (power_up->getCenter().second + power_up->getRadius() > _surface->h && !power_up->isActive())
+        {
+            return true;
+        }
+        if(power_up->isActive() && power_up->getDuration() <= 0)
+        {
+            power_up->unApplyPowerUp(*this);
+            return true;
+        }
+        return false;
+    }), _power_ups.end());
+
+    
+    for (auto& ball : _balls)
+    {
+        for(auto& brick : _bricks)
+        {
+            std::vector<SDL_Vertex> v = brick->getVertices();
+            bool collision = false;
+            
+            for (size_t i = 0; i < v.size(); i++)
+            {
+                if (ball.resolveCollisionWithLine({v[i].position.x, v[i].position.y}, {v[(i + 1) % v.size()].position.x, v[(i + 1) % v.size()].position.y}, delta_time))
+                {
+                    collision = true;
+                    break;
+                }
+            }
+
+            if(collision)
+            {
+                brick->decreaseResistance();
+                if(brick->getResistance() == 0)
+                {
+                    std::unique_ptr<PowerUp> power_up = brick->getPowerUp();
+                    if(power_up)
+                    {
+                        _power_ups.push_back(std::move(power_up));
+                        _power_ups.back()->setRadius(getBallRadius());
+                        _power_ups.back()->setCenter(brick->getCenter());
+                        _power_ups.back()->setSpeed({0, static_cast<_Float32>(_surface->h) / 4000.0f});
+                    }
+                    // we remove the brick from the vector here, because we don't want to check for collision with it anymore
+                    _bricks.erase(std::remove_if(_bricks.begin(), _bricks.end(), [&brick](const std::unique_ptr<Brick>& b) {
+                        return b.get() == brick.get();
+                    }), _bricks.end());
+                }
+                break;
+            }
+        }
+
+        // Check for collision with platform
+        ball.resolveCollisionWithRectangle(_platform.getRect());
+
+        // Check for collision with borders
+        std::vector<std::pair<_Float32, _Float32>> borders = {
+            {0, 0},
+            {static_cast<_Float32>(_surface->w), 0},
+            {static_cast<_Float32>(_surface->w), static_cast<_Float32>(_surface->h)},
+            {0, static_cast<_Float32>(_surface->h)},
+        };
+        
+        ball.resolveCollisionWithLine(borders[0], borders[1], delta_time);
+        ball.resolveCollisionWithLine(borders[1], borders[2], delta_time);
+        ball.resolveCollisionWithLine(borders[2], borders[3], delta_time);
+        ball.resolveCollisionWithLine(borders[3], borders[0], delta_time);
+        
+        ball.update(delta_time);
+    }
+
+    // remove balls that are out of bounds
+    /*balls.erase(std::remove_if(balls.begin(), balls.end(), [this](const Ball& ball) {
+        return ball.getCenter().second - ball.getRadius() > surface->h;
+    }), balls.end());*/
 }

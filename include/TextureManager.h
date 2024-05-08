@@ -7,6 +7,8 @@
 #include <string>
 #include <memory>
 
+// we can add later a surcharge of the loadTexture function to manage user defined textures
+
 class TextureManager
 {
 public:

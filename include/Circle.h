@@ -25,7 +25,7 @@ public:
 
     void update(const uint64_t delta_time);
     const bool resolveCollisionWithRectangle(const SDL_FRect& rect);
-    const bool resolveCollisionWithLine(const std::pair<_Float32, _Float32>& p1, const std::pair<_Float32, _Float32>& p2);
+    const bool resolveCollisionWithLine(const std::pair<_Float32, _Float32>& p1, const std::pair<_Float32, _Float32>& p2, uint64_t delta_time);
 
 private:
     _Float32 _radius;

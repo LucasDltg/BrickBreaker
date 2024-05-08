@@ -96,10 +96,14 @@ const bool Circle::resolveCollisionWithRectangle(const SDL_FRect& rect) {
     return false;
 }
 
-const bool Circle::resolveCollisionWithLine(const std::pair<_Float32, _Float32>& p1, const std::pair<_Float32, _Float32>& p2)
+const bool Circle::resolveCollisionWithLine(const std::pair<_Float32, _Float32>& p1, const std::pair<_Float32, _Float32>& p2, uint64_t deltaTime)
 {
-    _Float32 a = _center.first - p1.first;
-    _Float32 b = _center.second - p1.second;
+    // Calculate the ball's position at the next time step
+    _Float32 nextX = _center.first + _speed.first * deltaTime;
+    _Float32 nextY = _center.second + _speed.second * deltaTime;
+
+    _Float32 a = nextX - p1.first;
+    _Float32 b = nextY - p1.second;
     _Float32 c = p2.first - p1.first;
     _Float32 d = p2.second - p1.second;
 
@@ -120,8 +124,8 @@ const bool Circle::resolveCollisionWithLine(const std::pair<_Float32, _Float32>&
         yy = p1.second + param * d;
     }
 
-    _Float32 dx = _center.first - xx;
-    _Float32 dy = _center.second - yy;
+    _Float32 dx = nextX - xx;
+    _Float32 dy = nextY - yy;
     _Float32 distance = std::sqrt(dx * dx + dy * dy);
 
     if (distance < _radius && distance) {
@@ -131,6 +135,7 @@ const bool Circle::resolveCollisionWithLine(const std::pair<_Float32, _Float32>&
             _Float32 direction_x = dx / distance;
             _Float32 direction_y = dy / distance;
 
+            // Resolve the collision based on the fixed time step
             _center.first += overlap * direction_x;
             _center.second += overlap * direction_y;
 
