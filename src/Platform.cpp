@@ -4,15 +4,11 @@
 #include <iostream>
 
 Platform::Platform()
-: _rect({ 0, 0, 0, 0 }), _color({ 0, 0, 0, 0 }), _speed_x(0)
+: _rect({ 0, 0, 0, 0 }), _speed_x(0)
 {}
 
 void Platform::setRect(const SDL_FRect& rect) {
     _rect = rect;
-}
-
-void Platform::setColor(const SDL_Color& color) {
-    _color = color;
 }
 
 const SDL_FRect& Platform::getRect() const {
@@ -21,10 +17,6 @@ const SDL_FRect& Platform::getRect() const {
 
 SDL_FRect& Platform::getRect() {
     return _rect;
-}
-
-const SDL_Color& Platform::getColor() const {
-    return _color;
 }
 
 void Platform::setSpeedX(const _Float32 speed_x)

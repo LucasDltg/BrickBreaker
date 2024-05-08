@@ -1,0 +1,4 @@
+<map id="Ball" name="Ball">
+<area shape="rect" id="node1" title="Represents a ball in the game." alt="" coords="92,359,156,424"/>
+<area shape="rect" id="node2" href="$classCircle.html" title="The Circle class represents a circle in 2D space." alt="" coords="5,5,243,311"/>
+</map>

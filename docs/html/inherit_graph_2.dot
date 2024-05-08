@@ -1,0 +1,22 @@
+digraph "Graphical Class Hierarchy"
+{
+ // INTERACTIVE_SVG=YES
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="LR";
+  Node0 [label="Circle",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classCircle.html",tooltip="The Circle class represents a circle in 2D space."];
+  Node0 -> Node1 [dir="back",color="steelblue1",style="solid"];
+  Node1 [label="Ball",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classBall.html",tooltip="Represents a ball in the game."];
+  Node0 -> Node2 [dir="back",color="steelblue1",style="solid"];
+  Node2 [label="PowerUp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classPowerUp.html",tooltip="The PowerUp class represents a base class for power-up objects."];
+  Node2 -> Node3 [dir="back",color="steelblue1",style="solid"];
+  Node3 [label="AddBallPowerUp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classAddBallPowerUp.html",tooltip="The AddBallPowerUp class represents a power-up that adds a ball to the game."];
+  Node2 -> Node4 [dir="back",color="steelblue1",style="solid"];
+  Node4 [label="DuplicateBallPowerUp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classDuplicateBallPowerUp.html",tooltip="The DuplicateBallPowerUp class represents a power-up that duplicates the current ball."];
+  Node2 -> Node5 [dir="back",color="steelblue1",style="solid"];
+  Node5 [label="ExtendPlatformPowerUp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classExtendPlatformPowerUp.html",tooltip="The ExtendPlatformPowerUp class represents a power-up that extends the platform size."];
+  Node2 -> Node6 [dir="back",color="steelblue1",style="solid"];
+  Node6 [label="SpeedUpPowerUp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classSpeedUpPowerUp.html",tooltip="The SpeedUpPowerUp class represents a power-up that speeds up the ball."];
+}

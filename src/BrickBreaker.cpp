@@ -23,14 +23,11 @@ BrickBreaker::BrickBreaker(const std::shared_ptr<SDL_Renderer>& renderer, const 
 
 void BrickBreaker::initSurface()
 {
-    SDL_Color color = {0, 0, 255, 0};
     std::pair<uint32_t, uint32_t> center = {_surface->w / 2, _surface->h * 3/ 4};
     std::pair<_Float32, _Float32> speed = {getInitialBallSpeed() / 3, -getInitialBallSpeed()};
-    _balls.push_back(Ball(getBallRadius(), center, color, speed));
+    _balls.push_back(Ball(getBallRadius(), center, speed));
 
-    color.r = 255; color.g = 0; color.b = 0; color.a = 0;
     _platform.setRect({static_cast<_Float32>(_surface->w) / 2.0f - static_cast<_Float32>(_surface->w) / 14.0f, static_cast<_Float32>(_surface->h) * 0.9f, static_cast<_Float32>(_surface->w) / 7.0f, static_cast<_Float32>(_surface->h) / 30.0f});
-    _platform.setColor(color);
 
     for (auto& brick : _bricks)
     {

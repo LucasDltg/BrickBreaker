@@ -5,9 +5,19 @@
 #include <SDL2/SDL.h>
 #include "../include/Circle.h"
 
-class Ball : public Circle{
+/**
+ * @brief Represents a ball in the game.
+ */
+class Ball : public Circle {
 public:
-    Ball(const _Float32 radius, const std::pair<_Float32, _Float32>& center, const SDL_Color& color, const std::pair<_Float32, _Float32>& speed);
+    /**
+     * @brief Constructor for Ball.
+     * 
+     * @param radius The radius of the ball.
+     * @param center The center coordinates of the ball.
+     * @param speed The speed vector of the ball.
+     */
+    Ball(const _Float32 radius, const std::pair<_Float32, _Float32>& center, const std::pair<_Float32, _Float32>& speed);
 };
 
 #endif // BALL_H

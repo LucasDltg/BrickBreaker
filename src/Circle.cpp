@@ -4,11 +4,11 @@
 #include "../include/Circle.h"
 
 Circle::Circle()
-    : _radius(0), _center({0, 0}), _color({0, 0, 0, 0}), _speed({0, 0})
+    : _radius(0), _center({0, 0}), _speed({0, 0})
     {}
 
-Circle::Circle(const _Float32 radius, const std::pair<_Float32, _Float32>& center, const SDL_Color& color, const std::pair<_Float32, _Float32>& speed)
-    : _radius(radius), _center(center), _color(color), _speed(speed)
+Circle::Circle(const _Float32 radius, const std::pair<_Float32, _Float32>& center, const std::pair<_Float32, _Float32>& speed)
+    : _radius(radius), _center(center), _speed(speed)
     {}
 
 const _Float32 Circle::getRadius() const {
@@ -17,10 +17,6 @@ const _Float32 Circle::getRadius() const {
 
 const std::pair<_Float32, _Float32>& Circle::getCenter() const {
     return _center;
-}
-
-const SDL_Color& Circle::getColor() const {
-    return _color;
 }
 
 const std::pair<_Float32, _Float32>& Circle::getSpeed() const {
@@ -33,10 +29,6 @@ void Circle::setRadius(_Float32 new_radius) {
 
 void Circle::setCenter(const std::pair<_Float32, _Float32>& new_center) {
     _center = new_center;
-}
-
-void Circle::setColor(const SDL_Color& new_color) {
-    _color = new_color;
 }
 
 void Circle::setSpeed(const std::pair<_Float32, _Float32>& new_speed) {

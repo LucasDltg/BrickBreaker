@@ -1,0 +1,9 @@
+<map id="Circle" name="Circle">
+<area shape="rect" id="node1" title="The Circle class represents a circle in 2D space." alt="" coords="189,5,427,311"/>
+<area shape="rect" id="node2" href="$classBall.html" title="Represents a ball in the game." alt="" coords="207,419,271,484"/>
+<area shape="rect" id="node3" href="$classPowerUp.html" title="The PowerUp class represents a base class for power&#45;up objects." alt="" coords="295,359,460,544"/>
+<area shape="rect" id="node4" href="$classAddBallPowerUp.html" title="The AddBallPowerUp class represents a power&#45;up that adds a ball to the game." alt="" coords="5,592,155,697"/>
+<area shape="rect" id="node5" href="$classDuplicateBallPowerUp.html" title="The DuplicateBallPowerUp class represents a power&#45;up that duplicates the current ball." alt="" coords="179,592,363,697"/>
+<area shape="rect" id="node6" href="$classExtendPlatformPowerUp.html" title="The ExtendPlatformPowerUp class represents a power&#45;up that extends the platform size." alt="" coords="387,592,584,697"/>
+<area shape="rect" id="node7" href="$classSpeedUpPowerUp.html" title="The SpeedUpPowerUp class represents a power&#45;up that speeds up the ball." alt="" coords="608,592,763,697"/>
+</map>

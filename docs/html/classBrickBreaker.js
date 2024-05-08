@@ -1,0 +1,27 @@
+var classBrickBreaker =
+[
+    [ "BrickBreaker", "classBrickBreaker.html#a2420eeccb6c44470e410aa8e292a2687", null ],
+    [ "addBall", "classBrickBreaker.html#a9f900b9cd6328ed60ff319e314edf809", null ],
+    [ "createBricksFromLevel", "classBrickBreaker.html#a5bbb6710b47bb5dbac12450e9946d7ea", null ],
+    [ "getBallRadius", "classBrickBreaker.html#ab0665564479838a078c8745ad7f3e787", null ],
+    [ "getBalls", "classBrickBreaker.html#a5d843493bf376dd7cd01e513eacbf93c", null ],
+    [ "getInitialBallSpeed", "classBrickBreaker.html#a8baa9bea6a11131891c591b140ec1de5", null ],
+    [ "getInitialPlatformSpeed", "classBrickBreaker.html#a7d9c0fbcca7309ca0040c9ed185137cf", null ],
+    [ "getPlatform", "classBrickBreaker.html#aae48c63dc7f49c438c3c11dee066e67c", null ],
+    [ "getPlatform", "classBrickBreaker.html#ac23ec5cc202ea8b8306cac0b868a719e", null ],
+    [ "handleEvents", "classBrickBreaker.html#a3fa28067bdf3a9ac981bc8077a82ccff", null ],
+    [ "handleResize", "classBrickBreaker.html#a7dedc645e2f951f52180602ddad23dc3", null ],
+    [ "initSurface", "classBrickBreaker.html#a87f0afb6d4a64cab91438a0e07b146e6", null ],
+    [ "render", "classBrickBreaker.html#a7e935953cae5a4c24ba863fe0e0a31ea", null ],
+    [ "update", "classBrickBreaker.html#a6442a111c72bc53e4327083f04d000df", null ],
+    [ "updateLoop", "classBrickBreaker.html#a3eb8fdf9ba725de736c61102ec7dbf08", null ],
+    [ "_balls", "classBrickBreaker.html#ade39be68aafb06044673955669434006", null ],
+    [ "_BRICK_HEIGHT_LIMIT", "classBrickBreaker.html#a50a4700c2262a31cb1c7eed8e80aaba1", null ],
+    [ "_brick_shape", "classBrickBreaker.html#a5605d0cf0e4b0935750ca54bc3f3bb13", null ],
+    [ "_bricks", "classBrickBreaker.html#a8ec09a0e857ea4ea10d9a568002d84d4", null ],
+    [ "_font", "classBrickBreaker.html#a02858834129235f9901fde892439466c", null ],
+    [ "_grid_dimensions", "classBrickBreaker.html#a9e6e13d5a0d93e97cf84b549c05a34c7", null ],
+    [ "_platform", "classBrickBreaker.html#a8abdc45e561f2344595d6e9d3b4cd838", null ],
+    [ "_power_ups", "classBrickBreaker.html#aea8f866b619ac5ff137939066bd61ec3", null ],
+    [ "_start_duration", "classBrickBreaker.html#a1663f5479c32dd1981a4a14a35d69ed1", null ]
+];

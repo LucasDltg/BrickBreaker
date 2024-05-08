@@ -1,0 +1,5 @@
+<map id="SDLComponent" name="SDLComponent">
+<area shape="rect" id="node1" title="The SDLComponent class represents a base class for SDL components." alt="" coords="109,5,295,251"/>
+<area shape="rect" id="node2" href="$classBrickBreaker.html" title="The BrickBreaker class represents the main game logic for the Brick Breaker game." alt="" coords="5,299,199,804"/>
+<area shape="rect" id="node3" href="$classBrickBreakerMenu.html" title="Represents the main menu of the BrickBreaker game." alt="" coords="223,359,381,744"/>
+</map>

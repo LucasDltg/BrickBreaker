@@ -27,8 +27,14 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
+doc:
+	doxygen Doxyfile
+
 # Rule to clean up generated files
 clean:
 	rm -rf $(BUILD_DIR)
+
+clean-doc:
+	rm -rf ./docs
 
 .PHONY: clean

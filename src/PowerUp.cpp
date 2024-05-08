@@ -47,7 +47,7 @@ void AddBallPowerUp::applyPowerUp(BrickBreaker &game)
     
     const SDL_FRect& platform_rect = game.getPlatform().getRect();
     Ball ball = Ball(game.getBallRadius(), std::pair<_Float32, _Float32>{static_cast<_Float32>(platform_rect.x) + static_cast<_Float32>(platform_rect.w) / 2.0f, 
-                    static_cast<_Float32>(platform_rect.y) - game.getBallRadius()}, SDL_Color{255, 0, 0, 0}, std::pair<_Float32, _Float32>{0, game.getInitialBallSpeed()});
+                    static_cast<_Float32>(platform_rect.y) - game.getBallRadius()}, std::pair<_Float32, _Float32>{0, game.getInitialBallSpeed()});
 
     game.addBall(ball);
 }
@@ -65,7 +65,7 @@ void DuplicateBallPowerUp::applyPowerUp(BrickBreaker &game)
     
     for (auto &ball : game.getBalls()) {
         
-        Ball duplicate_ball = Ball(ball.getRadius(), ball.getCenter(), ball.getColor(), ball.getSpeed());
+        Ball duplicate_ball = Ball(ball.getRadius(), ball.getCenter(), ball.getSpeed());
         
         double original_angle = atan2(ball.getSpeed().second, ball.getSpeed().first);
         double new_angle = original_angle + (30 * M_PI / 180); // Add 30° to the original angle

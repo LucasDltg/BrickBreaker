@@ -13,6 +13,7 @@
 
 // bug mineur avec menu, deplacement
 
+// final sdl_components
 int32_t main()
 {
     const int32_t screen_width = SDLApp::_MIN_SCREEN_WIDTH;
