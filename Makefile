@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Werror -Wextra -g
+CXXFLAGS = -std=c++17 -g
 LDFLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf
 
 SRC_DIR = src
@@ -35,6 +35,6 @@ clean:
 	rm -rf $(BUILD_DIR)
 
 clean-doc:
-	rm -rf ./docs
+	rm -rf docs
 
 .PHONY: clean

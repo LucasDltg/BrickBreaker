@@ -30,30 +30,30 @@ public:
     /**
      * @brief Handles SDL events.
      * 
-     * @param event The SDL event to handle.
-     * @param data1 Additional shared data for event handling.
-     * @param data2 Additional shared data for event handling.
      */
-    void handleEvents(const SDL_Event& event, const std::shared_ptr<void>& data1, const std::shared_ptr<void>& data2) override;
+    virtual void handleEvents(const std::shared_ptr<SDL_Renderer> renderer) override;
 
     /**
      * @brief Updates the game state.
      * 
      * @param delta_time The time elapsed since the last update.
      */
-    void update(uint64_t delta_time) override;
+    void update(uint64_t delta_time, const std::shared_ptr<SDL_Renderer> renderer) override;
 
     /**
      * @brief Renders the game screen.
      * 
+     * @param renderer The SDL renderer to render the screen with.
      * @return A shared pointer to the SDL_Surface representing the rendered screen.
      */
-    const std::shared_ptr<SDL_Surface> render() override;
+    virtual const std::shared_ptr<SDL_Texture> render(const std::shared_ptr<SDL_Renderer> renderer) override;
 
     /**
      * @brief Initializes the game surface.
+     * 
+     * @param renderer The SDL renderer to initialize the surface with.
      */
-    void initSurface() override;
+    virtual void initSurface(const std::shared_ptr<SDL_Renderer> renderer) override;
     
     /**
      * @brief Adds a ball to the game.

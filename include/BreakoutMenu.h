@@ -44,26 +44,26 @@ public:
      * @param data1 Additional shared data for event handling.
      * @param data2 Additional shared data for event handling.
      */
-    void handleEvents(const SDL_Event& event, const std::shared_ptr<void>& data1, const std::shared_ptr<void>& data2) override;
+    void handleEvents(const std::shared_ptr<SDL_Renderer> renderer) override;
 
     /**
      * @brief Updates the menu interface.
      * 
      * @param delta_time The time elapsed since the last update.
      */
-    void update(const uint64_t delta_time) override;
+    void update(const uint64_t delta_time, const std::shared_ptr<SDL_Renderer> renderer) override;
 
     /**
      * @brief Renders the menu interface.
      * 
      * @return A shared pointer to the SDL_Surface representing the rendered menu interface.
      */
-    const std::shared_ptr<SDL_Surface> render() override;
+    const std::shared_ptr<SDL_Texture> render(const std::shared_ptr<SDL_Renderer> renderer) override;
 
     /**
      * @brief Initializes the menu surface.
      */
-    void initSurface() override;
+    void initSurface(const std::shared_ptr<SDL_Renderer> renderer) override;
 
 private:
     /**
@@ -92,6 +92,19 @@ private:
      * @brief Reloads the background of the menu interface.
      */
     void reloadBackground();
+
+    void beforeSetSurfaceDimensions(int32_t width, int32_t height) override
+    {
+        if(_background)
+        {
+            // _background->setSurfaceDimensions(width, height);
+        }
+
+        if(_breakout)
+        {
+            // _breakout->setSurfaceDimensions(width, height);
+        }
+    }
     
     size_t _selected_level; ///< Index of the currently selected level.
     uint32_t _num_rows; ///< Number of rows in the menu grid.

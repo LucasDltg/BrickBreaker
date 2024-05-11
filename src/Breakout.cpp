@@ -12,29 +12,30 @@ Breakout::Breakout(const std::string& filename)
         throw std::runtime_error("Failed to load font: " + std::string(TTF_GetError()));
 }
 
-void Breakout::initSurface()
+void Breakout::initSurface(const std::shared_ptr<SDL_Renderer> renderer)
 {
-    std::pair<uint32_t, uint32_t> center = {_surface->w / 2, _surface->h * 3/ 4};
+    std::cout << "Breakout::initSurface " << _texture_size.first << " " << _texture_size.second << std::endl;
+    std::pair<uint32_t, uint32_t> center = {_texture_size.first / 2, _texture_size.second * 3/ 4};
     std::pair<_Float32, _Float32> speed = {getInitialBallSpeed() / 3, -getInitialBallSpeed()};
     _balls.push_back(Ball(getBallRadius(), center, speed));
 
-    _paddle.setRect({static_cast<_Float32>(_surface->w) / 2.0f - static_cast<_Float32>(_surface->w) / 14.0f, static_cast<_Float32>(_surface->h) * 0.9f, static_cast<_Float32>(_surface->w) / 7.0f, static_cast<_Float32>(_surface->h) / 30.0f});
+    _paddle.setRect({static_cast<_Float32>(_texture_size.first) / 2.0f - static_cast<_Float32>(_texture_size.first) / 14.0f, static_cast<_Float32>(_texture_size.second) * 0.9f, static_cast<_Float32>(_texture_size.first) / 7.0f, static_cast<_Float32>(_texture_size.second) / 30.0f});
 
     for (auto& brick : _bricks)
     {
-        brick->calculateVerticesWithPosition(_grid_dimensions, {static_cast<_Float32>(_surface->w), static_cast<_Float32>(_surface->h * Breakout::_BRICK_HEIGHT_LIMIT)});
+        brick->calculateVerticesWithPosition(_grid_dimensions, {static_cast<_Float32>(_texture_size.first), static_cast<_Float32>(_texture_size.second * Breakout::_BRICK_HEIGHT_LIMIT)});
     }
 
-    _texture_manager.loadDefaultTextures(_renderer);
-    _texture_manager.loadTexture("assets/textures/small_crack.png", "small", _renderer, SDL_BLENDMODE_MUL);
-    _texture_manager.loadTexture("assets/textures/medium_crack.png", "medium", _renderer, SDL_BLENDMODE_MUL);
-    _texture_manager.loadTexture("assets/textures/big_crack.png", "big", _renderer, SDL_BLENDMODE_MUL);
-    _texture_manager.loadTexture("assets/textures/ball.png", typeid(Ball).name(), _renderer);
-    _texture_manager.loadTexture("assets/textures/paddle.png", typeid(Paddle).name(), _renderer);
-    _texture_manager.loadTexture("assets/textures/bubble_duplicate.png", typeid(DuplicateBallPowerUp).name(), _renderer);
-    _texture_manager.loadTexture("assets/textures/bubble_multi.png", typeid(AddBallPowerUp).name(), _renderer);
-    _texture_manager.loadTexture("assets/textures/bubble_extend.png", typeid(ExtendPaddlePowerUp).name(), _renderer);
-    _texture_manager.loadTexture("assets/textures/bubble_speed.png", typeid(SpeedUpPowerUp).name(), _renderer);
+    _texture_manager.loadDefaultTextures(renderer);
+    _texture_manager.loadTextureFromFile("assets/textures/small_crack.png", "small", renderer, SDL_BLENDMODE_MUL);
+    _texture_manager.loadTextureFromFile("assets/textures/medium_crack.png", "medium", renderer, SDL_BLENDMODE_MUL);
+    _texture_manager.loadTextureFromFile("assets/textures/big_crack.png", "big", renderer, SDL_BLENDMODE_MUL);
+    _texture_manager.loadTextureFromFile("assets/textures/ball.png", typeid(Ball).name(), renderer);
+    _texture_manager.loadTextureFromFile("assets/textures/paddle.png", typeid(Paddle).name(), renderer);
+    _texture_manager.loadTextureFromFile("assets/textures/bubble_duplicate.png", typeid(DuplicateBallPowerUp).name(), renderer);
+    _texture_manager.loadTextureFromFile("assets/textures/bubble_multi.png", typeid(AddBallPowerUp).name(), renderer);
+    _texture_manager.loadTextureFromFile("assets/textures/bubble_extend.png", typeid(ExtendPaddlePowerUp).name(), renderer);
+    _texture_manager.loadTextureFromFile("assets/textures/bubble_speed.png", typeid(SpeedUpPowerUp).name(), renderer);
 }
 
 void Breakout::handleResize(const std::pair<int32_t, int32_t>& previous_size, const std::pair<int32_t, int32_t>& new_size)
@@ -135,11 +136,11 @@ void Breakout::createBricksFromLevel(const std::string& filename) {
         std::stringstream(color_hex) >> std::hex >> mapped_color >> std::dec;
 
         if (_brick_shape == BrickShape::RECTANGLE)
-            _bricks.push_back(std::make_unique<BrickRectangular>(std::make_pair(pos_x, pos_y), _grid_dimensions, std::make_pair(_surface->w, _surface->h * Breakout::_BRICK_HEIGHT_LIMIT), mapped_color, resistance, power_up));
+            _bricks.push_back(std::make_unique<BrickRectangular>(std::make_pair(pos_x, pos_y), _grid_dimensions, std::make_pair(_texture_size.first, _texture_size.second * Breakout::_BRICK_HEIGHT_LIMIT), mapped_color, resistance, power_up));
         else if (_brick_shape == BrickShape::TRIANGLE)
-            _bricks.push_back(std::make_unique<BrickTriangular>(std::make_pair(pos_x, pos_y), _grid_dimensions, std::make_pair(_surface->w, _surface->h * Breakout::_BRICK_HEIGHT_LIMIT), mapped_color, resistance, power_up));
+            _bricks.push_back(std::make_unique<BrickTriangular>(std::make_pair(pos_x, pos_y), _grid_dimensions, std::make_pair(_texture_size.first, _texture_size.second * Breakout::_BRICK_HEIGHT_LIMIT), mapped_color, resistance, power_up));
         else if (_brick_shape == BrickShape::HEXAGON)
-            _bricks.push_back(std::make_unique<BrickHexagonal>(std::make_pair(pos_x, pos_y), _grid_dimensions, std::make_pair(_surface->w, _surface->h * Breakout::_BRICK_HEIGHT_LIMIT), mapped_color, resistance, power_up));
+            _bricks.push_back(std::make_unique<BrickHexagonal>(std::make_pair(pos_x, pos_y), _grid_dimensions, std::make_pair(_texture_size.first, _texture_size.second * Breakout::_BRICK_HEIGHT_LIMIT), mapped_color, resistance, power_up));
     }
 
     file.close();
@@ -155,15 +156,23 @@ const Paddle& Breakout::getPaddle() const
     return _paddle;
 }
 
-void Breakout::handleEvents(const SDL_Event& event, const std::shared_ptr<void>& data1, const std::shared_ptr<void>& data2)
+void Breakout::handleEvents(const std::shared_ptr<SDL_Renderer> renderer)
 {
-    if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
+    (void)renderer;
+    EventData event;
+
+    while(hasEvents())
     {
-        handleResize({*(int32_t*)data1.get(), *(int32_t*)data2.get()}, {event.window.data1, event.window.data2});
-    }
-    else if (event.type == SDL_MOUSEMOTION)
-    {
-        _paddle.setRect({event.motion.x - _paddle.getRect().w / 2, _paddle.getRect().y, _paddle.getRect().w, _paddle.getRect().h});
+        event = popEvent();
+
+        if (event.event.type == SDL_WINDOWEVENT && event.event.window.event == SDL_WINDOWEVENT_RESIZED)
+        {
+            handleResize({*(int32_t*)event.data1.get(), *(int32_t*)event.data2.get()}, {event.event.window.data1, event.event.window.data2});
+        }
+        else if (event.event.type == SDL_MOUSEMOTION)
+        {
+            _paddle.setRect({event.event.motion.x - _paddle.getRect().w / 2, _paddle.getRect().y, _paddle.getRect().w, _paddle.getRect().h});
+        }
     }
 
     const uint8_t* state = SDL_GetKeyboardState(nullptr);
@@ -185,7 +194,7 @@ void Breakout::handleEvents(const SDL_Event& event, const std::shared_ptr<void>&
     }
 }
 
-void Breakout::update(uint64_t delta_time)
+void Breakout::update(uint64_t delta_time, const std::shared_ptr<SDL_Renderer> renderer)
 {
     // check if the game is starting
     if(_start_duration > 0)
@@ -210,11 +219,11 @@ void Breakout::update(uint64_t delta_time)
         _start_duration = 2000;
 }
 
-const std::shared_ptr<SDL_Surface> Breakout::render()
+const std::shared_ptr<SDL_Texture> Breakout::render(const std::shared_ptr<SDL_Renderer> renderer)
 {
     // reset surface
-    SDL_SetRenderDrawColor(_renderer.get(), 0, 0, 0, 255);
-    SDL_RenderFillRect(_renderer.get(), nullptr);
+    SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
+    SDL_RenderFillRect(renderer.get(), nullptr);
     
     // check if all balls are lost or all bricks are destroyed or have resisitance < 0
     if (_balls.empty() || _bricks.empty() || std::all_of(_bricks.begin(), _bricks.end(), [](const std::unique_ptr<Brick>& brick) {
@@ -226,12 +235,13 @@ const std::shared_ptr<SDL_Surface> Breakout::render()
             _is_running = false;
 
         SDL_Color color = {255, 255, 255, 0};
-        SDL_Surface* text_surface = TTF_RenderText_Solid(_font.get(), text.c_str(), color);
-        SDL_Rect dest_rect = {_surface->w / 2 - text_surface->w / 2, _surface->h / 2 - text_surface->h / 2, text_surface->w, text_surface->h};
-        SDL_BlitSurface(text_surface, nullptr, _surface.get(), &dest_rect);
-        SDL_FreeSurface(text_surface);
+        SDL_Surface* s = TTF_RenderText_Solid(_font.get(), text.c_str(), color);
+        std::shared_ptr<SDL_Surface> text_surface = std::shared_ptr<SDL_Surface>(s, SDL_FreeSurface);
+        SDL_Rect dest_rect = {_texture_size.first / 2 - text_surface->w / 2, _texture_size.second / 2 - text_surface->h / 2, text_surface->w, text_surface->h};
+        SDL_CreateTextureFromSurface(renderer.get(), text_surface.get());
+        SDL_RenderCopy(renderer.get(), SDL_CreateTextureFromSurface(renderer.get(), text_surface.get()), nullptr, &dest_rect);
         
-        return _surface;
+        return _texture;
     }
 
     if (_start_duration > 0)
@@ -239,11 +249,11 @@ const std::shared_ptr<SDL_Surface> Breakout::render()
         SDL_Color color = {255, 255, 255, 0};
         std::stringstream ss;
         ss << "Starting in " << std::fixed << std::setprecision(1) << _start_duration / 1000.0f << " seconds";
-        SDL_Surface* text_surface = TTF_RenderText_Solid(_font.get(), ss.str().c_str(), color);
-        SDL_Rect dest_rect = {_surface->w / 2 - text_surface->w / 2, _surface->h / 2 - text_surface->h / 2, text_surface->w, text_surface->h};
-        
-        SDL_BlitSurface(text_surface, nullptr, _surface.get(), &dest_rect);
-        SDL_FreeSurface(text_surface);
+        SDL_Surface* s = TTF_RenderText_Solid(_font.get(), ss.str().c_str(), color);
+        std::shared_ptr<SDL_Surface> text_surface = std::shared_ptr<SDL_Surface>(s, SDL_FreeSurface);
+        SDL_Rect dest_rect = {_texture_size.first / 2 - text_surface->w / 2, _texture_size.second / 2 - text_surface->h / 2, text_surface->w, text_surface->h};
+        SDL_CreateTextureFromSurface(renderer.get(), text_surface.get());
+        SDL_RenderCopy(renderer.get(), SDL_CreateTextureFromSurface(renderer.get(), text_surface.get()), nullptr, &dest_rect);
     }
 
     for (const auto& brick : _bricks)
@@ -251,7 +261,7 @@ const std::shared_ptr<SDL_Surface> Breakout::render()
         std::vector<SDL_Vertex> vertices = brick->getVertices();
         std::vector<int32_t> indices = brick->getIndices();
 
-        if (SDL_RenderGeometry(_renderer.get(), nullptr, vertices.data(), vertices.size(), indices.data(), indices.size()) != 0) {
+        if (SDL_RenderGeometry(renderer.get(), nullptr, vertices.data(), vertices.size(), indices.data(), indices.size()) != 0) {
             std::cerr << "Failed to render geometry: " << SDL_GetError() << std::endl;
             return nullptr;
         }
@@ -270,7 +280,7 @@ const std::shared_ptr<SDL_Surface> Breakout::render()
                 texture = _texture_manager.getTexture("small");
         
             vertices = brick->getVerticesWithoutColor();
-            if(SDL_RenderGeometry(_renderer.get(), texture.get(), vertices.data(), vertices.size(), indices.data(), indices.size()) != 0)
+            if(SDL_RenderGeometry(renderer.get(), texture.get(), vertices.data(), vertices.size(), indices.data(), indices.size()) != 0)
             {    
                 std::cerr << "Failed to render geometry: " << SDL_GetError() << std::endl;
                 return nullptr;
@@ -279,7 +289,7 @@ const std::shared_ptr<SDL_Surface> Breakout::render()
 
         for (size_t i = 0; i < vertices.size(); i++)
         {
-            if (SDL_RenderDrawLine(_renderer.get(), static_cast<int32_t>(vertices[i].position.x), static_cast<int32_t>(vertices[i].position.y), static_cast<int32_t>(vertices[(i + 1) % vertices.size()].position.x), static_cast<int32_t>(vertices[(i + 1) % vertices.size()].position.y)) != 0)
+            if (SDL_RenderDrawLine(renderer.get(), static_cast<int32_t>(vertices[i].position.x), static_cast<int32_t>(vertices[i].position.y), static_cast<int32_t>(vertices[(i + 1) % vertices.size()].position.x), static_cast<int32_t>(vertices[(i + 1) % vertices.size()].position.y)) != 0)
             {
                 std::cerr << "Failed to render line: " << SDL_GetError() << std::endl;
                 return nullptr;
@@ -299,7 +309,7 @@ const std::shared_ptr<SDL_Surface> Breakout::render()
             static_cast<int32_t>(2 * radius)
         };
 
-        SDL_RenderCopy(_renderer.get(), _texture_manager.getTexture(typeid(ball).name()).get(), nullptr, &dest_rect);
+        SDL_RenderCopy(renderer.get(), _texture_manager.getTexture(typeid(ball).name()).get(), nullptr, &dest_rect);
     }
 
     for (const auto& power_up : _power_ups)
@@ -313,25 +323,25 @@ const std::shared_ptr<SDL_Surface> Breakout::render()
         SDL_Rect rect = {static_cast<int32_t>(position.first - radius), static_cast<int32_t>(position.second - radius), static_cast<int32_t>(2 * radius), static_cast<int32_t>(2 * radius)};
 
         std::shared_ptr<SDL_Texture> power_up_surface = _texture_manager.getTexture(typeid(*power_up).name());
-        SDL_RenderCopy(_renderer.get(), power_up_surface.get(), nullptr, &rect);
+        SDL_RenderCopy(renderer.get(), power_up_surface.get(), nullptr, &rect);
     }
 
     const SDL_FRect& rect = _paddle.getRect();
     SDL_Rect dest_rect = {static_cast<int32_t>(rect.x), static_cast<int32_t>(rect.y), static_cast<int32_t>(rect.w), static_cast<int32_t>(rect.h)};
-    std::shared_ptr<SDL_Texture> Paddle_surface = _texture_manager.getTexture(typeid(_paddle).name());
-    SDL_RenderCopy(_renderer.get(), Paddle_surface.get(), nullptr, &dest_rect);
+    std::shared_ptr<SDL_Texture> Paddle_surface = _texture_manager.getTexture(typeid(_paddle).name());//_texture_manager.getTexture(typeid(_paddle).name());
+    SDL_RenderCopy(renderer.get(), Paddle_surface.get(), nullptr, &dest_rect);
 
-    return _surface;
+    return _texture;
 }
 
 _Float32 Breakout::getBallRadius() const
 {
-    return static_cast<_Float32>(_surface->w) / 80.0f;
+    return static_cast<_Float32>(_texture_size.first) / 80.0f;
 }
 
 _Float32 Breakout::getInitialBallSpeed() const
 {
-    return static_cast<_Float32>(_surface->w) / 1600.0f;
+    return static_cast<_Float32>(_texture_size.first) / 1600.0f;
 }
 
 Paddle& Breakout::getPaddle()
@@ -346,12 +356,12 @@ std::vector<Ball>& Breakout::getBalls()
 
 _Float32 Breakout::getInitialPaddleSpeed() const
 {
-    return static_cast<_Float32>(_surface->w) / 700.0f;
+    return static_cast<_Float32>(_texture_size.first) / 700.0f;
 }
 
 void Breakout::updateLoop(int64_t delta_time)
 {
-    _paddle.update(delta_time, _surface->w);
+    _paddle.update(delta_time, _texture_size.first);
 
     for (auto& power_up : _power_ups)
     {
@@ -371,7 +381,7 @@ void Breakout::updateLoop(int64_t delta_time)
 
     // remove power-up if it is out of bounds or its duration is over
     _power_ups.erase(std::remove_if(_power_ups.begin(), _power_ups.end(), [this](const std::unique_ptr<PowerUp>& power_up) {
-        if (power_up->getCenter().second + power_up->getRadius() > _surface->h && !power_up->isActive())
+        if (power_up->getCenter().second + power_up->getRadius() > _texture_size.second && !power_up->isActive())
         {
             return true;
         }
@@ -411,7 +421,7 @@ void Breakout::updateLoop(int64_t delta_time)
                         _power_ups.push_back(std::move(power_up));
                         _power_ups.back()->setRadius(getBallRadius());
                         _power_ups.back()->setCenter(brick->getCenter());
-                        _power_ups.back()->setSpeed({0, static_cast<_Float32>(_surface->h) / 4000.0f});
+                        _power_ups.back()->setSpeed({0, static_cast<_Float32>(_texture_size.second) / 4000.0f});
                     }
                     // we remove the brick from the vector here, because we don't want to check for collision with it anymore
                     _bricks.erase(std::remove_if(_bricks.begin(), _bricks.end(), [&brick](const std::unique_ptr<Brick>& b) {
@@ -428,9 +438,9 @@ void Breakout::updateLoop(int64_t delta_time)
         // Check for collision with borders
         std::vector<std::pair<_Float32, _Float32>> borders = {
             {0, 0},
-            {static_cast<_Float32>(_surface->w), 0},
-            {static_cast<_Float32>(_surface->w), static_cast<_Float32>(_surface->h)},
-            {0, static_cast<_Float32>(_surface->h)},
+            {static_cast<_Float32>(_texture_size.first), 0},
+            {static_cast<_Float32>(_texture_size.first), static_cast<_Float32>(_texture_size.second)},
+            {0, static_cast<_Float32>(_texture_size.second)}
         };
         
         ball.resolveCollisionWithLine(borders[0], borders[1], delta_time);
@@ -439,6 +449,7 @@ void Breakout::updateLoop(int64_t delta_time)
         ball.resolveCollisionWithLine(borders[3], borders[0], delta_time);
         
         ball.update(delta_time);
+        std::cout << "Loop" << std::endl;
     }
 
     // remove balls that are out of bounds
