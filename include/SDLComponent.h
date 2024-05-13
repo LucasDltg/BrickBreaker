@@ -5,6 +5,7 @@
 #include <mutex>
 #include <deque>
 #include <atomic>
+#include <condition_variable>
 
 class SDLApp;
 struct ComponentData;
@@ -29,8 +30,6 @@ public:
 
     /**
      * @brief Constructor for SDLComponent.
-     * 
-     * @param renderer The SDL renderer to use.
      */
     SDLComponent();
 
@@ -39,15 +38,16 @@ public:
      * 
      * @param width The width of the surface.
      * @param height The height of the surface.
+     * @param renderer The SDL renderer to set dimensions for.
      */
-    virtual void setSurfaceDimensions(const uint32_t width, const uint32_t height, const std::shared_ptr<SDL_Renderer> renderer) final;
+    virtual void setSurfaceDimensions(const uint32_t width, const uint32_t height, std::shared_ptr<SDL_Renderer> renderer) final;
 
     /**
      * @brief Handles SDL events.
      * 
      * This method should be overridden by subclasses to handle specific events.
      */
-    virtual void handleEvents(const std::shared_ptr<SDL_Renderer> renderer) = 0;
+    virtual void handleEvents() = 0;
 
     /**
      * @brief Updates the component.
@@ -56,16 +56,17 @@ public:
      * 
      * @param delta_time The time elapsed since the last update.
      */
-    virtual void update(const uint64_t delta_time, const std::shared_ptr<SDL_Renderer> renderer) = 0;
+    virtual void update(const uint64_t delta_time) = 0;
 
     /**
      * @brief Renders the component.
      * 
      * This method should be overridden by subclasses to render the component.
      * 
+     * @param renderer The SDL renderer to render the component with.
      * @return A shared pointer to the SDL texture representing the rendered component.
      */
-    virtual const std::shared_ptr<SDL_Texture> render(const std::shared_ptr<SDL_Renderer> renderer) = 0;
+    virtual const std::shared_ptr<SDL_Texture> render(std::shared_ptr<SDL_Renderer> renderer) = 0;
 
     /**
      * @brief Initializes the surface.
@@ -73,8 +74,21 @@ public:
      * This method should be overridden by subclasses to initialize the surface after the initial size is known.
      * This method is called by the SDLApp after the component is added (so the size is known and can be accessed via _surface)
      * 
+     * @param renderer The SDL renderer to initialize the surface for.
      */
-    virtual void initSurface(const std::shared_ptr<SDL_Renderer> renderer) = 0;
+    virtual void initSurface(std::shared_ptr<SDL_Renderer> renderer) = 0;
+
+    /**
+     * @brief Change the size of your attributes SDLComponent here.(Most of the time, this is just a call to setSurfaceDimensions for each attribute)
+     * 
+     * @param width The width of the surface.
+     * @param height The height of the surface.
+     * @param renderer The SDL renderer.
+     */
+    virtual void onResize(const uint32_t width, const uint32_t height, std::shared_ptr<SDL_Renderer> renderer)
+    {
+        (void)renderer;
+    }
 
     /**
      * @brief Push an event onto the event queue.
@@ -86,26 +100,27 @@ public:
     /**
      * @brief Check if the component is running.
      * 
+     * @param running True if the component is running, false otherwise.
+     */
+    void setRunning(bool running);
+
+    /**
+     * @brief Check if the component is running.
+     * 
      * @return True if the component is running, false otherwise.
      */
-    bool isRunning() const;
+    bool isRunning() const
+    {
+        return _is_running.load();
+    }
 
     /**
-     * @brief Set the running state of the component.
+     * @brief Get the texture.
      * 
-     * @param running The running state of the component.
-     */
-    void setRunning(const bool running);
-
-    /**
-     * @brief Get the SDL texture.
-     * 
-     * @return The SDL texture.
+     * @return The texture.
      */
     std::shared_ptr<SDL_Texture> getTexture() const;
 
-    virtual void beforeSetSurfaceDimensions(int32_t width, int32_t height)
-    {}
 
 protected:
     std::shared_ptr<SDL_Texture> _texture; ///< The SDL texture.
@@ -129,6 +144,8 @@ protected:
 
 private:
     std::deque<EventData> _events; ///< The events for the component.
+    std::mutex _mutex; ///< The mutex for the object.
+    std::condition_variable _cv; ///< The condition variable for the rendering.
 };
 
 #endif

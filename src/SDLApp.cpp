@@ -6,7 +6,7 @@ const _Float32 SDLApp::_MIN_SCREEN_WIDTH = 1280;
 const _Float32 SDLApp::_MIN_SCREEN_HEIGHT = 720;
 
 SDLApp::SDLApp(const int32_t screen_width, const int32_t screen_height, const uint32_t flags, const std::string& font_path)
-    : _window(nullptr, SDL_DestroyWindow), _renderer(nullptr, SDL_DestroyRenderer), _font(nullptr), _is_running(false), _components(), _mutex()
+    : _window(nullptr, SDL_DestroyWindow), _renderer(nullptr, SDL_DestroyRenderer), _font(nullptr), _is_running(false), _components(), _window_dimensions()
 {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
         throw std::runtime_error("SDL initialization failed: " + std::string(SDL_GetError()));
@@ -41,6 +41,7 @@ void SDLApp::addComponent(const std::shared_ptr<SDLComponent>& obj, const SDL_FR
     // no need to lock the mutex here, as the main is adding the components before the main loop starts so no other thread is running
     _components.push_back({.component = obj, .location = location, .fps = 60, .draw_fps = draw_fps});
     obj->setSurfaceDimensions(static_cast<uint32_t>((location.w - location.x) * _window_dimensions.first), static_cast<uint32_t>((location.h - location.y) * _window_dimensions.second), _renderer);
+    obj->onResize(static_cast<uint32_t>((location.w - location.x) * _window_dimensions.first), static_cast<uint32_t>((location.h - location.y) * _window_dimensions.second), _renderer);
     obj->initSurface(_renderer);
 }
 
@@ -54,7 +55,7 @@ void SDLApp::run(std::set<int32_t> targets, const int32_t desired_fps)
         if(targets.size() > 0 && targets.find(i) == targets.end())
             continue;
         _components[i].component->_is_running = true;
-        threads.push_back(std::thread(&SDLApp::loop, this, std::ref(_components[i]), desired_fps));
+        threads.push_back(std::thread(&SDLApp::loop, this, std::ref(_components[i]), 90));
     }
 
     // Execute the main loop (events, render)
@@ -65,7 +66,6 @@ void SDLApp::run(std::set<int32_t> targets, const int32_t desired_fps)
 
     while(_is_running)
     {
-        _mutex.lock();
         // ------ handle events ------
         SDL_Event event;
         while (SDL_PollEvent(&event))
@@ -80,7 +80,9 @@ void SDLApp::run(std::set<int32_t> targets, const int32_t desired_fps)
             {
                 if(!_components[i].component->_is_running || (targets.size() > 0 && targets.find(i) == targets.end()))
                     continue;
+                _components[i].component->_mutex.lock();
                 handleEvents(_components[i], event);
+                _components[i].component->_mutex.unlock();
             }
 
             if(event.type == SDL_WINDOWEVENT && (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED || event.window.event == SDL_WINDOWEVENT_RESIZED))
@@ -88,18 +90,23 @@ void SDLApp::run(std::set<int32_t> targets, const int32_t desired_fps)
         }   
 
         // ------ render ------
-        SDL_SetRenderDrawColor(_renderer.get(), 0, 244, 0, 255);
+        SDL_SetRenderDrawColor(_renderer.get(), 0, 0, 0, 255);
         SDL_RenderClear(_renderer.get());
-        // SDL_SetRenderDrawBlendMode(_renderer.get(), SDL_BLENDMODE_NONE);
         for (size_t i(0); i < _components.size(); i++)
         {
             if(!_components[i].component->_is_running || (targets.size() > 0 && targets.find(i) == targets.end()))
                 continue;
 
+            // wait for a notification from the component
+            // std::unique_lock<std::mutex> lock(_components[i].component->_mutex);
+            // _components[i].component->_mutex.lock();
+            std::unique_lock<std::mutex> lock(_components[i].component->_mutex);
+            _components[i].component->_cv.wait(lock, [&] { return true; });
+
             render(_components[i]);
+            _components[i].component->_mutex.unlock();
         }
         SDL_RenderPresent(_renderer.get());
-        _mutex.unlock();
 
         // ------ fps ------
         auto current_time = std::chrono::steady_clock::now();
@@ -111,8 +118,7 @@ void SDLApp::run(std::set<int32_t> targets, const int32_t desired_fps)
         frame_count++;
         if (std::chrono::duration_cast<std::chrono::seconds>(current_time - fps_time).count() >= 1)
         {
-            // double fps = 1e6 * frame_count / std::chrono::duration_cast<std::chrono::microseconds>(current_time - fps_time).count();
-            // std::cout << "Thread main running at " << fps << " fps" << std::endl;
+            // std::cout << "Thread main running at " << 1e6 * frame_count / std::chrono::duration_cast<std::chrono::microseconds>(current_time - fps_time).count() << " fps" << std::endl;
             fps_time = std::chrono::steady_clock::now();
             frame_count = 0;
         }
@@ -147,8 +153,8 @@ void SDLApp::handleEvents(ComponentData& target, SDL_Event& event)
         int32_t old_width = static_cast<int32_t>((target.location.w - target.location.x) * _window_dimensions.first);
         int32_t old_height = static_cast<int32_t>((target.location.h - target.location.y) * _window_dimensions.second);
 
-        target.component->setSurfaceDimensions(static_cast<uint32_t>((target.location.w - target.location.x) * event.window.data1), static_cast<uint32_t>((target.location.h - target.location.y) * event.window.data2), _renderer);
-        target.component->beforeSetSurfaceDimensions(static_cast<uint32_t>((target.location.w - target.location.x) * event.window.data1), static_cast<uint32_t>((target.location.h - target.location.y) * event.window.data2));
+        target.component->setSurfaceDimensions(static_cast<uint32_t>((target.location.w - target.location.x) * _window_dimensions.first), static_cast<uint32_t>((target.location.h - target.location.y) * _window_dimensions.second), _renderer);
+        target.component->onResize(static_cast<uint32_t>((target.location.w - target.location.x) * _window_dimensions.first), static_cast<uint32_t>((target.location.h - target.location.y) * _window_dimensions.second), _renderer);
         // send new size and old size to the component
         target.component->pushEvent({.event = m_event, .data1 = std::make_shared<int32_t>(old_width), .data2 = std::make_shared<int32_t>(old_height)});
     }
@@ -173,7 +179,7 @@ void SDLApp::handleEvents(ComponentData& target, SDL_Event& event)
 void SDLApp::render(ComponentData& target)
 {
     SDL_SetRenderTarget(_renderer.get(), target.component->_texture.get());
-    SDL_RenderCopy(_renderer.get(), target.component->render(_renderer).get(), nullptr, nullptr);
+    target.component->render(_renderer);
     SDL_Rect dest_rect = {static_cast<int32_t>(target.location.x * _window_dimensions.first) + 1, static_cast<int32_t>(target.location.y * _window_dimensions.second) + 1, static_cast<int32_t>((target.location.w - target.location.x) * _window_dimensions.first) - 2, static_cast<int32_t>((target.location.h - target.location.y) * _window_dimensions.second) - 2};
             
     // draw fps on right top corner
@@ -205,17 +211,21 @@ void SDLApp::loop(ComponentData& target, const int32_t desired_fps)
     fps_time = last_time = delta_time = std::chrono::steady_clock::now();
     uint32_t frame_count = 0;
     
-    while (target.component->_is_running && _is_running)
+    while (_is_running && target.component->_is_running)
     {        
-        _mutex.lock();
+        target.component->_mutex.lock();
         // handle events stored in a deque in the component
-        target.component->handleEvents(_renderer);
+        target.component->handleEvents();
 
         std::chrono::steady_clock::time_point ttime = std::chrono::steady_clock::now();
-        target.component->update(std::chrono::duration_cast<std::chrono::milliseconds>(ttime - delta_time).count(), _renderer);
+        // print delta time converted in second
+        std::cout << "Thread " << std::chrono::duration_cast<std::chrono::milliseconds>(ttime - delta_time).count() << " ms" << std::endl;
+        target.component->update(std::chrono::duration_cast<std::chrono::milliseconds>(ttime - delta_time).count());
         delta_time = ttime;
 
-        _mutex.unlock();
+        target.component->_mutex.unlock();
+        target.component->_cv.notify_one();
+
 
         auto current_time = std::chrono::steady_clock::now();
         auto elapsed_time = std::chrono::duration_cast<std::chrono::microseconds>(current_time - last_time);
@@ -227,7 +237,7 @@ void SDLApp::loop(ComponentData& target, const int32_t desired_fps)
         if (std::chrono::duration_cast<std::chrono::seconds>(current_time - fps_time).count() >= 1)
         {
             double fps = 1e6 * frame_count / std::chrono::duration_cast<std::chrono::microseconds>(current_time - fps_time).count();
-            target.fps = fps;
+            target.fps = round(fps);
             // std::cout << "Thread " << std::this_thread::get_id() << " running at " << fps << " fps" << std::endl;
             fps_time = std::chrono::steady_clock::now();
             frame_count = 0;

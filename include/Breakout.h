@@ -31,14 +31,14 @@ public:
      * @brief Handles SDL events.
      * 
      */
-    virtual void handleEvents(const std::shared_ptr<SDL_Renderer> renderer) override;
+    virtual void handleEvents() override;
 
     /**
      * @brief Updates the game state.
      * 
      * @param delta_time The time elapsed since the last update.
      */
-    void update(uint64_t delta_time, const std::shared_ptr<SDL_Renderer> renderer) override;
+    void update(uint64_t delta_time) override;
 
     /**
      * @brief Renders the game screen.

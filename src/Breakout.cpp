@@ -14,7 +14,7 @@ Breakout::Breakout(const std::string& filename)
 
 void Breakout::initSurface(const std::shared_ptr<SDL_Renderer> renderer)
 {
-    std::cout << "Breakout::initSurface " << _texture_size.first << " " << _texture_size.second << std::endl;
+    // std::cout << "Breakout::initSurface " << _texture_size.first << " " << _texture_size.second << std::endl;
     std::pair<uint32_t, uint32_t> center = {_texture_size.first / 2, _texture_size.second * 3/ 4};
     std::pair<_Float32, _Float32> speed = {getInitialBallSpeed() / 3, -getInitialBallSpeed()};
     _balls.push_back(Ball(getBallRadius(), center, speed));
@@ -156,9 +156,8 @@ const Paddle& Breakout::getPaddle() const
     return _paddle;
 }
 
-void Breakout::handleEvents(const std::shared_ptr<SDL_Renderer> renderer)
+void Breakout::handleEvents()
 {
-    (void)renderer;
     EventData event;
 
     while(hasEvents())
@@ -194,8 +193,9 @@ void Breakout::handleEvents(const std::shared_ptr<SDL_Renderer> renderer)
     }
 }
 
-void Breakout::update(uint64_t delta_time, const std::shared_ptr<SDL_Renderer> renderer)
+void Breakout::update(uint64_t delta_time)
 {
+    std::cout << "Update " << delta_time << std::endl;
     // check if the game is starting
     if(_start_duration > 0)
     {
@@ -330,6 +330,8 @@ const std::shared_ptr<SDL_Texture> Breakout::render(const std::shared_ptr<SDL_Re
     SDL_Rect dest_rect = {static_cast<int32_t>(rect.x), static_cast<int32_t>(rect.y), static_cast<int32_t>(rect.w), static_cast<int32_t>(rect.h)};
     std::shared_ptr<SDL_Texture> Paddle_surface = _texture_manager.getTexture(typeid(_paddle).name());//_texture_manager.getTexture(typeid(_paddle).name());
     SDL_RenderCopy(renderer.get(), Paddle_surface.get(), nullptr, &dest_rect);
+
+    // std::cout << "Rendering breakout " << _texture_size.first << " " << _texture_size.second << std::endl;
 
     return _texture;
 }

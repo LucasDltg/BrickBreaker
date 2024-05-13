@@ -17,10 +17,10 @@ int32_t main()
 
     SDLApp app(screen_width, screen_height, SDL_WINDOW_RESIZABLE, "./assets/fonts/arial/arial.ttf");
     // app.addComponent(std::make_shared<BreakoutMenu>(), SDL_FRect{0.0f, 0.0f, 0.5f, 1.0f}, true);
-    app.addComponent(std::make_shared<BreakoutMenu>(), SDL_FRect{0.5f, 0.0f, 1.0f, 1.0f}, true);
+    app.addComponent(std::make_shared<BreakoutMenu>(), SDL_FRect{0.0f, 0.0f, 1.0f, 1.0f}, true);
     // app.addComponent(std::make_shared<Breakout>("./assets/levels/ChipiChapa.lvl"), SDL_FRect{0.0f, 0.0f, 1.0f, 1.0f}, true);
     
-    app.run({}, 60);
+    app.run({}, 90);
 
     return 0;
 }

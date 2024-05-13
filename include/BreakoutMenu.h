@@ -44,14 +44,14 @@ public:
      * @param data1 Additional shared data for event handling.
      * @param data2 Additional shared data for event handling.
      */
-    void handleEvents(const std::shared_ptr<SDL_Renderer> renderer) override;
+    void handleEvents() override;
 
     /**
      * @brief Updates the menu interface.
      * 
      * @param delta_time The time elapsed since the last update.
      */
-    void update(const uint64_t delta_time, const std::shared_ptr<SDL_Renderer> renderer) override;
+    void update(const uint64_t delta_time) override;
 
     /**
      * @brief Renders the menu interface.
@@ -91,25 +91,15 @@ private:
     /**
      * @brief Reloads the background of the menu interface.
      */
-    void reloadBackground();
+    void reloadBackground(std::shared_ptr<SDL_Renderer> renderer);
 
-    void beforeSetSurfaceDimensions(int32_t width, int32_t height) override
-    {
-        if(_background)
-        {
-            // _background->setSurfaceDimensions(width, height);
-        }
-
-        if(_breakout)
-        {
-            // _breakout->setSurfaceDimensions(width, height);
-        }
-    }
+    void onResize(const uint32_t width, const uint32_t height, std::shared_ptr<SDL_Renderer> renderer) override;
     
     size_t _selected_level; ///< Index of the currently selected level.
     uint32_t _num_rows; ///< Number of rows in the menu grid.
     uint32_t _num_columns; ///< Number of columns in the menu grid.
     std::vector<BreakoutMenuLevel> _levels; ///< List of menu levels.
+    int32_t _launch_level; ///< Flag to launch the selected level.
     std::unique_ptr<Breakout> _breakout; ///< Instance of Breakout for playing levels.
     std::unique_ptr<Breakout> _background; ///< Background instance of Breakout for the menu.
     uint32_t _current_page; ///< Current page of the menu.

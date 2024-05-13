@@ -67,14 +67,6 @@ public:
      * @param desired_fps The desired frames per second for the application (default is 60).
      */
     void run(std::set<int32_t> targets = {}, const int32_t desired_fps=60);
-
-    ~SDLApp()
-    {
-        for(auto& component : _components)
-        {
-            component.component.reset();
-        }
-    }
     
 private:
     std::shared_ptr<SDL_Window> _window;             ///< The SDL window.
@@ -83,7 +75,6 @@ private:
     std::atomic<bool> _is_running;                   ///< Flag to indicate if the application is running.
     std::vector<ComponentData> _components;          ///< The components of the application.
     std::pair<uint32_t, uint32_t> _window_dimensions;///< Dimensions of the SDL window.
-    std::mutex _mutex;                               ///< Mutex to protect the components vector & window dimensions.
 
     /**
      * @brief Handle SDL events for a target component.
