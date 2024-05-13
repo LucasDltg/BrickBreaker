@@ -1,0 +1,8 @@
+rectangle
+10 6
+1 1 1 0x00FF0000 FlipRenderer
+2 2 1 0x00FF0000 FlipRenderer
+0 0 1 0xFF000000 FlipRenderer
+3 2 1 0x00FF0000 FlipRenderer
+4 2 1 0x00FF0000 FlipRenderer
+9 5 1 0x00FF0000 FlipRenderer

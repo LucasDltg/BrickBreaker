@@ -191,4 +191,34 @@ public:
     void unApplyPowerUp(Breakout &game) override;
 };
 
+/**
+ * @brief The FlipRendererPowerUp class represents a power-up that flips the renderer.
+ */
+class FlipRendererPowerUp : public PowerUp
+{
+public:
+    /**
+     * @brief Constructor for FlipRendererPowerUp.
+     */
+    FlipRendererPowerUp();
+
+    /**
+     * @brief Applies the power-up effect.
+     * 
+     * Flips the renderer.
+     * 
+     * @param game The Breakout game instance.
+     */
+    void applyPowerUp(Breakout &game) override;
+
+    /**
+     * @brief Removes the power-up effect.
+     * 
+     * Flips the renderer back.
+     * 
+     * @param game The Breakout game instance.
+     */
+    void unApplyPowerUp(Breakout &game) override;
+};
+
 #endif // POWERUP_H

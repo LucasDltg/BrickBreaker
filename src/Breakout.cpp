@@ -3,7 +3,7 @@
 #include "../include/Paddle.h"
 
 Breakout::Breakout(const std::string& filename, bool run, bool is_background)
-: SDLComponent(run), _paddle(), _start_duration(1000), _font(nullptr, TTF_CloseFont), _is_background(is_background)
+: SDLComponent(run), _paddle(), _start_duration(1000), _font(nullptr, TTF_CloseFont), _is_background(is_background), _is_rendered_flipped(0)
 {
     createBricksFromLevel(filename);
     
@@ -37,6 +37,7 @@ void Breakout::initSurface(const std::shared_ptr<SDL_Renderer> renderer)
     _texture_manager.loadTextureFromFile("assets/textures/bubble_multi.png", typeid(AddBallPowerUp).name(), renderer);
     _texture_manager.loadTextureFromFile("assets/textures/bubble_extend.png", typeid(ExtendPaddlePowerUp).name(), renderer);
     _texture_manager.loadTextureFromFile("assets/textures/bubble_speed.png", typeid(SpeedUpPowerUp).name(), renderer);
+    _texture_manager.loadTextureFromFile("assets/textures/bubble_flip.png", typeid(FlipRendererPowerUp).name(), renderer);
 }
 
 void Breakout::handleResize(const std::pair<int32_t, int32_t>& previous_size, const std::pair<int32_t, int32_t>& new_size)
@@ -235,6 +236,7 @@ void Breakout::render(const std::shared_ptr<SDL_Renderer> renderer)
         return brick->getResistance() <= 0;
     }))
     {
+        _is_rendered_flipped = 0;
         if(_is_background)
         {
             _is_running = false;
@@ -465,4 +467,19 @@ void Breakout::updateLoop(int64_t delta_time)
     /*balls.erase(std::remove_if(balls.begin(), balls.end(), [this](const Ball& ball) {
         return ball.getCenter().second - ball.getRadius() > surface->h;
     }), balls.end());*/
+}
+
+void Breakout::increaseFlipRenderer()
+{
+    _is_rendered_flipped++;
+}
+
+void Breakout::decreaseFlipRenderer()
+{
+    _is_rendered_flipped--;
+}
+
+int32_t Breakout::getFlipRenderer() const
+{
+    return _is_rendered_flipped;
 }

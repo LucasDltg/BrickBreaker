@@ -225,7 +225,7 @@ void BreakoutMenu::render(const std::shared_ptr<SDL_Renderer> renderer)
             SDL_SetRenderTarget(renderer.get(), _breakout->getTexture().get());
             _breakout->render(renderer);
             SDL_SetRenderTarget(renderer.get(), _texture.get());
-            SDL_RenderCopy(renderer.get(), _breakout->getTexture().get(), nullptr, nullptr);
+            SDL_RenderCopyEx(renderer.get(), _breakout->getTexture().get(), nullptr, nullptr, 0, nullptr, _breakout->getFlipRenderer() ? SDL_FLIP_VERTICAL : SDL_FLIP_NONE);
         }
         return;
     }
@@ -239,7 +239,7 @@ void BreakoutMenu::render(const std::shared_ptr<SDL_Renderer> renderer)
         SDL_SetRenderTarget(renderer.get(), _background->getTexture().get());
         _background->render(renderer);
         SDL_SetRenderTarget(renderer.get(), _texture.get());
-        SDL_RenderCopy(renderer.get(), _background->getTexture().get(), nullptr, nullptr);
+        SDL_RenderCopyEx(renderer.get(), _background->getTexture().get(), nullptr, nullptr, 0, nullptr, _background->getFlipRenderer() ? SDL_FLIP_VERTICAL : SDL_FLIP_NONE);
     }
 
     const uint32_t padding = getPadding();

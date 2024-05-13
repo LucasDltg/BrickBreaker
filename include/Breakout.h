@@ -104,6 +104,25 @@ public:
      */
     std::vector<Ball>& getBalls();
 
+    /**
+     * @brief Increases the flip renderer count.
+     * 
+     */
+    void increaseFlipRenderer();
+
+    /**
+     * @brief Decreases the flip renderer count.
+     * 
+     */
+    void decreaseFlipRenderer();
+
+    /**
+     * @brief Get the flip renderer count.
+     * 
+     * @return The flip renderer count.
+     */
+    int32_t getFlipRenderer() const;
+
 private:
     std::vector<std::unique_ptr<Brick>> _bricks; /**< Vector of bricks in the game. */
     std::vector<Ball> _balls; /**< Vector of balls in the game. */
@@ -114,6 +133,7 @@ private:
     int32_t _start_duration; /**< The duration of the game start sequence. */
     std::unique_ptr<TTF_Font, void(*)(TTF_Font*)> _font; /**< The font used for rendering text. */
     bool _is_background; /**< Whether the game is in the background. */
+    int32_t _is_rendered_flipped; /**< Whether the game is rendered flipped. */
     
     /**
      * @brief Creates bricks from the level configuration file.
