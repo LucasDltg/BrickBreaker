@@ -218,8 +218,6 @@ void SDLApp::loop(ComponentData& target, const int32_t desired_fps)
         target.component->handleEvents();
 
         std::chrono::steady_clock::time_point ttime = std::chrono::steady_clock::now();
-        // print delta time converted in second
-        std::cout << "Thread " << std::chrono::duration_cast<std::chrono::milliseconds>(ttime - delta_time).count() << " ms" << std::endl;
         target.component->update(std::chrono::duration_cast<std::chrono::milliseconds>(ttime - delta_time).count());
         delta_time = ttime;
 

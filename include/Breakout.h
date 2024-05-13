@@ -25,13 +25,13 @@ public:
      * 
      * @param filename The filename of the level configuration file.
      */
-    Breakout(const std::string& filename);
+    Breakout(const std::string& filename, bool run = false, bool is_background = false);
 
     /**
      * @brief Handles SDL events.
      * 
      */
-    virtual void handleEvents() override;
+    void handleEvents() override;
 
     /**
      * @brief Updates the game state.
@@ -46,14 +46,14 @@ public:
      * @param renderer The SDL renderer to render the screen with.
      * @return A shared pointer to the SDL_Surface representing the rendered screen.
      */
-    virtual const std::shared_ptr<SDL_Texture> render(const std::shared_ptr<SDL_Renderer> renderer) override;
+    void render(const std::shared_ptr<SDL_Renderer> renderer) override;
 
     /**
      * @brief Initializes the game surface.
      * 
      * @param renderer The SDL renderer to initialize the surface with.
      */
-    virtual void initSurface(const std::shared_ptr<SDL_Renderer> renderer) override;
+    void initSurface(const std::shared_ptr<SDL_Renderer> renderer) override;
     
     /**
      * @brief Adds a ball to the game.
@@ -113,6 +113,7 @@ private:
     BrickShape _brick_shape; /**< The shape of the bricks in the game. */
     int32_t _start_duration; /**< The duration of the game start sequence. */
     std::unique_ptr<TTF_Font, void(*)(TTF_Font*)> _font; /**< The font used for rendering text. */
+    bool _is_background; /**< Whether the game is in the background. */
     
     /**
      * @brief Creates bricks from the level configuration file.

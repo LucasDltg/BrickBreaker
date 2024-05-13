@@ -2,8 +2,8 @@
 #include "../include/Ball.h"
 #include "../include/Paddle.h"
 
-Breakout::Breakout(const std::string& filename)
-: SDLComponent(), _paddle(), _start_duration(1000), _font(nullptr, TTF_CloseFont)
+Breakout::Breakout(const std::string& filename, bool run, bool is_background)
+: SDLComponent(run), _paddle(), _start_duration(1000), _font(nullptr, TTF_CloseFont), _is_background(is_background)
 {
     createBricksFromLevel(filename);
     
@@ -30,6 +30,7 @@ void Breakout::initSurface(const std::shared_ptr<SDL_Renderer> renderer)
     _texture_manager.loadTextureFromFile("assets/textures/small_crack.png", "small", renderer, SDL_BLENDMODE_MUL);
     _texture_manager.loadTextureFromFile("assets/textures/medium_crack.png", "medium", renderer, SDL_BLENDMODE_MUL);
     _texture_manager.loadTextureFromFile("assets/textures/big_crack.png", "big", renderer, SDL_BLENDMODE_MUL);
+    _texture_manager.loadTextureFromFile("assets/textures/infinite_resistance.png", "infinite", renderer, SDL_BLENDMODE_MUL);
     _texture_manager.loadTextureFromFile("assets/textures/ball.png", typeid(Ball).name(), renderer);
     _texture_manager.loadTextureFromFile("assets/textures/paddle.png", typeid(Paddle).name(), renderer);
     _texture_manager.loadTextureFromFile("assets/textures/bubble_duplicate.png", typeid(DuplicateBallPowerUp).name(), renderer);
@@ -174,6 +175,11 @@ void Breakout::handleEvents()
         }
     }
 
+    if(_is_background)
+    {
+        return;
+    }
+
     const uint8_t* state = SDL_GetKeyboardState(nullptr);
     if(state[SDL_SCANCODE_ESCAPE])
     {
@@ -195,7 +201,6 @@ void Breakout::handleEvents()
 
 void Breakout::update(uint64_t delta_time)
 {
-    std::cout << "Update " << delta_time << std::endl;
     // check if the game is starting
     if(_start_duration > 0)
     {
@@ -219,7 +224,7 @@ void Breakout::update(uint64_t delta_time)
         _start_duration = 2000;
 }
 
-const std::shared_ptr<SDL_Texture> Breakout::render(const std::shared_ptr<SDL_Renderer> renderer)
+void Breakout::render(const std::shared_ptr<SDL_Renderer> renderer)
 {
     // reset surface
     SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
@@ -230,6 +235,11 @@ const std::shared_ptr<SDL_Texture> Breakout::render(const std::shared_ptr<SDL_Re
         return brick->getResistance() <= 0;
     }))
     {
+        if(_is_background)
+        {
+            _is_running = false;
+            return;
+        }
         std::string text = _balls.empty() ? "You lost!" : "You won!";
         if (_start_duration <= 0)
             _is_running = false;
@@ -241,10 +251,10 @@ const std::shared_ptr<SDL_Texture> Breakout::render(const std::shared_ptr<SDL_Re
         SDL_CreateTextureFromSurface(renderer.get(), text_surface.get());
         SDL_RenderCopy(renderer.get(), SDL_CreateTextureFromSurface(renderer.get(), text_surface.get()), nullptr, &dest_rect);
         
-        return _texture;
+        return;
     }
 
-    if (_start_duration > 0)
+    if (_start_duration > 0 && !_is_background)
     {
         SDL_Color color = {255, 255, 255, 0};
         std::stringstream ss;
@@ -263,16 +273,18 @@ const std::shared_ptr<SDL_Texture> Breakout::render(const std::shared_ptr<SDL_Re
 
         if (SDL_RenderGeometry(renderer.get(), nullptr, vertices.data(), vertices.size(), indices.data(), indices.size()) != 0) {
             std::cerr << "Failed to render geometry: " << SDL_GetError() << std::endl;
-            return nullptr;
+            return;
         }
         
         // draw resistance texture on brick
         _Float32 resistance_percentage = brick->getResistancePercentage();
-        // skip brick with infinite resistance or full resistance
-        if (brick->getResistance() > 0 && resistance_percentage >= 0.25f)
+        // skip brick with full resistance
+        if (resistance_percentage >= 0.25f || brick->getResistance() == -1)
         {
             std::shared_ptr<SDL_Texture> texture;
-            if (resistance_percentage >= 0.75f)
+            if(brick->getResistance() == -1)
+                texture = _texture_manager.getTexture("infinite");
+            else if (resistance_percentage >= 0.75f)
                 texture = _texture_manager.getTexture("big");
             else if (resistance_percentage >= 0.50f)
                 texture = _texture_manager.getTexture("medium");
@@ -283,7 +295,7 @@ const std::shared_ptr<SDL_Texture> Breakout::render(const std::shared_ptr<SDL_Re
             if(SDL_RenderGeometry(renderer.get(), texture.get(), vertices.data(), vertices.size(), indices.data(), indices.size()) != 0)
             {    
                 std::cerr << "Failed to render geometry: " << SDL_GetError() << std::endl;
-                return nullptr;
+                return;
             }
         }
 
@@ -292,7 +304,7 @@ const std::shared_ptr<SDL_Texture> Breakout::render(const std::shared_ptr<SDL_Re
             if (SDL_RenderDrawLine(renderer.get(), static_cast<int32_t>(vertices[i].position.x), static_cast<int32_t>(vertices[i].position.y), static_cast<int32_t>(vertices[(i + 1) % vertices.size()].position.x), static_cast<int32_t>(vertices[(i + 1) % vertices.size()].position.y)) != 0)
             {
                 std::cerr << "Failed to render line: " << SDL_GetError() << std::endl;
-                return nullptr;
+                return;
             }
         }
     }
@@ -328,12 +340,8 @@ const std::shared_ptr<SDL_Texture> Breakout::render(const std::shared_ptr<SDL_Re
 
     const SDL_FRect& rect = _paddle.getRect();
     SDL_Rect dest_rect = {static_cast<int32_t>(rect.x), static_cast<int32_t>(rect.y), static_cast<int32_t>(rect.w), static_cast<int32_t>(rect.h)};
-    std::shared_ptr<SDL_Texture> Paddle_surface = _texture_manager.getTexture(typeid(_paddle).name());//_texture_manager.getTexture(typeid(_paddle).name());
+    std::shared_ptr<SDL_Texture> Paddle_surface = _texture_manager.getTexture(typeid(_paddle).name());
     SDL_RenderCopy(renderer.get(), Paddle_surface.get(), nullptr, &dest_rect);
-
-    // std::cout << "Rendering breakout " << _texture_size.first << " " << _texture_size.second << std::endl;
-
-    return _texture;
 }
 
 _Float32 Breakout::getBallRadius() const
@@ -451,7 +459,6 @@ void Breakout::updateLoop(int64_t delta_time)
         ball.resolveCollisionWithLine(borders[3], borders[0], delta_time);
         
         ball.update(delta_time);
-        std::cout << "Loop" << std::endl;
     }
 
     // remove balls that are out of bounds

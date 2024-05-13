@@ -31,7 +31,7 @@ public:
     /**
      * @brief Constructor for SDLComponent.
      */
-    SDLComponent();
+    SDLComponent(bool run = false);
 
     /**
      * @brief Sets the dimensions of the surface.
@@ -66,7 +66,7 @@ public:
      * @param renderer The SDL renderer to render the component with.
      * @return A shared pointer to the SDL texture representing the rendered component.
      */
-    virtual const std::shared_ptr<SDL_Texture> render(std::shared_ptr<SDL_Renderer> renderer) = 0;
+    virtual void render(std::shared_ptr<SDL_Renderer> renderer) = 0;
 
     /**
      * @brief Initializes the surface.

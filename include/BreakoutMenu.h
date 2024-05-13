@@ -58,7 +58,7 @@ public:
      * 
      * @return A shared pointer to the SDL_Surface representing the rendered menu interface.
      */
-    const std::shared_ptr<SDL_Texture> render(const std::shared_ptr<SDL_Renderer> renderer) override;
+    void render(const std::shared_ptr<SDL_Renderer> renderer) override;
 
     /**
      * @brief Initializes the menu surface.

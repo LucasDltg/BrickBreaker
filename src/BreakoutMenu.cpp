@@ -1,7 +1,5 @@
 #include "../include/BreakoutMenu.h"
 
-// clavier fcontionne background
-
 BreakoutMenu::BreakoutMenu(const std::string& directory_path)
 : SDLComponent(), _selected_level(0), _num_rows(3), _num_columns(3), _breakout(nullptr), _launch_level(-1), _background(nullptr), _current_page(0), _font(nullptr, nullptr)
 {
@@ -45,7 +43,7 @@ void BreakoutMenu::handleEvents()
         {
             handleResize({*(int32_t*)event.data1.get(), *(int32_t*)event.data2.get()}, {event.event.window.data1, event.event.window.data2});
 
-            // only resize the background
+            // only send resize event to background
             if(_background)
                 _background->pushEvent(event);
         }
@@ -180,8 +178,7 @@ void BreakoutMenu::handleEvents()
     // handle events for breakout
     if (_breakout != nullptr)
         _breakout->handleEvents();
-
-    if(_background != nullptr)
+    else
         _background->handleEvents();
 }
 
@@ -193,14 +190,7 @@ void BreakoutMenu::update(uint64_t delta_time)
     }
     else // update background with an automated Paddle
     {
-        /*if (!_background->isRunning())
-        {
-            reloadBackground();
-            return;
-        }*/
-
-
-        /*_background->update(delta_time);
+        _background->update(delta_time);
         
         const SDL_FRect& paddle_rect = _background->getPaddle().getRect();
         const Ball& ball = _background->getBalls().front();
@@ -209,18 +199,17 @@ void BreakoutMenu::update(uint64_t delta_time)
         if (ball.getCenter().first < paddle_rect.x)
             _background->getPaddle().setSpeedX(-initial_paddle_speed);
         else if (ball.getCenter().first > (paddle_rect.x + paddle_rect.w))
-            _background->getPaddle().setSpeedX(initial_paddle_speed);*/
+            _background->getPaddle().setSpeedX(initial_paddle_speed);
     }
 }
 
-const std::shared_ptr<SDL_Texture> BreakoutMenu::render(const std::shared_ptr<SDL_Renderer> renderer)
+void BreakoutMenu::render(const std::shared_ptr<SDL_Renderer> renderer)
 {
     if(_launch_level != -1)
     {
-        _breakout = std::make_unique<Breakout>(_levels[_selected_level + _current_page * _num_rows * _num_columns]._path);
+        _breakout = std::make_unique<Breakout>(_levels[_selected_level + _current_page * _num_rows * _num_columns]._path, true);
         _breakout->setSurfaceDimensions(_texture_size.first, _texture_size.second, renderer);
         _breakout->initSurface(renderer);
-        _breakout->setRunning(true);
         _launch_level = -1;
     }
     
@@ -229,27 +218,28 @@ const std::shared_ptr<SDL_Texture> BreakoutMenu::render(const std::shared_ptr<SD
         if (!_breakout->isRunning())
         {
             _breakout = nullptr;
-            // reloadBackground();
-            return nullptr;
+            reloadBackground(renderer);
         }
-
-        SDL_SetRenderTarget(renderer.get(), _breakout->getTexture().get());
-        _breakout->render(renderer);
-        SDL_SetRenderTarget(renderer.get(), _texture.get());
-        SDL_RenderCopy(renderer.get(), _breakout->getTexture().get(), nullptr, nullptr);
-        return _texture;
+        else
+        {
+            SDL_SetRenderTarget(renderer.get(), _breakout->getTexture().get());
+            _breakout->render(renderer);
+            SDL_SetRenderTarget(renderer.get(), _texture.get());
+            SDL_RenderCopy(renderer.get(), _breakout->getTexture().get(), nullptr, nullptr);
+        }
+        return;
     }
 
     // draw background
-    // SDL_SetRenderTarget(_renderer.get(), _texture.get());
-    SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
-    SDL_RenderClear(renderer.get());
     if (_background != nullptr)
     {
-        /*SDL_SetRenderTarget(renderer.get(), _background->getTexture().get());
-        SDL_SetRenderDrawBlendMode(renderer.get(), SDL_BLENDMODE_BLEND);
+        if(!_background->isRunning())
+            reloadBackground(renderer);
+        
+        SDL_SetRenderTarget(renderer.get(), _background->getTexture().get());
         _background->render(renderer);
-        SDL_SetRenderTarget(renderer.get(), _texture.get());*/
+        SDL_SetRenderTarget(renderer.get(), _texture.get());
+        SDL_RenderCopy(renderer.get(), _background->getTexture().get(), nullptr, nullptr);
     }
 
     const uint32_t padding = getPadding();
@@ -275,14 +265,6 @@ const std::shared_ptr<SDL_Texture> BreakoutMenu::render(const std::shared_ptr<SD
             
             SDL_RenderCopy(renderer.get(), _texture_manager.getTexture("button").get(), nullptr, &rect);
         }
-        else
-        {
-            if (i == _selected_level + _num_columns * _num_rows * _current_page)
-                {rect.x -= padding / 16; rect.y -= padding / 16; rect.w += padding / 8; rect.h += padding / 8;}
-            
-            SDL_SetRenderDrawColor(renderer.get(), 255, 255, 255, 255);
-            SDL_RenderFillRect(renderer.get(), &rect);
-        }
 
         SDL_Color text_color = {0, 0, 0, 255};
         std::shared_ptr<SDL_Surface> text_surface(TTF_RenderText_Solid(_font.get(), _levels[i]._name.c_str(), text_color), SDL_FreeSurface);
@@ -305,8 +287,6 @@ const std::shared_ptr<SDL_Texture> BreakoutMenu::render(const std::shared_ptr<SD
         if (i == _current_page)
             SDL_RenderCopy(renderer.get(), _texture_manager.getTexture("page_button_selected").get(), nullptr, &page_rect);
     }
-
-    return _texture;
 }
 
 void BreakoutMenu::initSurface(const std::shared_ptr<SDL_Renderer> renderer)
@@ -328,11 +308,9 @@ uint32_t BreakoutMenu::getPadding() const
 void BreakoutMenu::reloadBackground(std::shared_ptr<SDL_Renderer> renderer)
 {
     uint32_t level = rand() % _levels.size();
-    std::cout << "Level selected " << _levels[level]._path << std::endl;
-    _background = std::make_unique<Breakout>(_levels[level]._path);
+    _background = std::make_unique<Breakout>(_levels[level]._path, true, true);
     _background->setSurfaceDimensions(_texture_size.first, _texture_size.second, renderer);
     _background->initSurface(renderer);
-    _background->setRunning(true);
 }
 
 uint32_t BreakoutMenu::getFontSize() const
