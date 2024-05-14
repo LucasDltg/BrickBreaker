@@ -1,4 +1,0 @@
-/home/ldeletang/Année2/C++/BrickBreaker/build/CMakeFiles/doc.dir
-/home/ldeletang/Année2/C++/BrickBreaker/build/CMakeFiles/BrickBreaker.dir
-/home/ldeletang/Année2/C++/BrickBreaker/build/CMakeFiles/edit_cache.dir
-/home/ldeletang/Année2/C++/BrickBreaker/build/CMakeFiles/rebuild_cache.dir

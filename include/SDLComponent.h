@@ -87,6 +87,8 @@ public:
     virtual void onResize(const uint32_t width, const uint32_t height, std::shared_ptr<SDL_Renderer> renderer)
     {
         (void)renderer;
+        (void)width;
+        (void)height;
     }
 
     /**

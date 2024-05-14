@@ -35,7 +35,7 @@ public:
      * 
      * @param directory_path The directory path containing level files. Default is "./assets/levels".
      */
-    BreakoutMenu(const std::string& directory_path = "./assets/levels");
+    BreakoutMenu(const std::string& directory_path = "../assets/levels");
 
     /**
      * @brief Handles SDL events.

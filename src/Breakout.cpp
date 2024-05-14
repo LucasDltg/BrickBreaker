@@ -7,7 +7,7 @@ Breakout::Breakout(const std::string& filename, bool run, bool is_background)
 {
     createBricksFromLevel(filename);
     
-    _font = std::unique_ptr<TTF_Font, void(*)(TTF_Font*)>(TTF_OpenFont("./assets/fonts/arial/arial.ttf", 24), TTF_CloseFont);
+    _font = std::unique_ptr<TTF_Font, void(*)(TTF_Font*)>(TTF_OpenFont("../assets/fonts/arial/arial.ttf", 24), TTF_CloseFont);
     if (!_font.get())
         throw std::runtime_error("Failed to load font: " + std::string(TTF_GetError()));
 }
@@ -27,17 +27,17 @@ void Breakout::initSurface(const std::shared_ptr<SDL_Renderer> renderer)
     }
 
     _texture_manager.loadDefaultTextures(renderer);
-    _texture_manager.loadTextureFromFile("assets/textures/small_crack.png", "small", renderer, SDL_BLENDMODE_MUL);
-    _texture_manager.loadTextureFromFile("assets/textures/medium_crack.png", "medium", renderer, SDL_BLENDMODE_MUL);
-    _texture_manager.loadTextureFromFile("assets/textures/big_crack.png", "big", renderer, SDL_BLENDMODE_MUL);
-    _texture_manager.loadTextureFromFile("assets/textures/infinite_resistance.png", "infinite", renderer, SDL_BLENDMODE_MUL);
-    _texture_manager.loadTextureFromFile("assets/textures/ball.png", typeid(Ball).name(), renderer);
-    _texture_manager.loadTextureFromFile("assets/textures/paddle.png", typeid(Paddle).name(), renderer);
-    _texture_manager.loadTextureFromFile("assets/textures/bubble_duplicate.png", typeid(DuplicateBallPowerUp).name(), renderer);
-    _texture_manager.loadTextureFromFile("assets/textures/bubble_multi.png", typeid(AddBallPowerUp).name(), renderer);
-    _texture_manager.loadTextureFromFile("assets/textures/bubble_extend.png", typeid(ExtendPaddlePowerUp).name(), renderer);
-    _texture_manager.loadTextureFromFile("assets/textures/bubble_speed.png", typeid(SpeedUpPowerUp).name(), renderer);
-    _texture_manager.loadTextureFromFile("assets/textures/bubble_flip.png", typeid(FlipRendererPowerUp).name(), renderer);
+    _texture_manager.loadTextureFromFile("../assets/textures/small_crack.png", "small", renderer, SDL_BLENDMODE_MUL);
+    _texture_manager.loadTextureFromFile("../assets/textures/medium_crack.png", "medium", renderer, SDL_BLENDMODE_MUL);
+    _texture_manager.loadTextureFromFile("../assets/textures/big_crack.png", "big", renderer, SDL_BLENDMODE_MUL);
+    _texture_manager.loadTextureFromFile("../assets/textures/infinite_resistance.png", "infinite", renderer, SDL_BLENDMODE_MUL);
+    _texture_manager.loadTextureFromFile("../assets/textures/ball.png", typeid(Ball).name(), renderer);
+    _texture_manager.loadTextureFromFile("../assets/textures/paddle.png", typeid(Paddle).name(), renderer);
+    _texture_manager.loadTextureFromFile("../assets/textures/bubble_duplicate.png", typeid(DuplicateBallPowerUp).name(), renderer);
+    _texture_manager.loadTextureFromFile("../assets/textures/bubble_multi.png", typeid(AddBallPowerUp).name(), renderer);
+    _texture_manager.loadTextureFromFile("../assets/textures/bubble_extend.png", typeid(ExtendPaddlePowerUp).name(), renderer);
+    _texture_manager.loadTextureFromFile("../assets/textures/bubble_speed.png", typeid(SpeedUpPowerUp).name(), renderer);
+    _texture_manager.loadTextureFromFile("../assets/textures/bubble_flip.png", typeid(FlipRendererPowerUp).name(), renderer);
 }
 
 void Breakout::handleResize(const std::pair<int32_t, int32_t>& previous_size, const std::pair<int32_t, int32_t>& new_size)

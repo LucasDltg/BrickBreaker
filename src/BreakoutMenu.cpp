@@ -1,9 +1,9 @@
 #include "../include/BreakoutMenu.h"
 
 BreakoutMenu::BreakoutMenu(const std::string& directory_path)
-: SDLComponent(), _selected_level(0), _num_rows(3), _num_columns(3), _breakout(nullptr), _launch_level(-1), _background(nullptr), _current_page(0), _font(nullptr, nullptr)
+: SDLComponent(), _selected_level(0), _num_rows(3), _num_columns(3), _launch_level(-1), _breakout(nullptr), _background(nullptr), _current_page(0), _font(nullptr, nullptr)
 {
-    _font = std::unique_ptr<TTF_Font, void(*)(TTF_Font*)>(TTF_OpenFont("./assets/fonts/arial/arial.ttf", getFontSize()), TTF_CloseFont);
+    _font = std::unique_ptr<TTF_Font, void(*)(TTF_Font*)>(TTF_OpenFont("../assets/fonts/arial/arial.ttf", getFontSize()), TTF_CloseFont);
     if (!_font.get())
         throw std::runtime_error("Failed to load font: " + std::string(TTF_GetError()));
 
@@ -307,9 +307,9 @@ void BreakoutMenu::initSurface(const std::shared_ptr<SDL_Renderer> renderer)
     TTF_SetFontSize(_font.get(), getFontSize());
 
     _texture_manager.loadDefaultTextures(renderer);
-    _texture_manager.loadTextureFromFile("./assets/textures/paddle.png", "button", renderer);
-    _texture_manager.loadTextureFromFile("./assets/textures/level_selected.png", "page_button_selected", renderer);
-    _texture_manager.loadTextureFromFile("./assets/textures/level_not_selected.png", "page_button_not_selected", renderer);
+    _texture_manager.loadTextureFromFile("../assets/textures/paddle.png", "button", renderer);
+    _texture_manager.loadTextureFromFile("../assets/textures/level_selected.png", "page_button_selected", renderer);
+    _texture_manager.loadTextureFromFile("../assets/textures/level_not_selected.png", "page_button_not_selected", renderer);
 }
 
 uint32_t BreakoutMenu::getPadding() const

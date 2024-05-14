@@ -3,7 +3,6 @@
 
 #include "../include/SDLComponent.h"
 #include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_audio.h>
 #include <vector>
 #include <thread>
 #include <mutex>
@@ -49,7 +48,7 @@ public:
      * @param window_flags Additional flags for the SDL window (optional).
      * @param font_path The path to the font file for rendering text (optional).
      */
-    SDLApp(const int32_t screen_width, const int32_t screen_height, const uint32_t window_flags = 0, const std::string& font_path = "assets/arial.ttf");
+    SDLApp(const int32_t screen_width, const int32_t screen_height, const uint32_t window_flags = 0, const std::string& font_path = "../assets/arial.ttf");
 
     /**
      * @brief Add a component to the SDLApp.
