@@ -273,7 +273,7 @@ void BreakoutMenu::render(const std::shared_ptr<SDL_Renderer> renderer)
         SDL_RenderCopy(renderer.get(), SDL_CreateTextureFromSurface(renderer.get(), text_surface.get()), nullptr, &text_rect);
     }
 
-    // draw squares for pages numbers
+    // draw circles for pages numbers
     const int32_t total_width_p = _num_pages * padding / 4 + (_num_pages - 1) * padding / 2;
     int32_t start_x = _texture_size.first / 2 - total_width_p / 2;
     for (size_t i(0); i < _num_pages; ++i)
@@ -283,9 +283,21 @@ void BreakoutMenu::render(const std::shared_ptr<SDL_Renderer> renderer)
             static_cast<int32_t>(_texture_size.second - padding / 2),                                    
             static_cast<int32_t>(padding / 4),
             static_cast<int32_t>(padding / 4)};
-        SDL_RenderCopy(renderer.get(), _texture_manager.getTexture("page_button_not_selected").get(), nullptr, &page_rect);
         if (i == _current_page)
             SDL_RenderCopy(renderer.get(), _texture_manager.getTexture("page_button_selected").get(), nullptr, &page_rect);
+        else
+            SDL_RenderCopy(renderer.get(), _texture_manager.getTexture("page_button_not_selected").get(), nullptr, &page_rect);
+        // draw number
+        SDL_Color color = {0, 0, 0, 0};
+        std::stringstream ss;
+        ss << i + 1;
+        SDL_Surface* s = TTF_RenderText_Solid(_font.get(), ss.str().c_str(), color);
+        std::shared_ptr<SDL_Surface> text_surface = std::shared_ptr<SDL_Surface>(s, SDL_FreeSurface);
+        int32_t r_w = static_cast<int32_t>(static_cast<_Float32>(text_surface->w) / 1.5f);
+        int32_t r_h = static_cast<int32_t>(static_cast<_Float32>(text_surface->h) / 1.5f);
+        SDL_Rect dest_rect = {page_rect.x + page_rect.w / 2 - r_w / 2, page_rect.y + page_rect.h / 2 - r_h / 2, r_w, r_h};
+        SDL_CreateTextureFromSurface(renderer.get(), text_surface.get());
+        SDL_RenderCopy(renderer.get(), SDL_CreateTextureFromSurface(renderer.get(), text_surface.get()), nullptr, &dest_rect);
     }
 }
 
@@ -296,8 +308,8 @@ void BreakoutMenu::initSurface(const std::shared_ptr<SDL_Renderer> renderer)
 
     _texture_manager.loadDefaultTextures(renderer);
     _texture_manager.loadTextureFromFile("./assets/textures/paddle.png", "button", renderer);
-    _texture_manager.loadTextureFromFile("./assets/textures/paddle.png", "page_button_selected", renderer);
-    _texture_manager.loadTextureFromFile("./assets/textures/ball.png", "page_button_not_selected", renderer);
+    _texture_manager.loadTextureFromFile("./assets/textures/level_selected.png", "page_button_selected", renderer);
+    _texture_manager.loadTextureFromFile("./assets/textures/level_not_selected.png", "page_button_not_selected", renderer);
 }
 
 uint32_t BreakoutMenu::getPadding() const
