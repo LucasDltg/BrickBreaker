@@ -35,16 +35,12 @@ public:
      * 
      * @param directory_path The directory path containing level files. Default is "./assets/levels".
      */
-    BreakoutMenu(const std::string& directory_path = "./assets/levels");
+    BreakoutMenu(const std::string& directory_path = "../assets/levels");
 
     /**
      * @brief Handles SDL events.
-     * 
-     * @param event The SDL event to handle.
-     * @param data1 Additional shared data for event handling.
-     * @param data2 Additional shared data for event handling.
      */
-    void handleEvents(const SDL_Event& event, const std::shared_ptr<void>& data1, const std::shared_ptr<void>& data2) override;
+    void handleEvents() override;
 
     /**
      * @brief Updates the menu interface.
@@ -56,14 +52,14 @@ public:
     /**
      * @brief Renders the menu interface.
      * 
-     * @return A shared pointer to the SDL_Surface representing the rendered menu interface.
+     * @param renderer The SDL renderer to render the menu with.
      */
-    const std::shared_ptr<SDL_Surface> render() override;
+    void render(const std::shared_ptr<SDL_Renderer> renderer) override;
 
     /**
      * @brief Initializes the menu surface.
      */
-    void initSurface() override;
+    void initSurface(const std::shared_ptr<SDL_Renderer> renderer) override;
 
 private:
     /**
@@ -90,13 +86,26 @@ private:
 
     /**
      * @brief Reloads the background of the menu interface.
+     * 
+     * @param renderer The SDL renderer to reload the background with.
      */
-    void reloadBackground();
+    void reloadBackground(std::shared_ptr<SDL_Renderer> renderer);
+
+
+    /**
+     * @brief Reloads the menu interface.
+     * 
+     * @param width The width of the menu interface.
+     * @param height The height of the menu interface.
+     * @param renderer The SDL renderer to reload the menu with.
+     */
+    void onResize(const uint32_t width, const uint32_t height, std::shared_ptr<SDL_Renderer> renderer) override;
     
     size_t _selected_level; ///< Index of the currently selected level.
     uint32_t _num_rows; ///< Number of rows in the menu grid.
     uint32_t _num_columns; ///< Number of columns in the menu grid.
     std::vector<BreakoutMenuLevel> _levels; ///< List of menu levels.
+    int32_t _launch_level; ///< Flag to launch the selected level.
     std::unique_ptr<Breakout> _breakout; ///< Instance of Breakout for playing levels.
     std::unique_ptr<Breakout> _background; ///< Background instance of Breakout for the menu.
     uint32_t _current_page; ///< Current page of the menu.

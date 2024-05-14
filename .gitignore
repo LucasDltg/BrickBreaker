@@ -1,4 +1,2 @@
-/build
-main
+build/
 /.vscode
-/docs

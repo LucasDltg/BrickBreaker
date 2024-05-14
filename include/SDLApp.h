@@ -4,6 +4,25 @@
 #include "../include/SDLComponent.h"
 #include <SDL2/SDL_ttf.h>
 #include <vector>
+#include <thread>
+#include <mutex>
+#include <chrono>
+#include <algorithm>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <set>
+
+/**
+ * @brief The ComponentData struct represents data for an SDL component.
+ */
+struct ComponentData
+{
+    std::shared_ptr<SDLComponent> component;  ///< The SDL component.
+    SDL_FRect location;                       ///< The location of the component on the screen.
+    int32_t fps;                              ///< Frames per second for the component.
+    bool draw_fps;                            ///< Flag indicating whether to draw FPS on the component.
+};
 
 /**
  * @brief The SDLApp class represents the main application that manages the SDL window and components.
@@ -14,73 +33,70 @@ public:
     /**
      * @brief Minimum screen width for the SDL window.
      */
-    static constexpr _Float32 _MIN_SCREEN_WIDTH = 1092;
+    static const _Float32 _MIN_SCREEN_WIDTH;
 
     /**
      * @brief Minimum screen height for the SDL window.
      */
-    static constexpr _Float32 _MIN_SCREEN_HEIGHT = 600;
+    static const _Float32 _MIN_SCREEN_HEIGHT;
     
     /**
      * @brief Constructor for SDLApp.
      * 
      * @param screen_width The width of the SDL window.
      * @param screen_height The height of the SDL window.
-     * @param window_flags Additional flags for creating the SDL window (optional).
+     * @param window_flags Additional flags for the SDL window (optional).
+     * @param font_path The path to the font file for rendering text (optional).
      */
-    SDLApp(const int32_t screen_width, const int32_t screen_height, const uint32_t window_flags = 0);
+    SDLApp(const int32_t screen_width, const int32_t screen_height, const uint32_t window_flags = 0, const std::string& font_path = "../assets/arial.ttf");
 
     /**
-     * @brief Adds a component to the SDLApp.
+     * @brief Add a component to the SDLApp.
      * 
-     * @param component The SDL component to add.
+     * @param component The component to add.
+     * @param location The location and size of the component on the screen (default is full screen).
+     * @param draw_fps Flag indicating whether to draw FPS on the component (default is false).
      */
-    void addComponent(const std::shared_ptr<SDLComponent>& component);
+    void addComponent(const std::shared_ptr<SDLComponent>& component, const SDL_FRect location={0.0f, 0.0f, 1.0f, 1.0f}, const bool draw_fps=false);
 
     /**
-     * @brief Runs the main loop of the SDL application.
-     * The main loop handles events, updates the applications state and renders the scene.
-     */
-    void run();
-
-    /**
-     * @brief Gets the SDL window.
+     * @brief Run the SDL application.
      * 
-     * @return A shared pointer to the SDL window.
+     * @param targets Set of component IDs to target (default is all components).
+     * @param desired_fps The desired frames per second for the application (default is 60).
      */
-    const std::shared_ptr<SDL_Window> getWindow() const;
-
-    /**
-     * @brief Gets the SDL renderer.
-     * 
-     * @return A shared pointer to the SDL renderer.
-     */
-    const std::shared_ptr<SDL_Renderer> getRenderer() const;
+    void run(std::set<int32_t> targets = {}, const int32_t desired_fps=60);
     
 private:
-    std::shared_ptr<SDL_Window> _window; ///< The SDL window.
-    std::shared_ptr<SDL_Renderer> _renderer; ///< The SDL renderer.
-    bool _is_running; ///< Flag indicating whether the application is running.
-    std::vector<std::shared_ptr<SDLComponent>> _components; ///< Vector of SDL components.
-    uint64_t _last_time; ///< Timestamp of the last frame.
-    std::pair<uint32_t, uint32_t> _window_dimensions; ///< Dimensions of the SDL window.
+    std::shared_ptr<SDL_Window> _window;             ///< The SDL window.
+    std::shared_ptr<SDL_Renderer> _renderer;         ///< The SDL renderer.
+    std::shared_ptr<TTF_Font> _font;                 ///< The SDL font.
+    std::atomic<bool> _is_running;                   ///< Flag to indicate if the application is running.
+    std::vector<ComponentData> _components;          ///< The components of the application.
+    std::pair<uint32_t, uint32_t> _window_dimensions;///< Dimensions of the SDL window.
 
     /**
-     * @brief Handles SDL events.
-     */
-    void handleEvents();
-
-    /**
-     * @brief Updates the application state.
+     * @brief Handle SDL events for a target component.
      * 
-     * @param delta_time The time elapsed since the last update.
+     * @param target The target component data.
+     * @param event The SDL event to handle.
      */
-    void update(const uint64_t delta_time);
+    void handleEvents(ComponentData& target, SDL_Event& event);
 
     /**
-     * @brief Renders the scene.
+     * @brief Render a target component.
+     * 
+     * @param target The target component data to render.
      */
-    void render();
+    void render(ComponentData& target);
+
+    /**
+     * @brief Main loop for a target component.
+     * 
+     * @param target The target component data.
+     * @param desired_fps The desired frames per second for the component.
+     */
+    void loop(ComponentData& target, const int32_t desired_fps=60);
 };
 
-#endif
+#endif // SDLAPP_H

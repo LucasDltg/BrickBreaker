@@ -11,6 +11,8 @@ std::unique_ptr<PowerUp> initPowerUp(const std::string& name)
         return std::make_unique<DuplicateBallPowerUp>();
     else if (name == "ExtendPaddle")
         return std::make_unique<ExtendPaddlePowerUp>();
+    else if (name == "FlipRenderer")
+        return std::make_unique<FlipRendererPowerUp>();
     else
         return nullptr;
 }
@@ -119,4 +121,19 @@ void SpeedUpPowerUp::unApplyPowerUp(Breakout &game)
     {
         ball.setSpeed({ball.getSpeed().first / 1.2f, ball.getSpeed().second / 1.2f});
     }
+}
+
+FlipRendererPowerUp::FlipRendererPowerUp()
+: PowerUp(10000)
+{}
+
+void FlipRendererPowerUp::applyPowerUp(Breakout &game)
+{
+    _active = true;
+    game.increaseFlipRenderer();
+}
+
+void FlipRendererPowerUp::unApplyPowerUp(Breakout &game)
+{
+    game.decreaseFlipRenderer();
 }

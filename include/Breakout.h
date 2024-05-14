@@ -24,17 +24,16 @@ public:
      * @brief Constructor for Breakout.
      * 
      * @param filename The filename of the level configuration file.
+     * @param run Whether to run the game.
+     * @param is_background Whether the game is in the background.
      */
-    Breakout(const std::string& filename);
+    Breakout(const std::string& filename, bool run = false, bool is_background = false);
 
     /**
      * @brief Handles SDL events.
      * 
-     * @param event The SDL event to handle.
-     * @param data1 Additional shared data for event handling.
-     * @param data2 Additional shared data for event handling.
      */
-    void handleEvents(const SDL_Event& event, const std::shared_ptr<void>& data1, const std::shared_ptr<void>& data2) override;
+    void handleEvents() override;
 
     /**
      * @brief Updates the game state.
@@ -46,14 +45,16 @@ public:
     /**
      * @brief Renders the game screen.
      * 
-     * @return A shared pointer to the SDL_Surface representing the rendered screen.
+     * @param renderer The SDL renderer to render the screen with.
      */
-    const std::shared_ptr<SDL_Surface> render() override;
+    void render(const std::shared_ptr<SDL_Renderer> renderer) override;
 
     /**
      * @brief Initializes the game surface.
+     * 
+     * @param renderer The SDL renderer to initialize the surface with.
      */
-    void initSurface() override;
+    void initSurface(const std::shared_ptr<SDL_Renderer> renderer) override;
     
     /**
      * @brief Adds a ball to the game.
@@ -104,6 +105,25 @@ public:
      */
     std::vector<Ball>& getBalls();
 
+    /**
+     * @brief Increases the flip renderer count.
+     * 
+     */
+    void increaseFlipRenderer();
+
+    /**
+     * @brief Decreases the flip renderer count.
+     * 
+     */
+    void decreaseFlipRenderer();
+
+    /**
+     * @brief Get the flip renderer count.
+     * 
+     * @return The flip renderer count.
+     */
+    int32_t getFlipRenderer() const;
+
 private:
     std::vector<std::unique_ptr<Brick>> _bricks; /**< Vector of bricks in the game. */
     std::vector<Ball> _balls; /**< Vector of balls in the game. */
@@ -113,6 +133,8 @@ private:
     BrickShape _brick_shape; /**< The shape of the bricks in the game. */
     int32_t _start_duration; /**< The duration of the game start sequence. */
     std::unique_ptr<TTF_Font, void(*)(TTF_Font*)> _font; /**< The font used for rendering text. */
+    bool _is_background; /**< Whether the game is in the background. */
+    int32_t _is_rendered_flipped; /**< Whether the game is rendered flipped. */
     
     /**
      * @brief Creates bricks from the level configuration file.

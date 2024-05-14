@@ -6,7 +6,7 @@
 #include <memory>
 #include <iostream>
 
-// we can add later a surcharge of the loadTexture function to manage user defined textures
+// we can add later a surcharge of the loadTextureFromFile function to manage user defined textures
 
 /**
  * @brief The TextureManager class manages SDL textures.
@@ -28,8 +28,18 @@ public:
      * @param key The key to associate with the loaded texture.
      * @param renderer A shared pointer to the SDL renderer.
      * @param blending_mode The blending mode for the texture (optional).
+     * @return True if the texture was loaded successfully, false otherwise.
      */
-    void loadTexture(const std::string& filename, const std::string& key, const std::shared_ptr<SDL_Renderer>& renderer, const int32_t blending_mode = SDL_BLENDMODE_INVALID);
+    bool loadTextureFromFile(const std::string& filename, const std::string& key, const std::shared_ptr<SDL_Renderer>& renderer, const SDL_BlendMode blending_mode = SDL_BLENDMODE_INVALID);
+
+    /**
+     * @brief Loads a texture from an existing SDL texture.
+     * 
+     * @param texture A shared pointer to the SDL texture.
+     * @param key The key to associate with the loaded texture.
+     * @return True if the texture was loaded successfully, false otherwise.
+     */
+    bool loadTexture(std::shared_ptr<SDL_Texture> texture, const std::string& key);
 
     /**
      * @brief Retrieves a texture by key, if it does not exist, returns the default texture, if it does not exist, returns nullptr.
@@ -60,7 +70,17 @@ private:
      */
     std::shared_ptr<SDL_Texture> createDefaultTexture(const std::shared_ptr<SDL_Renderer>& renderer);
 
-    std::map<std::string, std::tuple<std::string, SDL_BlendMode, std::shared_ptr<SDL_Texture>>> _textures; ///< Map storing loaded textures.
+    /**
+     * @brief The TextureData struct represents data for a texture.
+     */
+    typedef struct TextureData
+    {
+        std::string filename; // the filename of the texture
+        SDL_BlendMode blending_mode; // the blending mode of the texture
+        std::shared_ptr<SDL_Texture> texture; // the texture
+    } TextureData;
+
+    std::map<std::string, TextureData> _textures; ///< The textures.
 };
 
 #endif // TEXTUREMANAGER_H

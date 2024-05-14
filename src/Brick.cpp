@@ -165,12 +165,12 @@ void BrickHexagonal::calculateVerticesWithPosition(const std::pair<_Float32, _Fl
         y = ((_position.second - 1) / 2) * brick_height + brick_height / 2;
     }
 
-    _vertices.push_back(SDL_Vertex{SDL_FPoint{x, y + brick_height / 2}, colors[5], SDL_FPoint{0.0f, 0.0f}});
-    _vertices.push_back(SDL_Vertex{SDL_FPoint{x + brick_width / 4, y}, colors[0], SDL_FPoint{0.0f, 0.0f}});
-    _vertices.push_back(SDL_Vertex{SDL_FPoint{x + 3 * brick_width / 4, y}, colors[1], SDL_FPoint{0.0f, 0.0f}});
-    _vertices.push_back(SDL_Vertex{SDL_FPoint{x + brick_width, y + brick_height / 2}, colors[2], SDL_FPoint{0.0f, 0.0f}});
-    _vertices.push_back(SDL_Vertex{SDL_FPoint{x + 3 * brick_width / 4, y + brick_height}, colors[3], SDL_FPoint{0.0f, 0.0f}});
-    _vertices.push_back(SDL_Vertex{SDL_FPoint{x + brick_width / 4, y + brick_height}, colors[4], SDL_FPoint{0.0f, 0.0f}});
+    _vertices.push_back(SDL_Vertex{SDL_FPoint{x, y + brick_height / 2}, colors[5], SDL_FPoint{0.0f, 0.5f}});
+    _vertices.push_back(SDL_Vertex{SDL_FPoint{x + brick_width / 4, y}, colors[0], SDL_FPoint{0.25f, 0.0f}});
+    _vertices.push_back(SDL_Vertex{SDL_FPoint{x + 3 * brick_width / 4, y}, colors[1], SDL_FPoint{0.75f, 0.0f}});
+    _vertices.push_back(SDL_Vertex{SDL_FPoint{x + brick_width, y + brick_height / 2}, colors[2], SDL_FPoint{1.0f, 0.5f}});
+    _vertices.push_back(SDL_Vertex{SDL_FPoint{x + 3 * brick_width / 4, y + brick_height}, colors[3], SDL_FPoint{0.75f, 1.0f}});
+    _vertices.push_back(SDL_Vertex{SDL_FPoint{x + brick_width / 4, y + brick_height}, colors[4], SDL_FPoint{0.25f, 1.0f}});
 }
 
 const std::vector<int32_t> BrickHexagonal::getIndices() const
