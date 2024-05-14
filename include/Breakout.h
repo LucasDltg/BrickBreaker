@@ -24,6 +24,8 @@ public:
      * @brief Constructor for Breakout.
      * 
      * @param filename The filename of the level configuration file.
+     * @param run Whether to run the game.
+     * @param is_background Whether the game is in the background.
      */
     Breakout(const std::string& filename, bool run = false, bool is_background = false);
 
@@ -44,7 +46,6 @@ public:
      * @brief Renders the game screen.
      * 
      * @param renderer The SDL renderer to render the screen with.
-     * @return A shared pointer to the SDL_Surface representing the rendered screen.
      */
     void render(const std::shared_ptr<SDL_Renderer> renderer) override;
 

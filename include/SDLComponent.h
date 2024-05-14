@@ -64,7 +64,6 @@ public:
      * This method should be overridden by subclasses to render the component.
      * 
      * @param renderer The SDL renderer to render the component with.
-     * @return A shared pointer to the SDL texture representing the rendered component.
      */
     virtual void render(std::shared_ptr<SDL_Renderer> renderer) = 0;
 

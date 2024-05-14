@@ -39,10 +39,6 @@ public:
 
     /**
      * @brief Handles SDL events.
-     * 
-     * @param event The SDL event to handle.
-     * @param data1 Additional shared data for event handling.
-     * @param data2 Additional shared data for event handling.
      */
     void handleEvents() override;
 
@@ -56,7 +52,7 @@ public:
     /**
      * @brief Renders the menu interface.
      * 
-     * @return A shared pointer to the SDL_Surface representing the rendered menu interface.
+     * @param renderer The SDL renderer to render the menu with.
      */
     void render(const std::shared_ptr<SDL_Renderer> renderer) override;
 
@@ -90,9 +86,19 @@ private:
 
     /**
      * @brief Reloads the background of the menu interface.
+     * 
+     * @param renderer The SDL renderer to reload the background with.
      */
     void reloadBackground(std::shared_ptr<SDL_Renderer> renderer);
 
+
+    /**
+     * @brief Reloads the menu interface.
+     * 
+     * @param width The width of the menu interface.
+     * @param height The height of the menu interface.
+     * @param renderer The SDL renderer to reload the menu with.
+     */
     void onResize(const uint32_t width, const uint32_t height, std::shared_ptr<SDL_Renderer> renderer) override;
     
     size_t _selected_level; ///< Index of the currently selected level.
