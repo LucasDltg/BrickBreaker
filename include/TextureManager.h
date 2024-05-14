@@ -6,8 +6,6 @@
 #include <memory>
 #include <iostream>
 
-// we can add later a surcharge of the loadTextureFromFile function to manage user defined textures
-
 /**
  * @brief The TextureManager class manages SDL textures.
  */

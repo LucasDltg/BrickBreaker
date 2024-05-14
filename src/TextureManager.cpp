@@ -20,7 +20,6 @@ bool TextureManager::loadTextureFromFile(const std::string& filename, const std:
         return false;
     }
     
-    // set blending mode if valid
     if (blending_mode != SDL_BLENDMODE_INVALID)
         SDL_SetTextureBlendMode(_textures[key].texture.get(), blending_mode);
 
