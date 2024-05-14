@@ -1,4 +1,4 @@
-# Build Instauctions
+# Build Instructions
 ## Clone this repo
 git clone https://github.com/LucasDltg/BrickBreaker
 cd BrickBreaker
