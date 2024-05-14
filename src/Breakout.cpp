@@ -3,7 +3,7 @@
 #include "../include/Paddle.h"
 
 Breakout::Breakout(const std::string& filename, bool run, bool is_background)
-: SDLComponent(run), _paddle(), _start_duration(1000), _font(nullptr, TTF_CloseFont), _is_background(is_background), _is_rendered_flipped(0)
+: SDLComponent(run), _paddle(), _start_duration(1000), _font(nullptr, TTF_CloseFont), _is_background(is_background), _is_rendered_flipped(0), _lives(3)
 {
     createBricksFromLevel(filename);
     
@@ -344,6 +344,18 @@ void Breakout::render(const std::shared_ptr<SDL_Renderer> renderer)
     SDL_Rect dest_rect = {static_cast<int32_t>(rect.x), static_cast<int32_t>(rect.y), static_cast<int32_t>(rect.w), static_cast<int32_t>(rect.h)};
     std::shared_ptr<SDL_Texture> Paddle_surface = _texture_manager.getTexture(typeid(_paddle).name());
     SDL_RenderCopy(renderer.get(), Paddle_surface.get(), nullptr, &dest_rect);
+
+    // draw lives
+    SDL_Color color = {255, 255, 255, 0};
+    std::stringstream ss;
+    ss << "Lives: " << _lives;
+    SDL_Surface* s = TTF_RenderText_Solid(_font.get(), ss.str().c_str(), color);
+    std::shared_ptr<SDL_Surface> text_surface = std::shared_ptr<SDL_Surface>(s, SDL_FreeSurface);
+    SDL_Rect lives_rect = {_texture_size.first - text_surface->w - 10, 10, text_surface->w, text_surface->h};
+    SDL_CreateTextureFromSurface(renderer.get(), text_surface.get());
+    SDL_SetRenderDrawColor(renderer.get(), 0, 0, 0, 255);
+    SDL_RenderFillRect(renderer.get(), &lives_rect);
+    SDL_RenderCopy(renderer.get(), SDL_CreateTextureFromSurface(renderer.get(), text_surface.get()), nullptr, &lives_rect);
 }
 
 _Float32 Breakout::getBallRadius() const
@@ -457,16 +469,26 @@ void Breakout::updateLoop(int64_t delta_time)
         
         ball.resolveCollisionWithLine(borders[0], borders[1], delta_time);
         ball.resolveCollisionWithLine(borders[1], borders[2], delta_time);
-        ball.resolveCollisionWithLine(borders[2], borders[3], delta_time);
         ball.resolveCollisionWithLine(borders[3], borders[0], delta_time);
         
+        // we only lose life is there is one ball left
+        if(ball.resolveCollisionWithLine(borders[2], borders[3], delta_time) && _balls.size() == 1)
+        {
+            _lives--;
+            if(_lives == 0)
+                _balls.clear();
+        }
+
         ball.update(delta_time);
     }
-
-    // remove balls that are out of bounds
-    /*balls.erase(std::remove_if(balls.begin(), balls.end(), [this](const Ball& ball) {
-        return ball.getCenter().second - ball.getRadius() > surface->h;
-    }), balls.end());*/
+    
+    if(_balls.size() > 1)
+    {
+        // remove balls that are out of bounds
+        _balls.erase(std::remove_if(_balls.begin(), _balls.end(), [this](const Ball& ball) {
+            return ball.getCenter().second - ball.getRadius() > this->getPaddle().getRect().y + this->getPaddle().getRect().h;
+        }), _balls.end());   
+    }
 }
 
 void Breakout::increaseFlipRenderer()

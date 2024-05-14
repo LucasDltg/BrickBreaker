@@ -135,6 +135,7 @@ private:
     std::unique_ptr<TTF_Font, void(*)(TTF_Font*)> _font; /**< The font used for rendering text. */
     bool _is_background; /**< Whether the game is in the background. */
     int32_t _is_rendered_flipped; /**< Whether the game is rendered flipped. */
+    int32_t _lives; /**< The number of lives remaining. */
     
     /**
      * @brief Creates bricks from the level configuration file.
