@@ -38,7 +38,7 @@ cd build
 
 ## Build
 cmake ..  
-make  
+make (or 'make doc' to generate documentation)
 
 ## Run
 ./BrickBreaker
