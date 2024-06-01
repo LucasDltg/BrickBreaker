@@ -365,7 +365,7 @@ _Float32 Breakout::getBallRadius() const
 
 _Float32 Breakout::getInitialBallSpeed() const
 {
-    return static_cast<_Float32>(_texture_size.first) / 1600.0f;
+    return static_cast<_Float32>(_texture_size.first) / 3000.0f;
 }
 
 Paddle& Breakout::getPaddle()
